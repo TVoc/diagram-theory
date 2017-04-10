@@ -15,40 +15,63 @@ public class Class {
 	/**
 	 * Creates a new Class with the given id.
 	 * 
-	 * @param id
-	 * 		id of the new class
+	 * @param name
+	 * 		The name of the new class
+	 * @param attributes
+	 * 		Attributes of the new class. May be null.
+	 * @param operations
+	 * 		Operations of the new class. May be null.
+	 * 		
 	 * @throws IllegalArgumentException
-	 * 		id.equals("") || id == null
+	 * 		id.equals("") || id == null || attributes == null || attributes.isEmpty() || operations == null || operations.isEmpty()
 	 */
-	public Class(String id) throws IllegalArgumentException
+	public Class(String name, Optional<Set<DataUnit>> attributes, Optional<Set<Operation>> operations) throws IllegalArgumentException
 	{
-		if (id == null)
+		if (name == null)
 		{
-			throw new IllegalArgumentException("id cannot be null");
+			throw new IllegalArgumentException("name cannot be null");
 		}
-		if (id.equals(""))
+		if (name.equals(""))
 		{
-			throw new IllegalArgumentException("id cannot be empty");
+			throw new IllegalArgumentException("name cannot be empty");
+		}
+		if (attributes == null)
+		{
+			throw new IllegalArgumentException("attributes cannot be null");
+		}
+		if (operations == null)
+		{
+			throw new IllegalArgumentException("operations cannot be null");
+		}
+		if (attributes.isPresent() && attributes.get().isEmpty())
+		{
+			throw new IllegalArgumentException("attributes cannot be empty");
+		}
+		if (operations.isPresent() && operations.get().isEmpty())
+		{
+			throw new IllegalArgumentException("operations cannot be empty");
 		}
 		
-		this.id = id;
+		this.name = name;
+		this.attributes = attributes;
+		this.operations = operations;
 	}
 	
-	private final String id;
+	private final String name;
 	
-	public String getID()
+	public String getName()
 	{
-		return this.id;
+		return this.name;
 	}
 	
-	private Optional<Set<Attribute>> attributes;
+	private final Optional<Set<DataUnit>> attributes;
 	
 	/**
 	 * 
 	 * @return
 	 * An unmodifiable view of this class's attributes
 	 */
-	public Optional<Set<Attribute>> getAllAttributes()
+	public Optional<Set<DataUnit>> getAllAttributes()
 	{
 		if (! this.getAttributes().isPresent())
 		{
@@ -60,12 +83,12 @@ public class Class {
 		}
 	}
 	
-	private Optional<Set<Attribute>> getAttributes()
+	private Optional<Set<DataUnit>> getAttributes()
 	{
 		return this.attributes;
 	}
 	
-	private Optional<Set<Operation>> operations;
+	private final Optional<Set<Operation>> operations;
 	
 	/**
 	 * 
@@ -87,5 +110,42 @@ public class Class {
 	private Optional<Set<Operation>> getOperations()
 	{
 		return this.operations;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((operations == null) ? 0 : operations.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Class other = (Class) obj;
+		if (attributes == null) {
+			if (other.attributes != null)
+				return false;
+		} else if (!attributes.equals(other.attributes))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (operations == null) {
+			if (other.operations != null)
+				return false;
+		} else if (!operations.equals(other.operations))
+			return false;
+		return true;
 	}
 }

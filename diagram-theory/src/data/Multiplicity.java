@@ -8,6 +8,8 @@ package data;
  */
 public class Multiplicity {
 	
+	static final Multiplicity EXACTLY_ONE = new Multiplicity(1, 1, false, false);
+	
 	/**
 	 * Creates a new multiplicity object with the given lower and upper bounds.
 	 * 
@@ -15,10 +17,14 @@ public class Multiplicity {
 	 * 		The lower bound of this multiplicity
 	 * @param upperBound
 	 * 		The upper bound of this multiplicity
+	 * @param isOrdered
+	 * 		Only relevant if this multiplicity is greater than one. Indicates if a total ordering is enforced.
+	 * @param isUnique
+	 * 		Only relevant if this multiplicity is greater than one. Indicates if uniqueness if enforced.
 	 * @throws IllegalArgumentException
 	 * 		lowerBound < 0 || upperBound < 0 || lowerBound > upperBound
 	 */
-	Multiplicity(double lowerBound, double upperBound) throws IllegalArgumentException
+	Multiplicity(double lowerBound, double upperBound, boolean isOrdered, boolean isUnique) throws IllegalArgumentException
 	{
 		if (lowerBound < 0)
 		{
@@ -35,6 +41,8 @@ public class Multiplicity {
 		
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
+		this.isOrdered = isOrdered;
+		this.isUnique = isUnique;
 	}
 	
 	private final double lowerBound;
@@ -48,6 +56,71 @@ public class Multiplicity {
 	public double getUpperBound()
 	{
 		return this.upperBound;
+	}
+	
+	/**
+	 * 
+	 * @return This multiplicity expresses that it may be the case that no element is present
+	 */
+	public boolean isOptional()
+	{
+		return this.lowerBound == 0;
+	}
+	
+	/**
+	 * 
+	 * @return This multiplicity expresses that there may be more than one element present
+	 */
+	public boolean isCollection()
+	{
+		return this.upperBound > 1;
+	}
+	
+	private final boolean isOrdered;
+	private final boolean isUnique;
+	
+	public boolean isOrdered()
+	{
+		return this.isOrdered;
+	}
+	
+	public boolean isUnique()
+	{
+		return this.isUnique;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (isOrdered ? 1231 : 1237);
+		result = prime * result + (isUnique ? 1231 : 1237);
+		long temp;
+		temp = Double.doubleToLongBits(lowerBound);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(upperBound);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Multiplicity other = (Multiplicity) obj;
+		if (isOrdered != other.isOrdered)
+			return false;
+		if (isUnique != other.isUnique)
+			return false;
+		if (Double.doubleToLongBits(lowerBound) != Double.doubleToLongBits(other.lowerBound))
+			return false;
+		if (Double.doubleToLongBits(upperBound) != Double.doubleToLongBits(other.upperBound))
+			return false;
+		return true;
 	}
 
 }

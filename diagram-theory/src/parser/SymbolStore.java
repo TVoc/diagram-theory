@@ -1,5 +1,6 @@
+package parser;
 
 public class SymbolStore {
 	
-	private 
+	
 }
