@@ -17,7 +17,34 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public String resolveName(Type type) throws NoSuchTypeException;
+	public String resolveName(ComplexType type) throws NoSuchTypeException;
+	
+	/**
+	 * 
+	 * @param type
+	 * @return The type's true name
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public String resolveName(PrimitiveType type) throws NoSuchTypeException;
+
+	/**
+	 * 
+	 * @param type
+	 * @return The type's true name
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public String resolveName(UserDefinedType type) throws NoSuchTypeException;
+
+	/**
+	 * 
+	 * @param type
+	 * @return The type's true name
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public String resolveName(TypeParameterType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -26,7 +53,34 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public Class resolve(Type type) throws NoSuchTypeException;
+	public Class resolve(ComplexType type) throws NoSuchTypeException;
+	
+	/**
+	 * 
+	 * @param type
+	 * @return	The Class object corresponding to type
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public Class resolve(UserDefinedType type) throws NoSuchTypeException;
+	
+	/**
+	 * 
+	 * @param type
+	 * @return	The Class object corresponding to type
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public Class resolve(TypeParameterType type) throws NoSuchTypeException;
+	
+	/**
+	 * 
+	 * @param type
+	 * @return	The Class object corresponding to type
+	 * @throws NoSuchTypeException
+	 * 		This type context cannot resolve type
+	 */
+	public Class resolve(PrimitiveType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
