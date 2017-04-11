@@ -55,7 +55,7 @@ public class ComplexType implements Type
 	}
 
 	@Override
-	public UserDefinedClass getType(TypeContext context) throws NoSuchTypeException
+	public Class getType(TypeContext context) throws NoSuchTypeException
 	{
 		return context.resolve(this);
 	}

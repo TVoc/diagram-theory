@@ -30,6 +30,6 @@ public interface Type
 	 * @throws NoSuchTypeException
 	 * 		context cannot resolve this type
 	 */
-	public UserDefinedClass getType(TypeContext context) throws NoSuchTypeException;
+	public Class getType(TypeContext context) throws NoSuchTypeException;
 
 }

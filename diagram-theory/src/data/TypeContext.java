@@ -26,7 +26,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public UserDefinedClass resolve(Type type) throws NoSuchTypeException;
+	public Class resolve(Type type) throws NoSuchTypeException;
 	
 	/**
 	 * 
