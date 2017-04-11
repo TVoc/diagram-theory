@@ -2,9 +2,10 @@ package data;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-public class UserDefinedClassBuilder
+public class UserDefinedClassBuilder implements Class
 {
 
 	/**
@@ -80,6 +81,15 @@ public class UserDefinedClassBuilder
 	 * 
 	 * @return An unmodifiable view of the new class's attributes so far
 	 */
+	public Optional<Set<DataUnit>> getAllAttributes()
+	{
+		return Optional.of(Collections.unmodifiableSet(this.internalGetAttributes()));
+	}
+	
+	/**
+	 * 
+	 * @return An unmodifiable view of the new class's attributes so far
+	 */
 	public Set<DataUnit> getAttributes()
 	{
 		return Collections.unmodifiableSet(this.internalGetAttributes());
@@ -127,6 +137,15 @@ public class UserDefinedClassBuilder
 	private Set<Operation> internalGetOperations()
 	{
 		return this.operations;
+	}
+	
+	/**
+	 * 
+	 * @return An unmodifiable view of this class's operations so far
+	 */
+	public Optional<Set<Operation>> getAllOperations()
+	{
+		return Optional.of(Collections.unmodifiableSet(this.internalGetOperations()));
 	}
 	
 	/**

@@ -86,17 +86,17 @@ public class UserDefinedClass implements Class
 	@Override
 	public Optional<Set<DataUnit>> getAllAttributes()
 	{
-		if (!this.getAttributes().isPresent())
+		if (!this.internalGetAttributes().isPresent())
 		{
 			return Optional.empty();
 		}
 		else
 		{
-			return Optional.of(Collections.unmodifiableSet(this.getAttributes().get()));
+			return Optional.of(Collections.unmodifiableSet(this.internalGetAttributes().get()));
 		}
 	}
 
-	private Optional<Set<DataUnit>> getAttributes()
+	private Optional<Set<DataUnit>> internalGetAttributes()
 	{
 		return this.attributes;
 	}
@@ -109,17 +109,17 @@ public class UserDefinedClass implements Class
 	@Override
 	public Optional<Set<Operation>> getAllOperations()
 	{
-		if (!this.getOperations().isPresent())
+		if (!this.internalGetOperations().isPresent())
 		{
 			return Optional.empty();
 		}
 		else
 		{
-			return Optional.of(Collections.unmodifiableSet(this.getOperations().get()));
+			return Optional.of(Collections.unmodifiableSet(this.internalGetOperations().get()));
 		}
 	}
 
-	private Optional<Set<Operation>> getOperations()
+	private Optional<Set<Operation>> internalGetOperations()
 	{
 		return this.operations;
 	}

@@ -1,5 +1,7 @@
 package data;
 
+import java.util.Optional;
+
 /**
  * Represents the concept of multiplicity in UML Class Diagrams
  * 
@@ -45,8 +47,15 @@ public class Multiplicity
 
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
-		this.isOrdered = isOrdered;
-		this.isUnique = isUnique;
+		
+		if (upperBound > 1)
+		{
+			this.collectionProperties = Optional.of(new CollectionProperties(isOrdered, isUnique));
+		}
+		else
+		{
+			this.collectionProperties = Optional.empty();
+		}
 	}
 
 	/**
@@ -94,26 +103,37 @@ public class Multiplicity
 		return this.upperBound > 1;
 	}
 
-	private final boolean isOrdered;
-	private final boolean isUnique;
-
-	public boolean isOrdered()
+	private final Optional<CollectionProperties> collectionProperties;
+	
+	private Optional<CollectionProperties> getCollectionProperties()
 	{
-		return this.isOrdered;
+		return this.collectionProperties;
+	}
+	
+	/**
+	 * 
+	 * @return	If this multiplicity represents a collection, then determine what type of collection it is
+	 * @throws IllegalStateException
+	 * 		! this.isCollection()
+	 */
+	public String getCollectionType() throws IllegalStateException
+	{
+		if (! this.isCollection())
+		{
+			throw new IllegalStateException("multiplicity does not represent a collection");
+		}
+		
+		return this.getCollectionProperties().get().getCollectionName();
 	}
 
-	public boolean isUnique()
-	{
-		return this.isUnique;
-	}
-
+	
+	
 	@Override
 	public int hashCode()
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (isOrdered ? 1231 : 1237);
-		result = prime * result + (isUnique ? 1231 : 1237);
+		result = prime * result + ((collectionProperties == null) ? 0 : collectionProperties.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(lowerBound);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -132,9 +152,12 @@ public class Multiplicity
 		if (getClass() != obj.getClass())
 			return false;
 		Multiplicity other = (Multiplicity) obj;
-		if (isOrdered != other.isOrdered)
-			return false;
-		if (isUnique != other.isUnique)
+		if (collectionProperties == null)
+		{
+			if (other.collectionProperties != null)
+				return false;
+		}
+		else if (!collectionProperties.equals(other.collectionProperties))
 			return false;
 		if (Double.doubleToLongBits(lowerBound) != Double.doubleToLongBits(other.lowerBound))
 			return false;
@@ -143,4 +166,47 @@ public class Multiplicity
 		return true;
 	}
 
+
+
+	private class CollectionProperties
+	{
+		CollectionProperties(boolean isOrdered, boolean isUnique)
+		{
+			this.isOrdered = isOrdered;
+			this.isUnique = isUnique;
+		}
+		
+		private final boolean isOrdered;
+		private final boolean isUnique;
+
+		public boolean isOrdered()
+		{
+			return this.isOrdered;
+		}
+
+		public boolean isUnique()
+		{
+			return this.isUnique;
+		}
+		
+		public String getCollectionName()
+		{
+			if (! this.isOrdered() && ! this.isUnique())
+			{
+				return "Bag";
+			}
+			else if (! this.isOrdered() && this.isUnique())
+			{
+				return "Set";
+			}
+			else if (this.isOrdered() && ! this.isUnique())
+			{
+				return "Sequence";
+			}
+			else // (this.isOrdered && this.isUnique)
+			{
+				return "OrderedSet";
+			}
+		}
+	}
 }

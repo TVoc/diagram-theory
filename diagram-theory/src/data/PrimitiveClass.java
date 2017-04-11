@@ -3,7 +3,7 @@ package data;
 import java.util.Optional;
 import java.util.Set;
 
-enum PrimitiveClass implements Class
+public enum PrimitiveClass implements Class
 {
 	BOOLEAN("bool"), BYTE("byte"), CHAR("char"), DOUBLE("double"),
 	FLOAT("float"), INTEGER("int"), LONG("long"), SHORT("short"),

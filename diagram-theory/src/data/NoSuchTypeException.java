@@ -13,5 +13,10 @@ public class NoSuchTypeException extends RuntimeException
 	 * 
 	 */
 	private static final long serialVersionUID = 3163278769725839317L;
+	
+	public NoSuchTypeException(String message)
+	{
+		super(message);
+	}
 
 }
