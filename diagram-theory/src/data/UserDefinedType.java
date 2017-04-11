@@ -34,6 +34,12 @@ public class UserDefinedType implements Type
 	 * The TypeContext will use this id to retrieve the type's true name.
 	 */
 	private final String id;
+	
+	@Override
+	public String getID()
+	{
+		return this.id;
+	}
 
 	@Override
 	public String getTypeName(TypeContext context) throws NoSuchTypeException

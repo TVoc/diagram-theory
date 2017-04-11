@@ -39,6 +39,12 @@ public enum PrimitiveType implements Type
 	{
 		return this.name;
 	}
+	
+	@Override
+	public String getID()
+	{
+		return this.getName();
+	}
 
 	@Override
 	public String getTypeName(TypeContext context)

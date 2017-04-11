@@ -12,6 +12,8 @@ package data;
 public interface Type
 {
 
+	public String getID();
+	
 	/**
 	 * Resolve this type using the given TypeContext and give its name
 	 * 

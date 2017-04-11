@@ -47,6 +47,11 @@ public class AssociationEnd
 	}
 
 	private final UserDefinedType theClass;
+	
+	private UserDefinedType getTheClass()
+	{
+		return this.theClass;
+	}
 
 	/**
 	 * 
@@ -56,9 +61,21 @@ public class AssociationEnd
 	 *             The given type context cannot resolve this association end's
 	 *             type
 	 */
-	public String getType(TypeContext context) throws NoSuchTypeException
+	public String getTypeName(TypeContext context) throws NoSuchTypeException
 	{
-		return this.theClass.getTypeName(context);
+		return this.getTheClass().getTypeName(context);
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @return	The class object corresponding to this association end's type
+	 * @throws NoSuchTypeException
+	 * 		The given type context cannot resolve this association end's type
+	 */
+	public Class getType(TypeContext context) throws NoSuchTypeException
+	{
+		return this.getTheClass().getType(context);
 	}
 
 	private final Optional<String> roleName;

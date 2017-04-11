@@ -72,13 +72,25 @@ public class DataUnit
 	/**
 	 * 
 	 * @param context
-	 * @return
+	 * @return	The true name of this data unit's type
 	 * @throws NoSuchTypeException
 	 *             The given type context cannot resolve this data unit's type
 	 */
-	public String getType(TypeContext context) throws NoSuchTypeException
+	public String getTypeName(TypeContext context) throws NoSuchTypeException
 	{
 		return this.getType().getTypeName(context);
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @return	The Class object corresponding to this data unit's type
+	 * @throws NoSuchTypeException
+	 * 		The given type context cannot resolve this data unit's type
+	 */
+	public Class getType(TypeContext context) throws NoSuchTypeException
+	{
+		return this.getType().getType(context);
 	}
 
 	/**
