@@ -16,5 +16,13 @@ public interface TypeContext
 	 * @return The type's true name
 	 */
 	public String resolve(Type type);
+	
+	/**
+	 * This type context can resolve the given type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean canResolve(Type type);
 
 }
