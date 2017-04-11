@@ -15,7 +15,7 @@ public interface TypeContext
 	 * @param type
 	 * @return The type's true name
 	 */
-	public String resolve(Type type);
+	public String resolve(Type type) throws NoSuchTypeException;
 	
 	/**
 	 * This type context can resolve the given type.
