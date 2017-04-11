@@ -36,7 +36,13 @@ public class UserDefinedType implements Type
 	private final String id;
 
 	@Override
-	public String getType(TypeContext context) throws NoSuchTypeException
+	public String getTypeName(TypeContext context) throws NoSuchTypeException
+	{
+		return context.resolveName(this);
+	}
+
+	@Override
+	public UserDefinedClass getType(TypeContext context) throws NoSuchTypeException
 	{
 		return context.resolve(this);
 	}

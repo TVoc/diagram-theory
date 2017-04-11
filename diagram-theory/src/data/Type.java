@@ -13,13 +13,23 @@ public interface Type
 {
 
 	/**
-	 * Resolve this type using the given TypeContext
+	 * Resolve this type using the given TypeContext and give its name
 	 * 
 	 * @param context
 	 * @return The type's true name according to context
 	 * @throws NoSuchTypeException
-	 *             context cannot resolve this type
+	 * 		context cannot resolve this type
 	 */
-	public String getType(TypeContext context) throws NoSuchTypeException;
+	public String getTypeName(TypeContext context) throws NoSuchTypeException;
+	
+	/**
+	 * Resolve this type using the given TypeContext and give its corresponding Class object
+	 * 
+	 * @param context
+	 * @return	The Class object belonging to this type
+	 * @throws NoSuchTypeException
+	 * 		context cannot resolve this type
+	 */
+	public UserDefinedClass getType(TypeContext context) throws NoSuchTypeException;
 
 }

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ClassBuilder
+public class UserDefinedClassBuilder
 {
 
 	/**
@@ -14,7 +14,7 @@ public class ClassBuilder
 	 * @throws IllegalArgumentException
 	 * 		name == null || name.equals("")
 	 */
-	public ClassBuilder(String name) throws IllegalArgumentException
+	public UserDefinedClassBuilder(String name) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -33,7 +33,7 @@ public class ClassBuilder
 	/**
 	 * Initializes a new class builder with an empty name for the new class
 	 */
-	public ClassBuilder()
+	public UserDefinedClassBuilder()
 	{
 		this.name = "";
 		this.attributes = new HashSet<DataUnit>();
@@ -54,7 +54,7 @@ public class ClassBuilder
 	 * @throws IllegalArgumentException
 	 * 		name == null || name.equals("")
 	 */
-	public ClassBuilder setName(String name) throws IllegalArgumentException
+	public UserDefinedClassBuilder setName(String name) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -91,7 +91,7 @@ public class ClassBuilder
 	 * @throws IllegalArgumentException
 	 * 		attribute == null
 	 */
-	public ClassBuilder addAttribute(DataUnit attribute) throws IllegalArgumentException
+	public UserDefinedClassBuilder addAttribute(DataUnit attribute) throws IllegalArgumentException
 	{
 		if (attribute == null)
 		{
@@ -108,14 +108,14 @@ public class ClassBuilder
 	 * 
 	 * @param attribute
 	 */
-	public ClassBuilder removeAttribute(DataUnit attribute)
+	public UserDefinedClassBuilder removeAttribute(DataUnit attribute)
 	{
 		this.internalGetAttributes().remove(attribute);
 		
 		return this;
 	}
 	
-	public ClassBuilder clearAttributes()
+	public UserDefinedClassBuilder clearAttributes()
 	{
 		this.internalGetAttributes().clear();
 		
@@ -144,7 +144,7 @@ public class ClassBuilder
 	 * @throws IllegalArgumentException
 	 * 		operation == null
 	 */
-	public ClassBuilder addOperation(Operation operation) throws IllegalArgumentException
+	public UserDefinedClassBuilder addOperation(Operation operation) throws IllegalArgumentException
 	{
 		if (operation == null)
 		{
@@ -161,14 +161,14 @@ public class ClassBuilder
 	 * 
 	 * @param operation
 	 */
-	public ClassBuilder removeOperation(Operation operation)
+	public UserDefinedClassBuilder removeOperation(Operation operation)
 	{
 		this.internalGetOperations().remove(operation);
 		
 		return this;
 	}
 	
-	public ClassBuilder clearOperations()
+	public UserDefinedClassBuilder clearOperations()
 	{
 		this.internalGetOperations().clear();
 		
@@ -192,11 +192,11 @@ public class ClassBuilder
 	 * @throws IllegalStateException
 	 * 		this.getName().equals("")
 	 */
-	public Class build() throws IllegalStateException
+	public UserDefinedClass build() throws IllegalStateException
 	{
 		try
 		{
-			Class toReturn = new Class(this.getName(), this.internalGetAttributes(), this.internalGetOperations());
+			UserDefinedClass toReturn = new UserDefinedClass(this.getName(), this.internalGetAttributes(), this.internalGetOperations());
 			this.reset();
 			return toReturn;
 		}

@@ -58,7 +58,7 @@ public class AssociationEnd
 	 */
 	public String getType(TypeContext context) throws NoSuchTypeException
 	{
-		return this.theClass.getType(context);
+		return this.theClass.getTypeName(context);
 	}
 
 	private final Optional<String> roleName;

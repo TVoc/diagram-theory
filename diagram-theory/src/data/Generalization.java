@@ -52,7 +52,7 @@ public class Generalization
 	 */
 	public String getSubtype(TypeContext context) throws NoSuchTypeException
 	{
-		return this.internalGetSubtype().getType(context);
+		return this.internalGetSubtype().getTypeName(context);
 	}
 
 	/**
@@ -75,6 +75,6 @@ public class Generalization
 	 */
 	public String getSupertype(TypeContext context) throws NoSuchTypeException
 	{
-		return this.internalGetSupertype().getType(context);
+		return this.internalGetSupertype().getTypeName(context);
 	}
 }

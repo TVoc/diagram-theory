@@ -78,7 +78,7 @@ public class DataUnit
 	 */
 	public String getType(TypeContext context) throws NoSuchTypeException
 	{
-		return this.getType().getType(context);
+		return this.getType().getTypeName(context);
 	}
 
 	/**

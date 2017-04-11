@@ -41,7 +41,13 @@ public enum PrimitiveType implements Type
 	}
 
 	@Override
-	public String getType(TypeContext context)
+	public String getTypeName(TypeContext context)
+	{
+		return context.resolveName(this);
+	}
+
+	@Override
+	public UserDefinedClass getType(TypeContext context) throws NoSuchTypeException
 	{
 		return context.resolve(this);
 	}
