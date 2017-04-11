@@ -16,7 +16,6 @@ import data.PrimitiveType;
 import data.Type;
 import data.TypeContext;
 import data.TypeParameterType;
-import data.UserDefinedClass;
 import data.UserDefinedClassBuilder;
 import data.UserDefinedType;
 
@@ -27,7 +26,6 @@ import data.UserDefinedType;
  * @author Thomas
  *
  */
-// TODO separate into 'temporary' and 'definite' store
 public class SymbolStore implements TypeContext
 {
 	public SymbolStore()
