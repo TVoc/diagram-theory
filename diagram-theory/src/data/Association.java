@@ -6,6 +6,7 @@ package data;
  * @author Thomas
  *
  */
-public class Association {
+public class Association
+{
 
 }

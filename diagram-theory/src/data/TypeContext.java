@@ -7,7 +7,8 @@ package data;
  * @author Thomas
  *
  */
-public interface TypeContext {
+public interface TypeContext
+{
 	
 	/**
 	 * 

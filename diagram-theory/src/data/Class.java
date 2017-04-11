@@ -10,22 +10,24 @@ import java.util.Set;
  * @author Thomas
  *
  */
-public class Class {
-	
+public class Class
+{
+
 	/**
 	 * Creates a new Class with the given id.
 	 * 
 	 * @param name
-	 * 		The name of the new class
+	 *            The name of the new class
 	 * @param attributes
-	 * 		Attributes of the new class. May be null.
+	 *            Attributes of the new class. May be null.
 	 * @param operations
-	 * 		Operations of the new class. May be null.
-	 * 		
+	 *            Operations of the new class. May be null.
+	 * 
 	 * @throws IllegalArgumentException
-	 * 		id.equals("") || id == null || attributes == null || attributes.isEmpty() || operations == null || operations.isEmpty()
+	 *             id.equals("") || id == null || attributes == null ||
+	 *             operations == null
 	 */
-	public Class(String name, Optional<Set<DataUnit>> attributes, Optional<Set<Operation>> operations) throws IllegalArgumentException
+	Class(String name, Set<DataUnit> attributes, Set<Operation> operations) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -43,77 +45,80 @@ public class Class {
 		{
 			throw new IllegalArgumentException("operations cannot be null");
 		}
-		if (attributes.isPresent() && attributes.get().isEmpty())
-		{
-			throw new IllegalArgumentException("attributes cannot be empty");
-		}
-		if (operations.isPresent() && operations.get().isEmpty())
-		{
-			throw new IllegalArgumentException("operations cannot be empty");
-		}
-		
+
 		this.name = name;
-		this.attributes = attributes;
-		this.operations = operations;
+
+		if (attributes.isEmpty())
+		{
+			this.attributes = Optional.empty();
+		} else
+		{
+			this.attributes = Optional.of(attributes);
+		}
+
+		if (operations.isEmpty())
+		{
+			this.operations = Optional.empty();
+		} else
+		{
+			this.operations = Optional.of(operations);
+		}
 	}
-	
+
 	private final String name;
-	
+
 	public String getName()
 	{
 		return this.name;
 	}
-	
+
 	private final Optional<Set<DataUnit>> attributes;
-	
+
 	/**
 	 * 
-	 * @return
-	 * An unmodifiable view of this class's attributes
+	 * @return An unmodifiable view of this class's attributes
 	 */
 	public Optional<Set<DataUnit>> getAllAttributes()
 	{
-		if (! this.getAttributes().isPresent())
+		if (!this.getAttributes().isPresent())
 		{
 			return Optional.empty();
-		}
-		else
+		} else
 		{
 			return Optional.of(Collections.unmodifiableSet(this.getAttributes().get()));
 		}
 	}
-	
+
 	private Optional<Set<DataUnit>> getAttributes()
 	{
 		return this.attributes;
 	}
-	
+
 	private final Optional<Set<Operation>> operations;
-	
+
 	/**
 	 * 
-	 * @return
-	 * An unmodifiable view of this class's operations
+	 * @return An unmodifiable view of this class's operations
 	 */
 	public Optional<Set<Operation>> getAllOperations()
 	{
-		if (! this.getOperations().isPresent())
+		if (!this.getOperations().isPresent())
 		{
 			return Optional.empty();
-		}
-		else
+		} else
 		{
 			return Optional.of(Collections.unmodifiableSet(this.getOperations().get()));
 		}
 	}
-	
+
 	private Optional<Set<Operation>> getOperations()
 	{
 		return this.operations;
 	}
 
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
@@ -123,7 +128,8 @@ public class Class {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -131,17 +137,20 @@ public class Class {
 		if (getClass() != obj.getClass())
 			return false;
 		Class other = (Class) obj;
-		if (attributes == null) {
+		if (attributes == null)
+		{
 			if (other.attributes != null)
 				return false;
 		} else if (!attributes.equals(other.attributes))
 			return false;
-		if (name == null) {
+		if (name == null)
+		{
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (operations == null) {
+		if (operations == null)
+		{
 			if (other.operations != null)
 				return false;
 		} else if (!operations.equals(other.operations))

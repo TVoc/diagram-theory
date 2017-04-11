@@ -8,7 +8,8 @@ package data;
  * @author Thomas
  *
  */
-public interface Type {
+public interface Type
+{
 	
 	/**
 	 * Resolve this type using the given TypeContext

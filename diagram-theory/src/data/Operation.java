@@ -10,7 +10,8 @@ import java.util.Optional;
  * @author Thomas
  *
  */
-public class Operation {
+public class Operation
+{
 
 	/**
 	 * 

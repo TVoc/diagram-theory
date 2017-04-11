@@ -6,7 +6,8 @@ package data;
  * @author Thomas
  *
  */
-public class NoSuchTypeException extends RuntimeException {
+public class NoSuchTypeException extends RuntimeException
+{
 
 	/**
 	 * 
