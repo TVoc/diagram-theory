@@ -43,8 +43,7 @@ public enum PrimitiveType implements Type
 	@Override
 	public String getType(TypeContext context)
 	{
-		// TODO Auto-generated method stub
-		return this.getName();
+		return context.resolve(this);
 	}
 
 }

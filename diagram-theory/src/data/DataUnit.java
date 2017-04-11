@@ -64,9 +64,21 @@ public class DataUnit
 		return this.name;
 	}
 
-	public Type getType()
+	private Type getType()
 	{
 		return this.type;
+	}
+
+	/**
+	 * 
+	 * @param context
+	 * @return
+	 * @throws NoSuchTypeException
+	 *             The given type context cannot resolve this data unit's type
+	 */
+	public String getType(TypeContext context) throws NoSuchTypeException
+	{
+		return this.getType().getType(context);
 	}
 
 	/**
@@ -110,19 +122,22 @@ public class DataUnit
 		{
 			if (other.multiplicity != null)
 				return false;
-		} else if (!multiplicity.equals(other.multiplicity))
+		}
+		else if (!multiplicity.equals(other.multiplicity))
 			return false;
 		if (name == null)
 		{
 			if (other.name != null)
 				return false;
-		} else if (!name.equals(other.name))
+		}
+		else if (!name.equals(other.name))
 			return false;
 		if (type == null)
 		{
 			if (other.type != null)
 				return false;
-		} else if (!type.equals(other.type))
+		}
+		else if (!type.equals(other.type))
 			return false;
 		return true;
 	}

@@ -38,7 +38,6 @@ public class UserDefinedType implements Type
 	@Override
 	public String getType(TypeContext context) throws NoSuchTypeException
 	{
-		// TODO Auto-generated method stub
 		return context.resolve(this);
 	}
 

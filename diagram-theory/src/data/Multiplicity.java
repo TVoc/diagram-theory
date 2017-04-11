@@ -49,6 +49,18 @@ public class Multiplicity
 		this.isUnique = isUnique;
 	}
 
+	/**
+	 * Initializes a new multiplicity with the given bounds such that: !
+	 * (new.isOrdered() || new.isUnique())
+	 * 
+	 * @throws IllegalArgumentException
+	 *             See {@link #Multiplicity(double, double, boolean, boolean)}
+	 */
+	Multiplicity(double lowerBound, double upperBound) throws IllegalArgumentException
+	{
+		this(lowerBound, upperBound, false, false);
+	}
+
 	private final double lowerBound;
 	private final double upperBound;
 

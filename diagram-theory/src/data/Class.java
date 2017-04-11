@@ -51,7 +51,8 @@ public class Class
 		if (attributes.isEmpty())
 		{
 			this.attributes = Optional.empty();
-		} else
+		}
+		else
 		{
 			this.attributes = Optional.of(attributes);
 		}
@@ -59,7 +60,8 @@ public class Class
 		if (operations.isEmpty())
 		{
 			this.operations = Optional.empty();
-		} else
+		}
+		else
 		{
 			this.operations = Optional.of(operations);
 		}
@@ -83,7 +85,8 @@ public class Class
 		if (!this.getAttributes().isPresent())
 		{
 			return Optional.empty();
-		} else
+		}
+		else
 		{
 			return Optional.of(Collections.unmodifiableSet(this.getAttributes().get()));
 		}
@@ -105,7 +108,8 @@ public class Class
 		if (!this.getOperations().isPresent())
 		{
 			return Optional.empty();
-		} else
+		}
+		else
 		{
 			return Optional.of(Collections.unmodifiableSet(this.getOperations().get()));
 		}
@@ -141,19 +145,22 @@ public class Class
 		{
 			if (other.attributes != null)
 				return false;
-		} else if (!attributes.equals(other.attributes))
+		}
+		else if (!attributes.equals(other.attributes))
 			return false;
 		if (name == null)
 		{
 			if (other.name != null)
 				return false;
-		} else if (!name.equals(other.name))
+		}
+		else if (!name.equals(other.name))
 			return false;
 		if (operations == null)
 		{
 			if (other.operations != null)
 				return false;
-		} else if (!operations.equals(other.operations))
+		}
+		else if (!operations.equals(other.operations))
 			return false;
 		return true;
 	}
