@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import data.AssociationBuilder;
@@ -26,6 +27,7 @@ import data.UserDefinedType;
  * @author Thomas
  *
  */
+//TODO access methods for specific classes and associations
 public class SymbolStore implements TypeContext
 {
 	public SymbolStore()
@@ -50,6 +52,41 @@ public class SymbolStore implements TypeContext
 	{
 		return Collections.unmodifiableMap(this.internalGetClassesInProgress());
 	}
+	
+	/**
+	 * Create a new Class object with the given id and name and add it to the classes in progress
+	 * 
+	 * @param id
+	 * @param name
+	 * @throws IllegalArgumentException
+	 * 		id == null || id.equals("") || name == null || name.equals("")
+	 */
+	public void addClass(String id, String name) throws IllegalArgumentException
+	{
+		if (id == null)
+		{
+			throw new IllegalArgumentException("id cannot be null");
+		}
+		if (id.equals(""))
+		{
+			throw new IllegalArgumentException("id cannot be empty");
+		}
+		if (name == null)
+		{
+			throw new IllegalArgumentException("name cannot be null");
+		}
+		if (name.equals(""))
+		{
+			throw new IllegalArgumentException("name cannot be empty");
+		}
+		
+		this.internalGetClassesInProgress().put(id, new UserDefinedClassBuilder(name));
+	}
+	
+	public Optional<UserDefinedClassBuilder> getClass(String id)
+	{
+		return Optional.ofNullable(this.internalGetClassesInProgress().get(id));
+	}
 
 	private final Map<String, AssociationBuilder> associationsInProgress;
 
@@ -66,6 +103,32 @@ public class SymbolStore implements TypeContext
 	{
 		return Collections.unmodifiableMap(this.internalGetAssociationsInProgress());
 	}
+	
+	/**
+	 * Creates a new AssociationBuilder object with the given id
+	 * 
+	 * @param id
+	 * @throws IllegalArgumentException
+	 * 		id == null || id.equals("")
+	 */
+	public void addAssociation(String id) throws IllegalArgumentException
+	{
+		if (id == null)
+		{
+			throw new IllegalArgumentException("id cannot be null");
+		}
+		if (id.equals(""))
+		{
+			throw new IllegalArgumentException("id cannot be empty");
+		}
+		
+		this.internalGetAssociationsInProgress().put(id, new AssociationBuilder());
+	}
+	
+	public Optional<AssociationBuilder> getAssociation(String id)
+	{
+		return Optional.ofNullable(this.internalGetAssociationsInProgress().get(id));
+	}
 
 	private final Set<Generalization> generalizations;
 
@@ -81,6 +144,22 @@ public class SymbolStore implements TypeContext
 	public Set<Generalization> getGeneralizations()
 	{
 		return Collections.unmodifiableSet(this.internalGetGeneralizations());
+	}
+	
+	/**
+	 * 
+	 * @param generalization
+	 * @throws IllegalArgumentException
+	 * 		generalization == null
+	 */
+	public void addGeneralization(Generalization generalization) throws IllegalArgumentException
+	{
+		if (generalization == null)
+		{
+			throw new IllegalArgumentException("generalization cannot be null");
+		}
+		
+		this.internalGetGeneralizations().add(generalization);
 	}
 
 	private boolean checkIsPrimitiveType(Type type)
