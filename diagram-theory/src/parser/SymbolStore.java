@@ -64,7 +64,7 @@ public class SymbolStore implements TypeContext
 	 */
 	public Map<String, AssociationBuilder> getAssociationsInProgress()
 	{
-		return Collections.unmodifiableMap(this.getAssociationsInProgress());
+		return Collections.unmodifiableMap(this.internalGetAssociationsInProgress());
 	}
 
 	private final Set<Generalization> generalizations;
