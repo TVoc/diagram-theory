@@ -202,7 +202,7 @@ public class SymbolStore implements TypeContext
 		else // upperBound is always at least as large as lowerBound, so
 				// distinguish between collection types now
 		{
-			return type.getMultiplicity().getCollectionType();
+			return type.getMultiplicity().getCollectionType() + "<" + typeName + ">";
 		}
 	}
 
