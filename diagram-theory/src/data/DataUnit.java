@@ -17,6 +17,7 @@ public class DataUnit
 	 * @param name
 	 * @param type
 	 * @param multiplicity
+	 * 		How many elements the new data unit may contain. If absent, then 1..1 is assumed.
 	 * @throws IllegalArgumentException
 	 *             name == null || name.equals("") || type == null ||
 	 *             type.equals("") || multiplicity == null
@@ -99,6 +100,10 @@ public class DataUnit
 	 */
 	private final Optional<Multiplicity> multiplicity;
 
+	/**
+	 * 
+	 * @return	How many elements this data unit may contain.
+	 */
 	public Multiplicity getMultiplicity()
 	{
 		return this.internalGetMultiplicity().orElse(Multiplicity.EXACTLY_ONE);

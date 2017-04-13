@@ -12,7 +12,6 @@ import data.Class;
 import data.ComplexType;
 import data.Generalization;
 import data.NoSuchTypeException;
-import data.PrimitiveClass;
 import data.PrimitiveType;
 import data.Type;
 import data.TypeContext;
@@ -27,8 +26,7 @@ import data.UserDefinedType;
  * @author Thomas
  *
  */
-//TODO access methods for specific classes and associations
-public class SymbolStore implements TypeContext
+public class SymbolStore extends TypeContext
 {
 	public SymbolStore()
 	{
@@ -161,12 +159,17 @@ public class SymbolStore implements TypeContext
 		
 		this.internalGetGeneralizations().add(generalization);
 	}
-
-	private boolean checkIsPrimitiveType(Type type)
+	
+	/**
+	 * Clears all classes, associations and generalizations from this SymbolStore
+	 */
+	public void reset()
 	{
-		return type instanceof PrimitiveType;
+		this.internalGetClassesInProgress().clear();
+		this.internalGetAssociationsInProgress().clear();
+		this.internalGetGeneralizations().clear();
 	}
-
+	
 	private String getTypeName(Type type) throws NoSuchTypeException
 	{
 		if (! this.internalGetClassesInProgress().containsKey(type.getID()))
@@ -191,19 +194,7 @@ public class SymbolStore implements TypeContext
 	public String resolveName(ComplexType type) throws NoSuchTypeException
 	{
 		String typeName = this.getTypeName(type);
-		if (type.getMultiplicity().getLowerBound() == 0 && type.getMultiplicity().getUpperBound() == 1)
-		{
-			return "Optional<" + typeName + ">";
-		}
-		else if (type.getMultiplicity().getLowerBound() == 1 && type.getMultiplicity().getUpperBound() == 1)
-		{
-			return typeName;
-		}
-		else // upperBound is always at least as large as lowerBound, so
-				// distinguish between collection types now
-		{
-			return type.getMultiplicity().getCollectionType() + "<" + typeName + ">";
-		}
+		return this.determineComplexType(type, typeName);
 	}
 
 	@Override
@@ -221,7 +212,7 @@ public class SymbolStore implements TypeContext
 	@Override
 	public String resolveName(TypeParameterType type) throws NoSuchTypeException
 	{
-		return this.getTypeName(type);
+		return "<? extends " + this.getTypeName(type) + ">";
 	}
 
 	@Override
@@ -240,35 +231,6 @@ public class SymbolStore implements TypeContext
 	public Class resolve(TypeParameterType type) throws NoSuchTypeException
 	{
 		return this.getType(type);
-	}
-
-	@Override
-	public Class resolve(PrimitiveType type) throws NoSuchTypeException
-	{
-		switch(type)
-		{
-			case BOOLEAN :
-				return PrimitiveClass.BOOLEAN;
-			case BYTE :
-				return PrimitiveClass.BYTE;
-			case CHAR : 
-				return PrimitiveClass.CHAR;
-			case DOUBLE :
-				return PrimitiveClass.DOUBLE;
-			case FLOAT :
-				return PrimitiveClass.FLOAT;
-			case INTEGER :
-				return PrimitiveClass.INTEGER;
-			case LONG:
-				return PrimitiveClass.LONG;
-			case SHORT:
-				return PrimitiveClass.SHORT;
-			case STRING :
-				return PrimitiveClass.STRING;
-			case VOID :
-				return PrimitiveClass.VOID;
-		}
-		throw new IllegalStateException("could not find primitive type"); // should never reach here
 	}
 
 	@Override

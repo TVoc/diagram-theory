@@ -7,7 +7,7 @@ package data;
  * @author Thomas
  *
  */
-public interface TypeContext
+public abstract class TypeContext
 {
 
 	/**
@@ -17,7 +17,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public String resolveName(ComplexType type) throws NoSuchTypeException;
+	public abstract String resolveName(ComplexType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -26,7 +26,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public String resolveName(PrimitiveType type) throws NoSuchTypeException;
+	public abstract String resolveName(PrimitiveType type) throws NoSuchTypeException;
 
 	/**
 	 * 
@@ -35,7 +35,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public String resolveName(UserDefinedType type) throws NoSuchTypeException;
+	public abstract String resolveName(UserDefinedType type) throws NoSuchTypeException;
 
 	/**
 	 * 
@@ -44,7 +44,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public String resolveName(TypeParameterType type) throws NoSuchTypeException;
+	public abstract String resolveName(TypeParameterType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -53,7 +53,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public Class resolve(ComplexType type) throws NoSuchTypeException;
+	public abstract Class resolve(ComplexType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -62,7 +62,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public Class resolve(UserDefinedType type) throws NoSuchTypeException;
+	public abstract Class resolve(UserDefinedType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -71,7 +71,7 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public Class resolve(TypeParameterType type) throws NoSuchTypeException;
+	public abstract Class resolve(TypeParameterType type) throws NoSuchTypeException;
 	
 	/**
 	 * 
@@ -80,13 +80,68 @@ public interface TypeContext
 	 * @throws NoSuchTypeException
 	 * 		This type context cannot resolve type
 	 */
-	public Class resolve(PrimitiveType type) throws NoSuchTypeException;
+	public Class resolve(PrimitiveType type) throws NoSuchTypeException
+	{
+		switch(type)
+		{
+			case BOOLEAN :
+				return PrimitiveClass.BOOLEAN;
+			case BYTE :
+				return PrimitiveClass.BYTE;
+			case CHAR : 
+				return PrimitiveClass.CHAR;
+			case DOUBLE :
+				return PrimitiveClass.DOUBLE;
+			case FLOAT :
+				return PrimitiveClass.FLOAT;
+			case INTEGER :
+				return PrimitiveClass.INTEGER;
+			case LONG:
+				return PrimitiveClass.LONG;
+			case SHORT:
+				return PrimitiveClass.SHORT;
+			case STRING :
+				return PrimitiveClass.STRING;
+			case VOID :
+				return PrimitiveClass.VOID;
+		}
+		throw new IllegalStateException("could not find primitive type"); // should never reach here
+	}
+	
+	/**
+	 * Determine if this complex type is an Optional or a collection type.
+	 * 
+	 * @param type
+	 * @param typeName
+	 * @return	A name of type ComplexType<T>, where ComplexType is either Optional or a collection type
+	 */
+	protected String determineComplexType(ComplexType type, String typeName)
+	{
+		if (type.getMultiplicity().getLowerBound() == 0 && type.getMultiplicity().getUpperBound() == 1)
+		{
+			return "Optional<" + typeName + ">";
+		}
+		else if (type.getMultiplicity().getLowerBound() == 1 && type.getMultiplicity().getUpperBound() == 1)
+		{
+			return typeName;
+		}
+		else // upperBound is always at least as large as lowerBound, so
+				// distinguish between collection types now
+		{
+			return type.getMultiplicity().getCollectionType() + "<" + typeName + ">";
+		}
+	}
 	
 	/**
 	 * 
 	 * @param type
 	 * @return	This type context can resolve type
 	 */
-	public boolean canResolve(Type type);
+	public abstract boolean canResolve(Type type);
+	
+	protected boolean checkIsPrimitiveType(Type type)
+	{
+		return type instanceof PrimitiveType;
+	}	
 
 }
