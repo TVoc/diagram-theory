@@ -11,7 +11,8 @@ import java.util.Optional;
 public class Multiplicity
 {
 
-	static final Multiplicity EXACTLY_ONE = new Multiplicity(1, 1, false, false);
+	public static final Multiplicity EXACTLY_ONE = new Multiplicity(1, 1, false, false);
+	public static final Multiplicity OPTIONAL = new Multiplicity(0, 1, false, false);
 
 	/**
 	 * Creates a new multiplicity object with the given lower and upper bounds.
@@ -166,7 +167,34 @@ public class Multiplicity
 		return true;
 	}
 
-
+	/**
+	 * 
+	 * @param description
+	 * @return	A Multiplicity object that corresponds to the specified description
+	 * @throws IllegalArgumentException
+	 * 		! (description.equals("Set") || description.equals("Bag") || description.equals("Sequence")
+	 * 			|| description.equals("List") || description.equals("OrderedSet")) || description.equals("Optional")
+	 */
+	public static Multiplicity descriptionToMultiplicity(String description) throws IllegalArgumentException
+	{
+		switch (description)
+		{
+			case "Set":
+				return new Multiplicity(0, Double.POSITIVE_INFINITY, false, true);
+			case "Bag":
+				return new Multiplicity(0, Double.POSITIVE_INFINITY, false, false);
+			case "Sequence":
+				return new Multiplicity(0, Double.POSITIVE_INFINITY, true, false);
+			case "OrderedSet":
+				return new Multiplicity(0, Double.POSITIVE_INFINITY, true, true);
+			case "List":
+				return new Multiplicity(0, Double.POSITIVE_INFINITY, false, false);
+			case "Optional":
+				return OPTIONAL;
+			default:
+				throw new IllegalArgumentException("collectionType not recognized");
+		}
+	}
 
 	private class CollectionProperties
 	{

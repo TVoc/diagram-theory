@@ -17,15 +17,13 @@ public class Operation
 	 * 
 	 * @param name
 	 * @param resultType
-	 * @param multiplicity
-	 *            Pertains to the number of elements returned as the result of
-	 *            an invocation
+	 * @param resultType
 	 * @param parameters
 	 * @throws IllegalArgumentException
 	 *             name == null || name.equals("") || multiplicity == null ||
 	 *             parameters == null || parameters.isEmpty()
 	 */
-	public Operation(String name, Type resultType, Optional<Multiplicity> multiplicity,
+	public Operation(String name, DataUnit resultType,
 			Optional<List<DataUnit>> parameters) throws IllegalArgumentException
 	{
 		if (name == null)
@@ -40,14 +38,6 @@ public class Operation
 		{
 			throw new IllegalArgumentException("resultType cannot be null");
 		}
-		if (resultType.equals(""))
-		{
-			throw new IllegalArgumentException("resultType cannot be empty");
-		}
-		if (multiplicity == null)
-		{
-			throw new IllegalArgumentException("multiplicity cannot be null");
-		}
 		if (parameters == null)
 		{
 			throw new IllegalArgumentException("parameters cannot be null");
@@ -59,7 +49,6 @@ public class Operation
 
 		this.name = name;
 		this.resultType = resultType;
-		this.multiplicity = multiplicity;
 		this.parameters = parameters;
 	}
 
@@ -71,33 +60,16 @@ public class Operation
 	/**
 	 * The type of the result of an invocation.
 	 */
-	private final Type resultType;
+	private final DataUnit resultType;
 
 	public String getName()
 	{
 		return this.name;
 	}
 
-	public Type getResultType()
+	public DataUnit getResultType()
 	{
 		return this.resultType;
-	}
-
-	/**
-	 * The multiplicity of an operation pertains to the number of elements
-	 * returned as a result of an invocation. If multiplicity is absent, then
-	 * 1..1 is assumed.
-	 */
-	private final Optional<Multiplicity> multiplicity;
-
-	private Optional<Multiplicity> internalGetMultiplicity()
-	{
-		return this.multiplicity;
-	}
-
-	public Multiplicity getMultiplicity()
-	{
-		return this.internalGetMultiplicity().orElse(Multiplicity.EXACTLY_ONE);
 	}
 
 	/**

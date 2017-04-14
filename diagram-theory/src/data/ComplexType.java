@@ -6,6 +6,7 @@ package data;
  * @author Thomas
  *
  */
+//TODO T is sometimes also a primitive type — adapt to this: change id to Type to accommodate UserDefinedType and PrimitiveType
 public class ComplexType implements Type
 {
 	/**
