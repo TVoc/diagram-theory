@@ -57,5 +57,25 @@ public enum PrimitiveType implements Type
 	{
 		return context.resolve(this);
 	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @return	The PrimitiveType with the same name as the given type
+	 * @throws IllegalArgumentException
+	 * 		type does not correspond with a primitive type
+	 */
+	public static PrimitiveType getType(String type) throws IllegalArgumentException
+	{
+		for (PrimitiveType ele : PrimitiveType.values())
+		{
+			if (type.equals(ele.getName()))
+			{
+				return ele;
+			}
+		}
+		
+		throw new IllegalArgumentException(type + " did not correspond to a primitive type");
+	}
 
 }

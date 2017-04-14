@@ -3,6 +3,7 @@ package data;
 import java.util.Optional;
 import java.util.Set;
 
+//TODO: provide support for multiple type parameters like in Map<K,V>?
 public interface Class
 {
 

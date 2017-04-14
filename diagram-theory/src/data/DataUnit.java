@@ -19,8 +19,7 @@ public class DataUnit
 	 * @param multiplicity
 	 * 		How many elements the new data unit may contain. If absent, then 1..1 is assumed.
 	 * @throws IllegalArgumentException
-	 *             name == null || name.equals("") || type == null ||
-	 *             type.equals("") || multiplicity == null
+	 *             name == null || name.equals("") || type == null || multiplicity == null
 	 */
 	public DataUnit(String name, Type type, Optional<Multiplicity> multiplicity) throws IllegalArgumentException
 	{

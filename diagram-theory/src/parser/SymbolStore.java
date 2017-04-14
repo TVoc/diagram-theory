@@ -85,6 +85,12 @@ public class SymbolStore extends TypeContext
 	{
 		return Optional.ofNullable(this.internalGetClassesInProgress().get(id));
 	}
+	
+
+	public boolean hasClass(String id)
+	{
+		return this.internalGetClassesInProgress().containsKey(id);
+	}
 
 	private final Map<String, AssociationBuilder> associationsInProgress;
 
@@ -126,6 +132,11 @@ public class SymbolStore extends TypeContext
 	public Optional<AssociationBuilder> getAssociation(String id)
 	{
 		return Optional.ofNullable(this.internalGetAssociationsInProgress().get(id));
+	}
+	
+	public boolean hasAssociation(String id)
+	{
+		return this.internalGetAssociationsInProgress().containsKey(id);
 	}
 
 	private final Set<Generalization> generalizations;
