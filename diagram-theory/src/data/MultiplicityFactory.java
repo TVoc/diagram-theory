@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 //TODO implement
 public final class MultiplicityFactory
 {
-	private static final String MULTIPLICITY_REGEX = "Unspecified|[0-9]*(\\.\\.|\\.)([0-9]*|\\*)";
+	private static final String MULTIPLICITY_REGEX = "Unspecified|[0-9]+(\\.\\.|\\.)([0-9]+|\\*)";
 	
 	private MultiplicityFactory()
 	{

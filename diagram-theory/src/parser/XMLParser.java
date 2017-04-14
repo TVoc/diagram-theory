@@ -12,6 +12,7 @@ import org.jdom2.input.SAXBuilder;
 import data.DataUnit;
 import data.Multiplicity;
 import data.MultiplicityFactory;
+import data.Operation;
 import data.PrimitiveType;
 import data.Type;
 import data.UserDefinedType;
@@ -77,6 +78,10 @@ public class XMLParser
 				DataUnit attribute = this.parseClassAttribute(classElement);
 				store.getClass(classId).get().addAttribute(attribute);
 			}
+			else if (classElement.getName().equals("Operation"))
+			{
+				
+			}
 		}
 	}
 
@@ -115,5 +120,10 @@ public class XMLParser
 		Multiplicity multiplicity = MultiplicityFactory.parseMultiplicity(multiplicitySpec, isOrdered, isUnique);
 		
 		return new DataUnit(name, type, Optional.of(multiplicity));
+	}
+	
+	private Operation parseOperation(Element element)
+	{
+		
 	}
 }
