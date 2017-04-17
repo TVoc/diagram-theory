@@ -9,6 +9,7 @@ import data.Class;
 import data.ComplexType;
 import data.Generalization;
 import data.NoSuchTypeException;
+import data.PrimitiveClass;
 import data.PrimitiveType;
 import data.Type;
 import data.TypeContext;
@@ -105,6 +106,11 @@ public class DiagramStore extends TypeContext
 	
 	private String getTypeName(Type type) throws NoSuchTypeException
 	{
+		if (PrimitiveType.isPrimitiveType(type.getID()))
+		{
+			return type.getID();
+		}
+		
 		if (! this.internalGetClasses().containsKey(type.getID()))
 		{
 			throw new NoSuchTypeException("did not have type with id: " + type.getID());
@@ -115,6 +121,12 @@ public class DiagramStore extends TypeContext
 	
 	private Class getType(Type type) throws NoSuchTypeException
 	{
+		if (PrimitiveType.isPrimitiveType(type.getID()))
+		{
+			return PrimitiveClass.getType(type.getID());
+		}
+		
+		
 		if (! this.internalGetClasses().containsKey(type.getID()))
 		{
 			throw new NoSuchTypeException("did not have type with id: " + type.getID());

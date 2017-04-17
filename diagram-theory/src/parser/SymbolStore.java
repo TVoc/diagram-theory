@@ -12,6 +12,7 @@ import data.Class;
 import data.ComplexType;
 import data.Generalization;
 import data.NoSuchTypeException;
+import data.PrimitiveClass;
 import data.PrimitiveType;
 import data.Type;
 import data.TypeContext;
@@ -183,6 +184,11 @@ public class SymbolStore extends TypeContext
 	
 	private String getTypeName(Type type) throws NoSuchTypeException
 	{
+		if (PrimitiveType.isPrimitiveType(type.getID()))
+		{
+			return type.getID();
+		}
+		
 		if (! this.internalGetClassesInProgress().containsKey(type.getID()))
 		{
 			throw new NoSuchTypeException("did not have type with id: " + type.getID());
@@ -191,8 +197,13 @@ public class SymbolStore extends TypeContext
 		return this.internalGetClassesInProgress().get(type.getID()).getName();
 	}
 	
-	private UserDefinedClassBuilder getType(Type type) throws NoSuchTypeException
+	private Class getType(Type type) throws NoSuchTypeException
 	{
+		if (PrimitiveType.isPrimitiveType(type.getID()))
+		{
+			return PrimitiveClass.getType(type.getID());
+		}
+		
 		if (! this.internalGetClassesInProgress().containsKey(type.getID()))
 		{
 			throw new NoSuchTypeException("did not have type with id: " + type.getID());

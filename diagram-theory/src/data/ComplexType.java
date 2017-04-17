@@ -6,23 +6,22 @@ package data;
  * @author Thomas
  *
  */
-//TODO T is sometimes also a primitive type — adapt to this: change id to Type to accommodate UserDefinedType and PrimitiveType
 public class ComplexType implements Type
 {
 	/**
 	 * 
-	 * @param id
+	 * @param type
 	 * @param multiplicity
 	 * @throws IllegalArgumentException
-	 * 		id == null || id.equals("") || multiplicity == null
+	 * 		type == null || multiplicity == null
 	 */
-	public ComplexType(String id, Multiplicity multiplicity) throws IllegalArgumentException
+	public ComplexType(Type type, Multiplicity multiplicity) throws IllegalArgumentException
 	{
-		if (id == null)
+		if (type == null)
 		{
 			throw new IllegalArgumentException("id cannot be null");
 		}
-		if (id.equals(""))
+		if (type.equals(""))
 		{
 			throw new IllegalArgumentException("id cannot be empty");
 		}
@@ -31,15 +30,20 @@ public class ComplexType implements Type
 			throw new IllegalArgumentException("multiplicity cannot be null");
 		}
 		
-		this.id = id;
+		this.type = type;
 		this.multiplicity = multiplicity;
 	}
 	
-	private final String id;
+	private final Type type;
+	
+	public Type getType()
+	{
+		return this.type;
+	}
 	
 	public String getID()
 	{
-		return this.id;
+		return this.getType().getID();
 	}
 	
 	private final Multiplicity multiplicity;

@@ -43,4 +43,42 @@ public enum PrimitiveClass implements Class
 		return Optional.empty();
 	}
 	
+	/**
+	 * 
+	 * @param type
+	 * @return	The PrimitiveType with the same name as the given type
+	 * @throws IllegalArgumentException
+	 * 		! isPrimitiveType(type)
+	 */
+	public static PrimitiveClass getType(String type) throws IllegalArgumentException
+	{
+		for (PrimitiveClass ele : PrimitiveClass.values())
+		{
+			if (type.equals(ele.getName()))
+			{
+				return ele;
+			}
+		}
+		
+		throw new IllegalArgumentException(type + " did not correspond to a primitive class");
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return	name is the name of one of the primitive type objects
+	 */
+	public static boolean isPrimitiveClass(String name)
+	{
+		for (PrimitiveClass ele : PrimitiveClass.values())
+		{
+			if (name.equals(ele.getName()))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 }

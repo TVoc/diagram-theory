@@ -246,7 +246,15 @@ public class XMLParser
 			if (complexReturnElement.isPresent())
 			{
 				Multiplicity multiplicity = Multiplicity.descriptionToMultiplicity(complexReturnElement.get().getAttributeValue("BindedType"));
-				ComplexType theReturn = new ComplexType(child.getChild("Class").getAttributeValue("Idref"), multiplicity);
+				ComplexType theReturn;
+				if (child.getChild("Class") != null)
+				{
+					theReturn = new ComplexType(new UserDefinedType(child.getChild("Class").getAttributeValue("Idref")), multiplicity);
+				}
+				else
+				{
+					theReturn = new ComplexType(new UserDefinedType(child.getChild("DataType").getAttributeValue("Idref")), multiplicity);
+				}
 				return new DataUnit("return", theReturn, Optional.of(multiplicity));
 			}
 			UserDefinedType theReturn = new UserDefinedType(child.getChild("Class").getAttributeValue("Idref"));
