@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Expresses operation parameters and return types of the sort Class<T>
  * 
@@ -46,6 +49,11 @@ public class TypeParameterType implements Type
 	public Class getType(TypeContext context) throws NoSuchTypeException
 	{
 		return context.resolve(this);
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 
 }

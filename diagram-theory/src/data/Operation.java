@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents an operation in a UML Class Diagram
  * 
@@ -96,5 +99,10 @@ public class Operation
 		{
 			return Optional.of(Collections.unmodifiableList(this.getParameters().get()));
 		}
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

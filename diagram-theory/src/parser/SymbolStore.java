@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import data.AssociationBuilder;
 import data.Class;
 import data.ComplexType;
@@ -261,4 +264,8 @@ public class SymbolStore extends TypeContext
 		return this.checkIsPrimitiveType(type) || this.internalGetClassesInProgress().containsKey(type.getID());
 	}
 
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+	}
 }

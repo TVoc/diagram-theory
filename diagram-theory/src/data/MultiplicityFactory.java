@@ -2,6 +2,9 @@ package data;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public final class MultiplicityFactory
 {
 	private static final String MULTIPLICITY_REGEX = "Unspecified|[0-9]+(\\.\\.|\\.)([0-9]+|\\*)";
@@ -85,5 +88,10 @@ public final class MultiplicityFactory
 	public static boolean isValidMultiplicitySpecification(String multiplicitySpec)
 	{
 		return Pattern.matches(MULTIPLICITY_REGEX, multiplicitySpec);
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

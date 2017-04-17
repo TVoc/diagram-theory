@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class UserDefinedClassBuilder implements Class
 {
 
@@ -223,5 +226,10 @@ public class UserDefinedClassBuilder implements Class
 		{
 			throw new IllegalStateException(e);
 		}
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * This represents the occurrence of a type defined by a UML Class Diagram as an
  * attribute or operation parameter.
@@ -53,4 +56,8 @@ public class UserDefinedType implements Type
 		return context.resolve(this);
 	}
 
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+	}
 }

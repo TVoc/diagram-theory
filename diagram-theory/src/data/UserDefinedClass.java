@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents a class read from a UML Class Diagram.
  * 
@@ -167,5 +170,10 @@ public class UserDefinedClass implements Class
 		else if (!operations.equals(other.operations))
 			return false;
 		return true;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

@@ -3,6 +3,9 @@ package data;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public enum PrimitiveClass implements Class
 {
 	BOOLEAN("bool"), BYTE("byte"), CHAR("char"), DOUBLE("double"),
@@ -79,6 +82,11 @@ public enum PrimitiveClass implements Class
 		}
 		
 		return false;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 	
 }

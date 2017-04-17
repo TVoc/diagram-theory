@@ -3,6 +3,9 @@ package data;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents one single end of an association in a UML Class Diagram.
  * 
@@ -123,4 +126,8 @@ public class AssociationEnd
 		return this.internalGetMultiplicity().orElse(Multiplicity.EXACTLY_ONE);
 	}
 
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+	}
 }

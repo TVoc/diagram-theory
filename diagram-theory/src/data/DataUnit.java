@@ -2,6 +2,9 @@ package data;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents either an attribute of a class or a parameter of an operation.
  * 
@@ -156,5 +159,10 @@ public class DataUnit
 		else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

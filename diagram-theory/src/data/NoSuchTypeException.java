@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * This exception occurs when a TypeContext cannot resolve a given Type.
  * 
@@ -17,6 +20,11 @@ public class NoSuchTypeException extends RuntimeException
 	public NoSuchTypeException(String message)
 	{
 		super(message);
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 
 }

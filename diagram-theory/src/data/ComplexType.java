@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * A type with a multiplicity. Used to express types like List<T> or Optional<T>.
  * 
@@ -63,6 +66,11 @@ public class ComplexType implements Type
 	public Class getType(TypeContext context) throws NoSuchTypeException
 	{
 		return context.resolve(this);
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 
 }

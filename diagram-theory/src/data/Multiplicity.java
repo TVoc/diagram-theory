@@ -2,6 +2,9 @@ package data;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents the concept of multiplicity in UML Class Diagrams
  * 
@@ -238,5 +241,15 @@ public class Multiplicity
 				return "OrderedSet";
 			}
 		}
+		
+		public String toString()
+		{
+			return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+		}
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

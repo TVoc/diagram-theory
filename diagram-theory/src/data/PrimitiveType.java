@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents a primitive type such as int, bool or string.
  * 
@@ -94,6 +97,11 @@ public enum PrimitiveType implements Type
 		}
 		
 		return false;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 
 }

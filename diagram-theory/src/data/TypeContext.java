@@ -142,6 +142,6 @@ public abstract class TypeContext
 	protected boolean checkIsPrimitiveType(Type type)
 	{
 		return type instanceof PrimitiveType;
-	}	
+	}
 
 }

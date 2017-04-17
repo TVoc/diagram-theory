@@ -1,5 +1,8 @@
 package data;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Represents a generalization in a UML Class Diagram
  * 
@@ -76,5 +79,10 @@ public class Generalization
 	public String getSupertype(TypeContext context) throws NoSuchTypeException
 	{
 		return this.internalGetSupertype().getTypeName(context);
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

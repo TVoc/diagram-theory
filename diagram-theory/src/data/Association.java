@@ -3,6 +3,8 @@ package data;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Represents an association between several types defined in the UML Class
@@ -61,5 +63,10 @@ public class Association implements Iterable<AssociationEnd>
 	public int getNbOfEnds()
 	{
 		return this.internalGetAssociationEnds().size();
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

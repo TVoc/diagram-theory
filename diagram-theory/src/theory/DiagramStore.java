@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import data.Association;
 import data.Class;
 import data.ComplexType;
@@ -184,4 +187,8 @@ public class DiagramStore extends TypeContext
 		return this.checkIsPrimitiveType(type) || this.internalGetClasses().containsKey(type.getID());
 	}
 
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+	}
 }

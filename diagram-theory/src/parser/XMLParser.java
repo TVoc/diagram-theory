@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -62,25 +64,28 @@ public class XMLParser
 			}
 			if (element.getName().equals("ModelRelationshipContainer"))
 			{
-				if (element.getAttributeValue("Name").equals("relationships"))
+				for (Element child : element.getChild("ModelChildren").getChildren())
 				{
-					for (Element assoc : element.getChild("ModelChildren").getChild("ModelRelationshipContainer").getChild("ModelChildren").getChildren())
+					if (child.getAttributeValue("Name").equals("Association"))
 					{
-						this.parseAssociation(assoc, store);
+						for (Element assoc : element.getChild("ModelChildren").getChild("ModelRelationshipContainer").getChild("ModelChildren").getChildren())
+						{
+							this.parseAssociation(assoc, store);
+						}
 					}
-				}
-				if (element.getAttributeValue("Name").equals("Generalization"))
-				{
-					for (Element gen : element.getChild("ModelChildren").getChildren())
+					if (child.getAttributeValue("Name").equals("Generalization"))
 					{
-						this.parseGeneralization(gen, store);
+						for (Element gen : child.getChild("ModelChildren").getChildren())
+						{
+							this.parseGeneralization(gen, store);
+						}
 					}
 				}
 			}
 		}
 		
 		DiagramStore diagramStore = new DiagramStoreFactory().makeDiagramStore(store);
-		System.out.println("done");
+		System.out.println(new ReflectionToStringBuilder(diagramStore, ToStringStyle.MULTI_LINE_STYLE).toString());
 	}
 	
 	private void parseClass(Element element, SymbolStore store)
@@ -238,8 +243,18 @@ public class XMLParser
 	{
 		if (child.getChild("DataType") != null)
 		{
-			PrimitiveType theReturn = PrimitiveType.getType(child.getChild("DataType").getAttributeValue("Name"));
-			return new DataUnit("return", theReturn, Optional.empty());
+			if (complexReturnElement.isPresent())
+			{
+				Multiplicity multiplicity = Multiplicity.descriptionToMultiplicity(complexReturnElement.get().getAttributeValue("BindedType"));
+				ComplexType theReturn = new ComplexType(new UserDefinedType(child.getChild("DataType").getAttributeValue("Idref")), multiplicity);
+				return new DataUnit("return", theReturn, Optional.of(multiplicity));
+			}
+			else
+			{
+				PrimitiveType theReturn = PrimitiveType.getType(child.getChild("DataType").getAttributeValue("Name"));
+				return new DataUnit("return", theReturn, Optional.empty());
+			}
+			
 		}
 		else if (child.getChild("Class") != null)
 		{
