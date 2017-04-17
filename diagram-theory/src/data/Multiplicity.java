@@ -191,8 +191,10 @@ public class Multiplicity
 				return new Multiplicity(0, Double.POSITIVE_INFINITY, false, false);
 			case "Optional":
 				return OPTIONAL;
+			case "Class":
+				return EXACTLY_ONE;
 			default:
-				throw new IllegalArgumentException("collectionType not recognized");
+				throw new IllegalArgumentException("description not recognized");
 		}
 	}
 

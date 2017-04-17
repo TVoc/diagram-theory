@@ -223,7 +223,7 @@ public class SymbolStore extends TypeContext
 	@Override
 	public String resolveName(TypeParameterType type) throws NoSuchTypeException
 	{
-		return "<? extends " + this.getTypeName(type) + ">";
+		return "Class<" + this.getTypeName(type) + ">";
 	}
 
 	@Override

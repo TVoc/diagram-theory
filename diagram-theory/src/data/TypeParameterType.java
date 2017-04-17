@@ -1,7 +1,7 @@
 package data;
 
 /**
- * Expresses operation parameters and return types of the sort <T extends Type>
+ * Expresses operation parameters and return types of the sort Class<T>
  * 
  * @author Thomas
  *

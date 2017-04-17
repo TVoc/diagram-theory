@@ -6,6 +6,11 @@ import java.util.Set;
 
 public class AssociationBuilder
 {
+	public AssociationBuilder()
+	{
+		this.associationEnds = new HashSet<AssociationEnd>();
+	}
+	
 	private Set<AssociationEnd> associationEnds;
 	
 	private Set<AssociationEnd> internalGetAssociationEnds()
