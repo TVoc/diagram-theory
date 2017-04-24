@@ -26,6 +26,7 @@ import data.TypeParameterType;
 import data.UserDefinedType;
 import theory.DiagramStore;
 import theory.DiagramStoreFactory;
+import theory.TheoryGenerator;
 
 public class XMLParser
 {
@@ -52,7 +53,7 @@ public class XMLParser
 		}
 	}
 	
-	private void parseModel(Element models)
+	private void parseModel(Element models) throws IOException
 	{
 		SymbolStore store = new SymbolStore();
 		
@@ -85,7 +86,7 @@ public class XMLParser
 		}
 		
 		DiagramStore diagramStore = new DiagramStoreFactory().makeDiagramStore(store);
-		System.out.println(new ReflectionToStringBuilder(diagramStore, ToStringStyle.MULTI_LINE_STYLE).toString());
+		new TheoryGenerator().generateTheory(diagramStore, "generatedtheory.idp");
 	}
 	
 	private void parseClass(Element element, SymbolStore store)

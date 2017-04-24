@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public final class MultiplicityFactory
 {
-	private static final String MULTIPLICITY_REGEX = "Unspecified|[0-9]+(\\.\\.|\\.)([0-9]+|\\*)";
+	private static final String MULTIPLICITY_REGEX = "Unspecified|[0-9]+|[0-9]+(\\.\\.|\\.)([0-9]+|\\*)";
 	
 	private MultiplicityFactory()
 	{
@@ -54,11 +54,18 @@ public final class MultiplicityFactory
 		{
 			bounds = parseBounds(multiplicitySpec.split("\\."));
 		}
-		else
+		else if (multiplicitySpec.equals("Unspecified"))
 		{
 			bounds = new double[]
 					{
 							1,1
+					};
+		}
+		else
+		{
+			bounds = new double[]
+					{
+							Double.parseDouble(multiplicitySpec), Double.parseDouble(multiplicitySpec)
 					};
 		}
 		
