@@ -1,7 +1,7 @@
 vocabulary V {
     type LimitedInt = { 1..20 } isa int
     type LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5; 9.0; 9.5 } isa float
-    type LimitedString  = { "TnHJ79OAwXniU8ZP5JsH"; "mEtzw7IKDKacNl5ZVTjh"; "TSDdjboeb9um8Lz7FQFX"; "6nKzVb2fxKriVW8ivtjh"; "DA3hcmtCmXf740zw9qoT"; "6qT3qEPIg5WpEwMxTSth"; "2PTLRuBnZLWqkR4ZYNcb"; "zvAwUkVQ1gDphTvonx9y"; "FnoyjdENWWtJHpKiQ5jv"; "SV4x9qh88Ync2FuF6OP9"; "a4pAGR55HcXmEk7mteiu"; "FU5m6cS2VXvh30uWZUhT"; "mIme8pQcWMDnxAVJVYMC"; "ABCs0ylHUKZX0mDBDqqm"; "pAwGlDk3cd7A2ln444Hc"; "pKtcairzgYLE4FUARhlN"; "Ljqa31uMkKAsVmoMnuDT"; "S7jabdLFFwbNPFrk1Ddp"; "gHjkgDsG3z7HESuwQfKh"; "6mcmxIfqflWhWhyJUnP8" } isa string
+    type LimitedString  = { "Q4dXdpPX5SW3TmvuvXY7"; "d2UJOrXhu62KWyuG6t4v"; "ix8eW4E3VT1rEVLXW3Q7"; "pflaSOiFo5w7II9DswIN"; "nF8y8Kt1amT007J3fQPu"; "Oc98DHxjgU4cE7Uixxsr"; "PRUv3U6Fyn2rHTuQSolS"; "jlHNqn1U16PJ6NgV0mRr"; "Wcrm7ETE2050dKSibLg5"; "TuupSMvUejV37I4lLxxW"; "lJzAWmkBrw4bI3C1NDSL"; "GuqBfJDnLieSWv6Poh4m"; "hWUYA0iWM2e1bI24rSU5"; "JZrWz05ztfTHFceE95qh"; "SEArWZcrUR7fel6XCpfQ"; "olPZKW1aBOw9yb0HlQbZ"; "VQTZzTm5KyzxJmkvRWMz"; "PypNQxsbyysRy7pEwkwF"; "Q300juxWi1n4YQOkp35g"; "OIUpZeOvB4QEAZSSPqUA" } isa string
     type bool constructed from { true, false }
     type void constructed from { void }
     type Object
