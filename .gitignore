@@ -66,3 +66,4 @@ local.properties
 sandbox/
 
 diagram-theory/lib/commons-lang3-3.5
+diagram-theory/lib/commons-cli-1.4

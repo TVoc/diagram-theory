@@ -13,6 +13,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.input.SAXBuilder;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import data.AssociationEnd;
 import data.ComplexType;
 import data.DataUnit;
@@ -26,6 +31,7 @@ import data.TypeParameterType;
 import data.UserDefinedType;
 import theory.DiagramStore;
 import theory.DiagramStoreFactory;
+import theory.Factors;
 import theory.TheoryGenerator;
 
 public class XMLParser
@@ -34,14 +40,55 @@ public class XMLParser
 	public static final String ISORDERED_DEFAULT = "false";
 	public static final String ISUNIQUE_DEFAULT = "true";
 	
-	public static void main(String[] args)
+	public static final double STRINGFACTOR_DEFAULT = 1;
+	public static final double INTFACTOR_DEFAULT = 1;
+	public static final double FLOATFACTOR_DEFAULT = 1;
+	
+	public static void main(String[] args) throws ParseException
 	{
+		Options options = new Options();
+		options.addRequiredOption("numobjects", "Number of objects", true, "Number of objects in the generated structure");
+		options.addOption("stringfactor", true, "Number of strings in generated structure will be ceil(stringfactor * numobjects); default is 1");
+		options.addOption("intfactor", true, "Number of ints in generated structure will be ceil(intfactor * numobjects); default is 1");
+		options.addOption("floatfactor", true, "Number of floats in generated structure will be ceil(floatfactor * numobjects; default is 1");
+		
+		int numObjects = 0;
+		double stringFactor = STRINGFACTOR_DEFAULT;
+		double intFactor = INTFACTOR_DEFAULT;
+		double floatFactor = FLOATFACTOR_DEFAULT;
+		
+		try
+		{
+			CommandLine cmd = new DefaultParser().parse(options, args);
+			
+			numObjects = Integer.parseInt(cmd.getOptionValue("numobjects"));
+			
+			if (cmd.hasOption("stringfactor"))
+			{
+				stringFactor = Double.parseDouble(cmd.getOptionValue("stringfactor"));
+			}
+			if (cmd.hasOption("intfactor"))
+			{
+				stringFactor = Double.parseDouble(cmd.getOptionValue("intfactor"));
+			}
+			if (cmd.hasOption("floatfactor"))
+			{
+				stringFactor = Double.parseDouble(cmd.getOptionValue("floatfactor"));
+			}
+		}
+		catch (ParseException e)
+		{
+			throw e;
+		}
+		
+		Factors factors = new Factors(numObjects, stringFactor, intFactor, floatFactor);
+		
 		SAXBuilder saxBuilder = new SAXBuilder();
 		try
 		{
 			Document doc = saxBuilder.build("C:\\Users\\Thomas\\Desktop\\Werk stuff\\Univ\\Thesis\\voorbeeld\\project.xml");
 			XMLParser parser = new XMLParser();
-			parser.parseModel(doc.getRootElement().getChild("Models"));
+			parser.parseModel(doc.getRootElement().getChild("Models"), factors);
 		}
 		catch (JDOMException e)
 		{
@@ -53,7 +100,7 @@ public class XMLParser
 		}
 	}
 	
-	private void parseModel(Element models) throws IOException
+	private void parseModel(Element models, Factors factors) throws IOException
 	{
 		SymbolStore store = new SymbolStore();
 		
@@ -86,7 +133,7 @@ public class XMLParser
 		}
 		
 		DiagramStore diagramStore = new DiagramStoreFactory().makeDiagramStore(store);
-		new TheoryGenerator().generateTheory(diagramStore, "generatedtheory.idp");
+		new TheoryGenerator().generateTheory(diagramStore, "generatedtheory.idp", factors);
 	}
 	
 	private void parseClass(Element element, SymbolStore store)

@@ -97,6 +97,7 @@ public class TheoryBuilder
 				+ this.getAttributeAssertionBuilder().build()
 				+ this.getOperationAssertionBuilder().build()
 				+ this.getAssociationAssertionBuilder().build()
-				+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel());
+				+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel())
+				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel());
 	}
 }

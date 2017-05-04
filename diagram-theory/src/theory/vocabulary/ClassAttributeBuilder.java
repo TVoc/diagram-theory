@@ -33,7 +33,7 @@ public class ClassAttributeBuilder
 		if (PrimitiveType.isPrimitiveType(typeName))
 		{
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(className + attribute.getName() + "(Object,"
-					+ typeName + ")", this.getTabLevel()));
+					+ OutputConvenienceFunctions.primitiveTypeToLogicType(typeName) + ")", this.getTabLevel()));
 		}
 		else
 		{

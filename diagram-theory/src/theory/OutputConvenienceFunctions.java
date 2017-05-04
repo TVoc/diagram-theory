@@ -27,4 +27,33 @@ public abstract class OutputConvenienceFunctions
 	{
 		return insertTabsNewLine("", tabLevel);
 	}
+	
+	public static String primitiveTypeToLogicType(String primitiveType) throws IllegalArgumentException
+	{
+		switch (primitiveType)
+		{
+			case "bool":
+				return primitiveType;
+			case "int":
+				return "LimitedInt";
+			case "short":
+				return "LimitedInt";
+			case "long":
+				return "LimitedInt";
+			case "byte":
+				return "LimitedInt";
+			case "void":
+				return "void";
+			case "double":
+				return "LimitedFloat";
+			case "float":
+				return "LimitedFloat";
+			case "char":
+				return primitiveType;
+			case "string":
+				return "LimitedString";
+			default:
+				throw new IllegalArgumentException("primitiveType was not a primitive type");
+		}
+	}
 }

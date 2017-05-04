@@ -1,8 +1,7 @@
 vocabulary V {
-    type short isa int
-    type long isa int
-    type byte isa int
-    type double isa float
+    type LimitedInt isa int
+    type LimitedFloat isa int
+    type LimitedString isa string
     type bool constructed from { true, false }
     type void constructed from { void }
     type ClassObject
@@ -13,43 +12,43 @@ vocabulary V {
     IsSupertypeOf(ClassObject, ClassObject)
     type ClassObject constructed from { DerivedStatisticStrategy, DerivedStatistic, WeaponType, CharacterClass, Inventory, Weapon, Character, SupportAffinity, WeaponLevel, Statistic, Item }    
     
-    CharacterClassname(Object,string)
-    Weaponweight(Object,int)
-    Weaponrange(Object,int)
-    Weapondamage(Object,int)
-    Charactername(Object,string)
-    SupportAffinityname(Object,string)
-    Statisticname(Object,string)
-    Itemvalue(Object,int)
-    Itemname(Object,string)
+    CharacterClassname(Object,LimitedString)
+    Weapondamage(Object,LimitedInt)
+    Weaponrange(Object,LimitedInt)
+    Weaponweight(Object,LimitedInt)
+    Charactername(Object,LimitedString)
+    SupportAffinityname(Object,LimitedString)
+    Statisticname(Object,LimitedString)
+    Itemvalue(Object,LimitedInt)
+    Itemname(Object,LimitedString)
     
     
-    DerivedStatisticStrategygetValue(Object,int)
-    CharacterdetermineDamageFrom(Object,Object,int)
-    StatisticgetValue(Object,int)
+    DerivedStatisticStrategygetValue(Object,LimitedInt)
+    CharacterdetermineDamageFrom(Object,Object,LimitedInt)
+    StatisticgetValue(Object,LimitedInt)
     
     
-    InventoryandItem(Object,Object)
-    CharacterandInventory(Object,Object)
-    DerivedStatisticStrategyandDerivedStatistic(Object,Object)
-    WeaponTypeandWeaponLevel(Object,Object)
+    CharacterClassandCharacter(Object,Object)
+    StatisticandWeaponType(Object,Object)
+    StatisticandCharacterClass(Object,Object)
+    CharacterandSupportAffinity(Object,Object)
+    InventoryandCharacter(Object,Object)
     WeaponandWeaponType(Object,Object)
-    DerivedStatisticStrategyandStatistic(Object,Object)
+    DerivedStatisticStrategyandDerivedStatistic(Object,Object)
+    InventoryandItem(Object,Object)
+    CharacterandStatistic(Object,Object)
+    WeaponTypeandWeaponLevel(Object,Object)
     CharacterClassandItem(Object,Object)
     CharacterandCharacter(Object,Object)
     CharacterClassandCharacterClass(Object,Object)
-    StatisticandCharacter(Object,Object)
-    SupportAffinityandCharacter(Object,Object)
-    CharacterClassandStatistic(Object,Object)
-    CharacterClassandCharacter(Object,Object)
-    WeaponTypeandStatistic(Object,Object)
+    StatisticandDerivedStatisticStrategy(Object,Object)
     
 }
 theory T:V {
 {
-    ! x y : IsDirectSupertypeOf(x, y) <- Statistic(x) & WeaponLevel(y).
-    ! x y : IsDirectSupertypeOf(x, y) <- Item(x) & Weapon(y).
     ! x y : IsDirectSupertypeOf(x, y) <- Statistic(x) & DerivedStatistic(y).
+    ! x y : IsDirectSupertypeOf(x, y) <- Item(x) & Weapon(y).
+    ! x y : IsDirectSupertypeOf(x, y) <- Statistic(x) & WeaponLevel(y).
 }
 
 ! o : ?1 x : RuntimeClass(x, o).
@@ -65,14 +64,14 @@ theory T:V {
 ! o x : CharacterClassname(o, x) => ? t : StaticClass(t, o) & t = CharacterClass.
 ! o : 1 =< #{x : CharacterClassname(o, x)} & #{x : CharacterClassname(o, x)} =< 1.
 
-! o x : Weaponweight(o, x) => ? t : StaticClass(t, o) & t = Weapon.
-! o : 1 =< #{x : Weaponweight(o, x)} & #{x : Weaponweight(o, x)} =< 1.
+! o x : Weapondamage(o, x) => ? t : StaticClass(t, o) & t = Weapon.
+! o : 1 =< #{x : Weapondamage(o, x)} & #{x : Weapondamage(o, x)} =< 1.
 
 ! o x : Weaponrange(o, x) => ? t : StaticClass(t, o) & t = Weapon.
 ! o : 1 =< #{x : Weaponrange(o, x)} & #{x : Weaponrange(o, x)} =< 1.
 
-! o x : Weapondamage(o, x) => ? t : StaticClass(t, o) & t = Weapon.
-! o : 1 =< #{x : Weapondamage(o, x)} & #{x : Weapondamage(o, x)} =< 1.
+! o x : Weaponweight(o, x) => ? t : StaticClass(t, o) & t = Weapon.
+! o : 1 =< #{x : Weaponweight(o, x)} & #{x : Weaponweight(o, x)} =< 1.
 
 ! o x : Charactername(o, x) => ? t : StaticClass(t, o) & t = Character.
 ! o : 1 =< #{x : Charactername(o, x)} & #{x : Charactername(o, x)} =< 1.
@@ -99,32 +98,51 @@ theory T:V {
 ! o r : StatisticgetValue(o, r) => ? t : StaticClass(t, o) & t = Statistic.
 ! o : ?1 r : StatisticgetValue(o, r).
 
-! o1 o2 : InventoryandItem(o1, o2) => ? t : StaticClass(t, o1) & t = Inventory.
-! o2 : #{o1 : InventoryandItem(o1, o2)} =< 1.
-! o1 o2 : InventoryandItem(o1, o2) => ? t : StaticClass(t, o2) & t = Item.
-! o1 : #{o2 : InventoryandItem(o1, o2)} =< 5.
+! o1 o2 : CharacterClassandCharacter(o1, o2) => ? t : StaticClass(t, o1) & t = CharacterClass.
+! o2 : 1 =< #{o1 : CharacterClassandCharacter(o1, o2)} & #{o1 : CharacterClassandCharacter(o1, o2)} =< 1.
+! o1 o2 : CharacterClassandCharacter(o1, o2) => ? t : StaticClass(t, o2) & t = Character.
 
-! o1 o2 : CharacterandInventory(o1, o2) => ? t : StaticClass(t, o1) & t = Character.
-! o2 : 1 =< #{o1 : CharacterandInventory(o1, o2)} & #{o1 : CharacterandInventory(o1, o2)} =< 1.
-! o1 o2 : CharacterandInventory(o1, o2) => ? t : StaticClass(t, o2) & t = Inventory.
-! o1 : 1 =< #{o2 : CharacterandInventory(o1, o2)} & #{o2 : CharacterandInventory(o1, o2)} =< 1.
+! o1 o2 : StatisticandWeaponType(o1, o2) => ? t : StaticClass(t, o1) & t = Statistic.
+! o2 : #{o1 : StatisticandWeaponType(o1, o2)} =< 1.
+! o1 o2 : StatisticandWeaponType(o1, o2) => ? t : StaticClass(t, o2) & t = WeaponType.
+
+! o1 o2 : StatisticandCharacterClass(o1, o2) => ? t : StaticClass(t, o1) & t = Statistic.
+! o2 : 1 =< #{o1 : StatisticandCharacterClass(o1, o2)}.
+! o1 o2 : StatisticandCharacterClass(o1, o2) => ? t : StaticClass(t, o2) & t = CharacterClass.
+! o1 : 1 =< #{o2 : StatisticandCharacterClass(o1, o2)} & #{o2 : StatisticandCharacterClass(o1, o2)} =< 1.
+
+! o1 o2 : CharacterandSupportAffinity(o1, o2) => ? t : StaticClass(t, o1) & t = Character.
+! o2 : 1 =< #{o1 : CharacterandSupportAffinity(o1, o2)} & #{o1 : CharacterandSupportAffinity(o1, o2)} =< 1.
+! o1 o2 : CharacterandSupportAffinity(o1, o2) => ? t : StaticClass(t, o2) & t = SupportAffinity.
+! o1 : 1 =< #{o2 : CharacterandSupportAffinity(o1, o2)} & #{o2 : CharacterandSupportAffinity(o1, o2)} =< 1.
+
+! o1 o2 : InventoryandCharacter(o1, o2) => ? t : StaticClass(t, o1) & t = Inventory.
+! o2 : 1 =< #{o1 : InventoryandCharacter(o1, o2)} & #{o1 : InventoryandCharacter(o1, o2)} =< 1.
+! o1 o2 : InventoryandCharacter(o1, o2) => ? t : StaticClass(t, o2) & t = Character.
+! o1 : 1 =< #{o2 : InventoryandCharacter(o1, o2)} & #{o2 : InventoryandCharacter(o1, o2)} =< 1.
+
+! o1 o2 : WeaponandWeaponType(o1, o2) => ? t : StaticClass(t, o1) & t = Weapon.
+! o1 o2 : WeaponandWeaponType(o1, o2) => ? t : StaticClass(t, o2) & t = WeaponType.
+! o1 : #{o2 : WeaponandWeaponType(o1, o2)} =< 1.
 
 ! o1 o2 : DerivedStatisticStrategyandDerivedStatistic(o1, o2) => ? t : StaticClass(t, o1) & t = DerivedStatisticStrategy.
 ! o2 : 1 =< #{o1 : DerivedStatisticStrategyandDerivedStatistic(o1, o2)} & #{o1 : DerivedStatisticStrategyandDerivedStatistic(o1, o2)} =< 1.
 ! o1 o2 : DerivedStatisticStrategyandDerivedStatistic(o1, o2) => ? t : StaticClass(t, o2) & t = DerivedStatistic.
 ! o1 : 1 =< #{o2 : DerivedStatisticStrategyandDerivedStatistic(o1, o2)} & #{o2 : DerivedStatisticStrategyandDerivedStatistic(o1, o2)} =< 1.
 
+! o1 o2 : InventoryandItem(o1, o2) => ? t : StaticClass(t, o1) & t = Inventory.
+! o2 : #{o1 : InventoryandItem(o1, o2)} =< 1.
+! o1 o2 : InventoryandItem(o1, o2) => ? t : StaticClass(t, o2) & t = Item.
+! o1 : #{o2 : InventoryandItem(o1, o2)} =< 5.
+
+! o1 o2 : CharacterandStatistic(o1, o2) => ? t : StaticClass(t, o1) & t = Character.
+! o2 : 1 =< #{o1 : CharacterandStatistic(o1, o2)} & #{o1 : CharacterandStatistic(o1, o2)} =< 1.
+! o1 o2 : CharacterandStatistic(o1, o2) => ? t : StaticClass(t, o2) & t = Statistic.
+! o1 : 1 =< #{o2 : CharacterandStatistic(o1, o2)}.
+
 ! o1 o2 : WeaponTypeandWeaponLevel(o1, o2) => ? t : StaticClass(t, o1) & t = WeaponType.
 ! o2 : 1 =< #{o1 : WeaponTypeandWeaponLevel(o1, o2)} & #{o1 : WeaponTypeandWeaponLevel(o1, o2)} =< 1.
 ! o1 o2 : WeaponTypeandWeaponLevel(o1, o2) => ? t : StaticClass(t, o2) & t = WeaponLevel.
-
-! o1 o2 : WeaponandWeaponType(o1, o2) => ? t : StaticClass(t, o1) & t = Weapon.
-! o1 o2 : WeaponandWeaponType(o1, o2) => ? t : StaticClass(t, o2) & t = WeaponType.
-! o1 : #{o2 : WeaponandWeaponType(o1, o2)} =< 1.
-
-! o1 o2 : DerivedStatisticStrategyandStatistic(o1, o2) => ? t : StaticClass(t, o1) & t = DerivedStatisticStrategy.
-! o1 o2 : DerivedStatisticStrategyandStatistic(o1, o2) => ? t : StaticClass(t, o2) & t = Statistic.
-! o1 : 1 =< #{o2 : DerivedStatisticStrategyandStatistic(o1, o2)}.
 
 ! o1 o2 : CharacterClassandItem(o1, o2) => ? t : StaticClass(t, o1) & t = CharacterClass.
 ! o1 o2 : CharacterClassandItem(o1, o2) => ? t : StaticClass(t, o2) & t = Item.
@@ -135,27 +153,15 @@ theory T:V {
 ! o1 o2 : CharacterClassandCharacterClass(o1, o2) => ? t : StaticClass(t, o1) & t = CharacterClass.
 ! o1 o2 : CharacterClassandCharacterClass(o1, o2) => ? t : StaticClass(t, o2) & t = CharacterClass.
 
-! o1 o2 : StatisticandCharacter(o1, o2) => ? t : StaticClass(t, o1) & t = Statistic.
-! o2 : 1 =< #{o1 : StatisticandCharacter(o1, o2)}.
-! o1 o2 : StatisticandCharacter(o1, o2) => ? t : StaticClass(t, o2) & t = Character.
-! o1 : 1 =< #{o2 : StatisticandCharacter(o1, o2)} & #{o2 : StatisticandCharacter(o1, o2)} =< 1.
-
-! o1 o2 : SupportAffinityandCharacter(o1, o2) => ? t : StaticClass(t, o1) & t = SupportAffinity.
-! o2 : 1 =< #{o1 : SupportAffinityandCharacter(o1, o2)} & #{o1 : SupportAffinityandCharacter(o1, o2)} =< 1.
-! o1 o2 : SupportAffinityandCharacter(o1, o2) => ? t : StaticClass(t, o2) & t = Character.
-! o1 : 1 =< #{o2 : SupportAffinityandCharacter(o1, o2)} & #{o2 : SupportAffinityandCharacter(o1, o2)} =< 1.
-
-! o1 o2 : CharacterClassandStatistic(o1, o2) => ? t : StaticClass(t, o1) & t = CharacterClass.
-! o2 : 1 =< #{o1 : CharacterClassandStatistic(o1, o2)} & #{o1 : CharacterClassandStatistic(o1, o2)} =< 1.
-! o1 o2 : CharacterClassandStatistic(o1, o2) => ? t : StaticClass(t, o2) & t = Statistic.
-! o1 : 1 =< #{o2 : CharacterClassandStatistic(o1, o2)}.
-
-! o1 o2 : CharacterClassandCharacter(o1, o2) => ? t : StaticClass(t, o1) & t = CharacterClass.
-! o2 : 1 =< #{o1 : CharacterClassandCharacter(o1, o2)} & #{o1 : CharacterClassandCharacter(o1, o2)} =< 1.
-! o1 o2 : CharacterClassandCharacter(o1, o2) => ? t : StaticClass(t, o2) & t = Character.
-
-! o1 o2 : WeaponTypeandStatistic(o1, o2) => ? t : StaticClass(t, o1) & t = WeaponType.
-! o1 o2 : WeaponTypeandStatistic(o1, o2) => ? t : StaticClass(t, o2) & t = Statistic.
-! o1 : #{o2 : WeaponTypeandStatistic(o1, o2)} =< 1.
+! o1 o2 : StatisticandDerivedStatisticStrategy(o1, o2) => ? t : StaticClass(t, o1) & t = Statistic.
+! o2 : 1 =< #{o1 : StatisticandDerivedStatisticStrategy(o1, o2)}.
+! o1 o2 : StatisticandDerivedStatisticStrategy(o1, o2) => ? t : StaticClass(t, o2) & t = DerivedStatisticStrategy.
 
 }
+
+structure struct : V {
+    Object = { 1..20}
+    LimitedStrings = { "fI1fEKcE1JIL8ZEqGPpW", "L4EfwVhnhtsyFyjKwOry", "wbOfYEoWc0MrTAyy1zB6", "SBOnTBxuikjxuLUMUzmx", "8dz48TKEaX1odtwqQUaN", "dpD2yzkQedhb3vAKuu7P", "R0kVRc1WFrFzShVMfI6x", "BDtxkJQVny1ecTLGox8S", "DVuRrHnITEe2e2NhetcX", "v7QvKyOaM3wY5HVRNSTX", "348OXQzhYQRnKrqO7dkh", "93pqOroM6ehbuKTiErgG", "9FGvEx17R4vHaifHbzpK", "MNVUEPuDuWZEyK6yU5Xe", "JJ6sNfTaJr8AWbCq6Gag", "YiCvQ509YzkwdkKzb9jp", "pLpmUp33JzuO43OuqGiG", "f2sV8lXhofKnd0BaNhZq", "SY3eyjnIv5HwNXCXvCuT", "TbCtESg7IOfAr8PR8igy" }
+    LimitedInt = { 1..20 }
+    LimitedFloat = { 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5 }
+    }

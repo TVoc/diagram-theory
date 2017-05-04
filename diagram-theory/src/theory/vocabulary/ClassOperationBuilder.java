@@ -44,7 +44,7 @@ public class ClassOperationBuilder
 				String typeName = ele.getTypeName(store);
 				if (PrimitiveType.isPrimitiveType(typeName))
 				{
-					predicateArguments.append(typeName + ",");
+					predicateArguments.append(OutputConvenienceFunctions.primitiveTypeToLogicType(typeName) + ",");
 				}
 				else
 				{
@@ -55,7 +55,7 @@ public class ClassOperationBuilder
 		
 		if (PrimitiveType.isPrimitiveType(operation.getResultType().getTypeName(store)))
 		{
-			predicateArguments.append(operation.getResultType().getTypeName(store) + ")");
+			predicateArguments.append(OutputConvenienceFunctions.primitiveTypeToLogicType(operation.getResultType().getTypeName(store)) + ")");
 		}
 		else
 		{

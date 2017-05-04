@@ -62,10 +62,9 @@ public class VocabularyBuilder
 	public String build(DiagramStore store)
 	{
 		String general = OutputConvenienceFunctions.insertTabsNewLine("vocabulary V {", this.getTabLevel())
-				+ OutputConvenienceFunctions.insertTabsNewLine("type short isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type long isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type byte isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type double isa float", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedInt isa int", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedFloat isa int", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedString isa string", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type bool constructed from { true, false }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void constructed from { void }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type ClassObject", this.getTabLevel() + 1)
