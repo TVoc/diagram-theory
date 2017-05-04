@@ -13,11 +13,11 @@ public class TheoryBuilder
 	public TheoryBuilder(int tabLevel)
 	{
 		this.tabLevel = tabLevel;
-		this.classAssertionBuilder = new ClassAssertionBuilder(tabLevel);
-		this.hierarchyAssertionBuilder = new HierarchyAssertionBuilder(tabLevel);
-		this.attributeAssertionBuilder = new AttributeAssertionBuilder(tabLevel);
-		this.operationAssertionBuilder = new OperationAssertionBuilder(tabLevel);
-		this.associationAssertionBuilder = new AssociationAssertionBuilder(tabLevel);
+		this.classAssertionBuilder = new ClassAssertionBuilder(tabLevel + 1);
+		this.hierarchyAssertionBuilder = new HierarchyAssertionBuilder(tabLevel + 1);
+		this.attributeAssertionBuilder = new AttributeAssertionBuilder(tabLevel + 1);
+		this.operationAssertionBuilder = new OperationAssertionBuilder(tabLevel + 1);
+		this.associationAssertionBuilder = new AssociationAssertionBuilder(tabLevel + 1);
 	}
 	
 	private final int tabLevel;

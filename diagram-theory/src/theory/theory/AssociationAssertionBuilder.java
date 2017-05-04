@@ -2,6 +2,7 @@ package theory.theory;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 
 import data.Association;
 import data.AssociationEnd;
@@ -34,26 +35,12 @@ public class AssociationAssertionBuilder
 	public AssociationAssertionBuilder addAssociation(Association association, DiagramStore store)
 	{
 		String predicateName = VocabularyAssociationBuilder.makePredicateName(association, store);
-		StringBuilder tuple = new StringBuilder("(o1, ");
-		StringBuilder allQuantifiers = new StringBuilder("! o1 ");
+		String tuple = this.makeTuple(association.getNbOfEnds());
+		StringBuilder allQuantifiers = new StringBuilder("! ");
+		StringBuilder typeAssertion = new StringBuilder("(");
+		StringBuilder multAssertions = new StringBuilder();
 		
-		for (int i = 1; i < association.getNbOfEnds(); i++)
-		{
-			allQuantifiers.append("o" + (i+1) + " ");
-			if (i < association.getNbOfEnds() - 1)
-			{
-				tuple.append("o" + (i+1) + ", ");
-			}
-			else
-			{
-				tuple.append("o" + (i+1));
-			}
-		}
-		
-		allQuantifiers.append(": ");
-		tuple.append(")");
-		
-		int i = 1;
+		int i = 0;
 		
 		Iterator<AssociationEnd> assEnds = association.getAssociationEnds().iterator();
 		
@@ -61,40 +48,39 @@ public class AssociationAssertionBuilder
 		{
 			AssociationEnd ele = assEnds.next();
 			
-			StringBuilder quantifiers = new StringBuilder("! ");
-			
-			for (int j = 1; j <= association.getNbOfEnds(); j++)
+			// add to type assertion
+			String theO = "o" + (i+1);
+			allQuantifiers.append(theO + " ");
+			typeAssertion.append("(?t : StaticClass(t, " + theO + ") & t = " + ele.getTypeName(store) + ")");
+			if (assEnds.hasNext())
 			{
-				if (i == j)
-				{
-					continue;
-				}
-				
-				quantifiers.append("o" + j + " ");
+				typeAssertion.append(" & ");
 			}
-			
-			quantifiers.append(": ");
-			
-			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(allQuantifiers + predicateName + tuple
-					+ " => ? t : StaticClass(t, o" + i + ") & t = " + ele.getTypeName(store) + ".", this.getTabLevel()));
-			
-			Optional<String> multiplicityAssertion = this.multiplicityAssertion(ele, predicateName, tuple.toString(), i, quantifiers.toString());
-			
-			if (multiplicityAssertion.isPresent())
+			Optional<String> multAssertion = this.multiplicityAssertion(association.getAssociationEnds(), ele,
+					predicateName, tuple, (i+1), this.makeQuantifiers(association.getNbOfEnds(), i), store);
+			if (multAssertion.isPresent())
 			{
-				this.getStringBuilder().append(multiplicityAssertion.get());
+				multAssertions.append(multAssertion.get());
 			}
 			
 			i++;
 		}
 		
+		allQuantifiers.append(": ");
+		typeAssertion.append(")");
+		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(allQuantifiers + predicateName + tuple + " => " + typeAssertion + ".", this.getTabLevel()));
+		this.getStringBuilder().append(multAssertions);
 		
 		return this;
 	}
 	
-	private Optional<String> multiplicityAssertion(AssociationEnd assEnd, String predicateName, String tuple, int assEndNumber, String quantifiers)
+	private Optional<String> multiplicityAssertion(Set<AssociationEnd> assEnds, AssociationEnd assEnd, String predicateName, String tuple, int assEndNumber, String quantifiers, DiagramStore store)
 	{
+		String typeAssertion = this.makeTypeAssertion(assEnds, assEnd, store);
+		
 		if (assEnd.getMultiplicity().getLowerBound() == 0 && assEnd.getMultiplicity().getUpperBound() == Double.POSITIVE_INFINITY)
 		{
 			return Optional.empty();
@@ -102,20 +88,84 @@ public class AssociationAssertionBuilder
 		
 		if (assEnd.getMultiplicity().getLowerBound() == 0)
 		{
-			return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + "#{o" + assEndNumber + " : " + predicateName + tuple
-					+ "} =< " + (int) assEnd.getMultiplicity().getUpperBound() + ".", this.getTabLevel()));
+			return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + typeAssertion + "(#{o" + assEndNumber + " : " + predicateName + tuple
+					+ "} =< " + (int) assEnd.getMultiplicity().getUpperBound() + ").", this.getTabLevel()));
 		}
 		
 		if (assEnd.getMultiplicity().getUpperBound() == Double.POSITIVE_INFINITY)
 		{
-			return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + (int) assEnd.getMultiplicity().getLowerBound()
-					+ " =< #{o" + assEndNumber + " : " + predicateName + tuple + "}.", this.getTabLevel()));
+			return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + typeAssertion + "(" + (int) assEnd.getMultiplicity().getLowerBound()
+					+ " =< #{o" + assEndNumber + " : " + predicateName + tuple + "}).", this.getTabLevel()));
 		}
 		
-		return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + (int) assEnd.getMultiplicity().getLowerBound()
+		return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + typeAssertion + "(" + (int) assEnd.getMultiplicity().getLowerBound()
 				+ " =< #{o" + assEndNumber + " : " + predicateName + tuple + "} & "
 				+ "#{o" + assEndNumber + " : " + predicateName + tuple
-				+ "} =< " + (int) assEnd.getMultiplicity().getUpperBound() + ".", this.getTabLevel()));
+				+ "} =< " + (int) assEnd.getMultiplicity().getUpperBound() + ").", this.getTabLevel()));
+	}
+	
+	private String makeTuple(int numMembers)
+	{
+		StringBuilder tuple = new StringBuilder("(");
+		
+		for (int i = 0; i < numMembers; i++)
+		{
+			String theO = "o" + (i+1);
+			if (i < numMembers - 1)
+			{
+				tuple.append(theO + ",");
+			}
+			else tuple.append(theO);
+		}
+		
+		return tuple.append(")").toString();
+	}
+	
+	private String makeQuantifiers(int numMembers, int skip)
+	{
+		StringBuilder quantifiers = new StringBuilder("! ");
+		
+		for (int i = 0; i < numMembers; i++)
+		{
+			if (i == skip)
+			{
+				continue;
+			}
+			
+			quantifiers.append("o" + (i+1) + " ");
+		}
+		
+		return quantifiers.append(": ").toString();
+	}
+	
+	private String makeTypeAssertion(Set<AssociationEnd> assEnds, AssociationEnd skip, DiagramStore store)
+	{
+		StringBuilder toReturn = new StringBuilder("(");
+		
+		Iterator<AssociationEnd> iterator = assEnds.iterator();
+		
+		int i = 0;
+		
+		while (iterator.hasNext())
+		{
+			AssociationEnd ele = iterator.next();
+			
+			String theO = "o" + (i+1);
+			
+			if (ele.equals(skip))
+			{
+				i++;
+				continue;
+			}
+			
+			toReturn.append("(?t : StaticClass(t, " + theO + ") & t = " + ele.getTypeName(store) + ")");
+			if (iterator.hasNext())
+			{
+				toReturn.append(" ");
+			}
+		}
+		
+		return toReturn.append(") => ").toString();
 	}
 	
 	public String build()

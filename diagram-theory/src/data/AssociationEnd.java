@@ -130,4 +130,49 @@ public class AssociationEnd
 	{
 		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((multiplicity == null) ? 0 : multiplicity.hashCode());
+		result = prime * result + ((roleName == null) ? 0 : roleName.hashCode());
+		result = prime * result + ((theClass == null) ? 0 : theClass.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AssociationEnd other = (AssociationEnd) obj;
+		if (multiplicity == null)
+		{
+			if (other.multiplicity != null)
+				return false;
+		}
+		else if (!multiplicity.equals(other.multiplicity))
+			return false;
+		if (roleName == null)
+		{
+			if (other.roleName != null)
+				return false;
+		}
+		else if (!roleName.equals(other.roleName))
+			return false;
+		if (theClass == null)
+		{
+			if (other.theClass != null)
+				return false;
+		}
+		else if (!theClass.equals(other.theClass))
+			return false;
+		return true;
+	}
 }

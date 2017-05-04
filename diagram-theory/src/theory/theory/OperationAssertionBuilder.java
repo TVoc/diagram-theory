@@ -33,20 +33,25 @@ public class OperationAssertionBuilder
 		String predicateName = className + operation.getName();
 		StringBuilder quantifiers = new StringBuilder("! o ");
 		StringBuilder tuple = new StringBuilder("(o, ");
+		StringBuilder multClassAssertion = new StringBuilder("((?t : StaticClass(t, o) & t = " + className + ")");
 		
 		if (operation.getAllParameters().isPresent())
 		{
 			for (int i = 0; i < operation.getAllParameters().get().size(); i++)
 			{
-				quantifiers.append("p" + (i+1) + " ");
-				tuple.append("p" + (i+1) + ", ");
+				String theP = "p" + (i+1);
+				quantifiers.append(theP + " ");
+				tuple.append(theP + ", ");
+				multClassAssertion.append(" & (?t : StaticClass(t, " + theP + ") & t = " + operation.getAllParameters().get().get(i).getTypeName(store) + ")");
 			}
 		}
 		
-		String altQuantifiers = quantifiers.toString() + ": ?1 r : ";
+		String altQuantifiers = "(?1 r : ";
+		String multQuantifiers = quantifiers.toString() + ": ";
 		
 		quantifiers.append("r : ");
 		tuple.append("r)");
+		multClassAssertion.append(") => ");
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
 						+ tuple.toString() + " => ? t : StaticClass(t, o) & t = " + className + ".", this.getTabLevel()));
@@ -71,8 +76,8 @@ public class OperationAssertionBuilder
 		}
 
 		// TODO accommodate optional result and more than one result
-		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(altQuantifiers + predicateName
-				+ tuple.toString() + ".", this.getTabLevel()));
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(multQuantifiers + multClassAssertion + altQuantifiers + predicateName
+				+ tuple.toString() + ").", this.getTabLevel()));
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 		

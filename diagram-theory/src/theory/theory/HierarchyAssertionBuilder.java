@@ -31,8 +31,8 @@ public class HierarchyAssertionBuilder
 		String superType = generalization.getSupertype(store);
 		String subType = generalization.getSubtype(store);
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"! x y : IsDirectSupertypeOf(x, y) <- "
-				+ superType + "(x) & " + subType + "(y).", this.getTabLevel() + 1));
+				"! x y : IsDirectSupertypeOf(x, y) <- x = "
+				+ superType + " & y = " + subType + ".", this.getTabLevel() + 1));
 		
 		return this;
 	}
