@@ -92,7 +92,7 @@ public class TheoryBuilder
 		}
 		
 		return OutputConvenienceFunctions.insertTabsNewLine("theory T:V {", this.getTabLevel())
-				+ this.getClassAssertionBuilder().build()
+			//	+ this.getClassAssertionBuilder().build()
 				+ this.getHierarchyAssertionBuilder().build()
 				+ this.getAttributeAssertionBuilder().build()
 				+ this.getOperationAssertionBuilder().build()

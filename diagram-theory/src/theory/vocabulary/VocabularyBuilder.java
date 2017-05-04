@@ -14,10 +14,11 @@ public class VocabularyBuilder
 	public VocabularyBuilder(int tabLevel)
 	{
 		this.tabLevel = tabLevel;
-		this.classPredicateBuilder = new ClassPredicateBuilder(tabLevel + 1);
+//		this.classPredicateBuilder = new ClassPredicateBuilder(tabLevel + 1);
 		this.classAttributeBuilder = new ClassAttributeBuilder(tabLevel + 1);
 		this.classOperationBuilder = new ClassOperationBuilder(tabLevel + 1);
 		this.vocabularyAssociationBuilder = new VocabularyAssociationBuilder(tabLevel + 1);
+		this.classObjectBuilder = new ClassObjectBuilder(tabLevel + 1);
 	}
 	
 	private final int tabLevel;
@@ -27,15 +28,16 @@ public class VocabularyBuilder
 		return this.tabLevel;
 	}
 
-	private final ClassPredicateBuilder classPredicateBuilder;
+//	private final ClassPredicateBuilder classPredicateBuilder;
 	private final ClassAttributeBuilder classAttributeBuilder;
 	private final ClassOperationBuilder classOperationBuilder;
 	private final VocabularyAssociationBuilder vocabularyAssociationBuilder;
+	private final ClassObjectBuilder classObjectBuilder;
 	
-	private ClassPredicateBuilder getClassPredicateBuilder()
-	{
-		return classPredicateBuilder;
-	}
+//	private ClassPredicateBuilder getClassPredicateBuilder()
+//	{
+//		return classPredicateBuilder;
+//	}
 
 	private ClassAttributeBuilder getClassAttributeBuilder()
 	{
@@ -52,28 +54,32 @@ public class VocabularyBuilder
 		return vocabularyAssociationBuilder;
 	}
 	
+	private ClassObjectBuilder getClassObjectBuilder()
+	{
+		return this.classObjectBuilder;
+	}
+
 	public String build(DiagramStore store)
 	{
 		String general = OutputConvenienceFunctions.insertTabsNewLine("vocabulary V {", this.getTabLevel())
 				+ OutputConvenienceFunctions.insertTabsNewLine("type short isa int", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type long isa int", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type byte isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type double isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type float isa int", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type char isa string", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type double isa float", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type bool constructed from { true, false }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void constructed from { void }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type ClassObject", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type Object", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("RuntimeClass(ClassObject, Object)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("StaticClass(ClassObject, Object)", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("DirectSupertypeOf(ClassObject, ClassObject)", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("SupertypeOf(ClassObject, ClassObject)", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1);
+				+ OutputConvenienceFunctions.insertTabsNewLine("IsDirectSupertypeOf(ClassObject, ClassObject)", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("IsSupertypeOf(ClassObject, ClassObject)", this.getTabLevel() + 1);
+//				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1);
 		
 		for (Entry<String,Class> ele : store.getClasses().entrySet())
 		{
-			this.getClassPredicateBuilder().addClassPredicate(ele.getValue().getName());
+//			this.getClassPredicateBuilder().addClassPredicate(ele.getValue().getName());
+			this.getClassObjectBuilder().addClass(ele.getValue().getName());
 			
 			if (ele.getValue().getAllAttributes().isPresent())
 			{
@@ -97,7 +103,10 @@ public class VocabularyBuilder
 			this.getVocabularyAssociationBuilder().addAssociation(association, store);
 		}
 		
-		return general + this.getClassPredicateBuilder().build() + OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
+		return general 
+//			+ this.getClassPredicateBuilder().build() + OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
+//			+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
+			+ this.getClassObjectBuilder().build() + OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 			+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 			+ this.getClassAttributeBuilder().build() + OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 			+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)

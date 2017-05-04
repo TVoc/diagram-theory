@@ -31,13 +31,13 @@ public class AttributeAssertionBuilder
 	{
 		String predicateName = className + attribute.getName();
 		
-		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o x : " + predicateName + "(o, x) => ? t : StaticClass(t, o) & "
-				+ className + "(t).", this.getTabLevel()));
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o x : " + predicateName + "(o, x) => ? t : StaticClass(t, o) & t = "
+				+ className + ".", this.getTabLevel()));
 		
 		if (! PrimitiveType.isPrimitiveType(attribute.getTypeName(store)))
 		{
-			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o x : " + predicateName + "(o, x) => ? t : StaticClass(t, x) & "
-					+ attribute.getTypeName(store) + "(t).", this.getTabLevel()));
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o x : " + predicateName + "(o, x) => ? t : StaticClass(t, x) & t = "
+					+ attribute.getTypeName(store) + ".", this.getTabLevel()));
 		}
 		
 		if (attribute.getMultiplicity().getLowerBound() == 0 && attribute.getMultiplicity().getUpperBound() == Double.POSITIVE_INFINITY)
@@ -48,7 +48,7 @@ public class AttributeAssertionBuilder
 		
 		if (attribute.getMultiplicity().getLowerBound() == 0)
 		{
-			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o : #{x : " + predicateName + "(o, x)} <= "
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o : #{x : " + predicateName + "(o, x)} =< "
 					+ (int) attribute.getMultiplicity().getUpperBound() + ".", this.getTabLevel()));
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 			return this;
@@ -57,14 +57,14 @@ public class AttributeAssertionBuilder
 		if (attribute.getMultiplicity().getUpperBound() == Double.POSITIVE_INFINITY)
 		{
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o : " + (int) attribute.getMultiplicity().getLowerBound()
-					+ " <= #{x : " + predicateName + "(o, x)}.", this.getTabLevel()));
+					+ " =< #{x : " + predicateName + "(o, x)}.", this.getTabLevel()));
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 			return this;
 		}
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"! o : " + (int) attribute.getMultiplicity().getLowerBound() + " <= #{x : " + predicateName + "(o, x)} & #{x : "
-				+ predicateName + "(o, x)} <= " + (int) attribute.getMultiplicity().getUpperBound() + ".", this.getTabLevel()));
+				"! o : " + (int) attribute.getMultiplicity().getLowerBound() + " =< #{x : " + predicateName + "(o, x)} & #{x : "
+				+ predicateName + "(o, x)} =< " + (int) attribute.getMultiplicity().getUpperBound() + ".", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 		return this;
 	}

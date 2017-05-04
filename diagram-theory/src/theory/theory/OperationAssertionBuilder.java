@@ -49,7 +49,7 @@ public class OperationAssertionBuilder
 		tuple.append("r)");
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-						+ tuple.toString() + " => ? t : StaticClass(t, o) & " + className + "(t).", this.getTabLevel()));
+						+ tuple.toString() + " => ? t : StaticClass(t, o) & t = " + className + ".", this.getTabLevel()));
 		
 		if (operation.getAllParameters().isPresent())
 		{
@@ -58,7 +58,7 @@ public class OperationAssertionBuilder
 			for (DataUnit ele : operation.getAllParameters().get())
 			{
 				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-						+ tuple.toString() + " => ? t : StaticClass(t, p" + pCounter + ") & " + ele.getTypeName(store) + "(t).", this.getTabLevel()));
+						+ tuple.toString() + " => ? t : StaticClass(t, p" + pCounter + ") & t = " + ele.getTypeName(store) + ".", this.getTabLevel()));
 				pCounter++;
 			}
 		}
@@ -66,7 +66,7 @@ public class OperationAssertionBuilder
 		if (! PrimitiveType.isPrimitiveType(operation.getResultType().getTypeName(store)))
 		{
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-					+ tuple.toString() + " => ? t : StaticClass(t, r) & " + operation.getResultType().getTypeName(store) + "(t).", this.getTabLevel()));
+					+ tuple.toString() + " => ? t : StaticClass(t, r) & t = " + operation.getResultType().getTypeName(store) + ".", this.getTabLevel()));
 
 		}
 
