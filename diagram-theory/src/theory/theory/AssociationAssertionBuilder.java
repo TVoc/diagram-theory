@@ -98,6 +98,12 @@ public class AssociationAssertionBuilder
 					+ " =< #{o" + assEndNumber + " : " + predicateName + tuple + "}).", this.getTabLevel()));
 		}
 		
+		if (assEnd.getMultiplicity().getLowerBound() == assEnd.getMultiplicity().getUpperBound())
+		{
+			return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + typeAssertion + "?" + (int) assEnd.getMultiplicity().getLowerBound()
+					+ " o" + assEndNumber + " : " + predicateName + tuple + ".", this.getTabLevel()));
+		}
+		
 		return Optional.of(OutputConvenienceFunctions.insertTabsNewLine(quantifiers + typeAssertion + "(" + (int) assEnd.getMultiplicity().getLowerBound()
 				+ " =< #{o" + assEndNumber + " : " + predicateName + tuple + "} & "
 				+ "#{o" + assEndNumber + " : " + predicateName + tuple

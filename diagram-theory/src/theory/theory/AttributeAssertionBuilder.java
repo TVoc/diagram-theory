@@ -64,6 +64,15 @@ public class AttributeAssertionBuilder
 			return this;
 		}
 		
+		if (attribute.getMultiplicity().getLowerBound() == attribute.getMultiplicity().getUpperBound())
+		{
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! o : (? t : StaticClass(t, o) & t = "
+					+ className + ") => ?" + (int) attribute.getMultiplicity().getLowerBound()
+						+ " x : " + predicateName + "(o, x).", this.getTabLevel()));
+				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
+				return this;
+		}
+		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
 				"! o : (? t : StaticClass(t, o) & t = "
 				+ className + ") => (" + (int) attribute.getMultiplicity().getLowerBound() + " =< #{x : " + predicateName + "(o, x)} & #{x : "
