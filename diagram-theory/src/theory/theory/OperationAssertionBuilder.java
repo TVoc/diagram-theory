@@ -42,7 +42,10 @@ public class OperationAssertionBuilder
 				String theP = "p" + (i+1);
 				quantifiers.append(theP + " ");
 				tuple.append(theP + ", ");
-				multClassAssertion.append(" & (?t : StaticClass(t, " + theP + ") & t = " + operation.getAllParameters().get().get(i).getTypeName(store) + ")");
+				if (! PrimitiveType.isPrimitiveType(operation.getAllParameters().get().get(i).getTypeName(store)))
+				{
+					multClassAssertion.append(" & (?t : StaticClass(t, " + theP + ") & t = " + operation.getAllParameters().get().get(i).getTypeName(store) + ")");
+				}
 			}
 		}
 		
@@ -51,32 +54,22 @@ public class OperationAssertionBuilder
 		
 		quantifiers.append("r : ");
 		tuple.append("r)");
-		multClassAssertion.append(") => ");
 		
-		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-						+ tuple.toString() + " => ? t : StaticClass(t, o) & t = " + className + ".", this.getTabLevel()));
-		
-		if (operation.getAllParameters().isPresent())
-		{
-			int pCounter = 1;
-			
-			for (DataUnit ele : operation.getAllParameters().get())
-			{
-				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-						+ tuple.toString() + " => ? t : StaticClass(t, p" + pCounter + ") & t = " + ele.getTypeName(store) + ".", this.getTabLevel()));
-				pCounter++;
-			}
-		}
 		
 		if (! PrimitiveType.isPrimitiveType(operation.getResultType().getTypeName(store)))
 		{
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-					+ tuple.toString() + " => ? t : StaticClass(t, r) & t = " + operation.getResultType().getTypeName(store) + ".", this.getTabLevel()));
+					+ tuple.toString() + " => " + multClassAssertion + " & (? t : StaticClass(t, r) & t = " + operation.getResultType().getTypeName(store) + ")).", this.getTabLevel()));
 
 		}
-
+		else
+		{
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
+					+ tuple.toString() + " => " + multClassAssertion + ").", this.getTabLevel()));
+		}
+		
 		// TODO accommodate optional result and more than one result
-		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(multQuantifiers + multClassAssertion + altQuantifiers + predicateName
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(multQuantifiers + multClassAssertion + ") => " + altQuantifiers + predicateName
 				+ tuple.toString() + ").", this.getTabLevel()));
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));

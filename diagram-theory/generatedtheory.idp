@@ -1,7 +1,7 @@
 vocabulary V {
     type LimitedInt = { 1..20 } isa int
     type LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5; 9.0; 9.5 } isa float
-    type LimitedString  = { "Q4dXdpPX5SW3TmvuvXY7"; "d2UJOrXhu62KWyuG6t4v"; "ix8eW4E3VT1rEVLXW3Q7"; "pflaSOiFo5w7II9DswIN"; "nF8y8Kt1amT007J3fQPu"; "Oc98DHxjgU4cE7Uixxsr"; "PRUv3U6Fyn2rHTuQSolS"; "jlHNqn1U16PJ6NgV0mRr"; "Wcrm7ETE2050dKSibLg5"; "TuupSMvUejV37I4lLxxW"; "lJzAWmkBrw4bI3C1NDSL"; "GuqBfJDnLieSWv6Poh4m"; "hWUYA0iWM2e1bI24rSU5"; "JZrWz05ztfTHFceE95qh"; "SEArWZcrUR7fel6XCpfQ"; "olPZKW1aBOw9yb0HlQbZ"; "VQTZzTm5KyzxJmkvRWMz"; "PypNQxsbyysRy7pEwkwF"; "Q300juxWi1n4YQOkp35g"; "OIUpZeOvB4QEAZSSPqUA" } isa string
+    type LimitedString  = { "hoAaptvn4PzALh3P6ynr"; "TEfZzcgdWPzuYlCtHe2U"; "LdLo1erXYypWXCsI12Gd"; "xfUF95zwggARDLHTkAkq"; "ZworuDpKETnweyk6U82H"; "i2XradTz7kefjysZ8zG9"; "UyBtrNYmLClfozJ7oAyr"; "zD8tYBMzPnou6scAs3pu"; "FsOq8c78UUaeA2n7X8lq"; "8trnYx5A9N0gVagLLzac"; "6hRsIfQaa6PjztbUk684"; "BAsRqycs8IK3WGC5uHLe"; "VDbIHXvJPjT9WfDNnyem"; "Na2b2ptrafyDBF587Izz"; "SqZAYbbB3UhK8ct0sCQL"; "rtWOQXp9keLCPemVOmmY"; "bG0SwYP0Gu9UeVwjDngT"; "EuVNPWSqS86r0voTYsqm"; "GNSbD8wrXqlievt52aC0"; "euCbh1CG4wf1g9K4vMvr" } isa string
     type bool constructed from { true, false }
     type void constructed from { void }
     type Object
@@ -88,14 +88,13 @@ theory T:V {
     ! o x : Itemname(o, x) => ? t : StaticClass(t, o) & t = Item.
     ! o : (? t : StaticClass(t, o) & t = Item) => (1 =< #{x : Itemname(o, x)} & #{x : Itemname(o, x)} =< 1).
     
-    ! o r : DerivedStatisticStrategygetValue(o, r) => ? t : StaticClass(t, o) & t = DerivedStatisticStrategy.
+    ! o r : DerivedStatisticStrategygetValue(o, r) => ((?t : StaticClass(t, o) & t = DerivedStatisticStrategy)).
     ! o : ((?t : StaticClass(t, o) & t = DerivedStatisticStrategy)) => (?1 r : DerivedStatisticStrategygetValue(o, r)).
     
-    ! o p1 r : CharacterdetermineDamageFrom(o, p1, r) => ? t : StaticClass(t, o) & t = Character.
-    ! o p1 r : CharacterdetermineDamageFrom(o, p1, r) => ? t : StaticClass(t, p1) & t = Weapon.
+    ! o p1 r : CharacterdetermineDamageFrom(o, p1, r) => ((?t : StaticClass(t, o) & t = Character) & (?t : StaticClass(t, p1) & t = Weapon)).
     ! o p1 : ((?t : StaticClass(t, o) & t = Character) & (?t : StaticClass(t, p1) & t = Weapon)) => (?1 r : CharacterdetermineDamageFrom(o, p1, r)).
     
-    ! o r : StatisticgetValue(o, r) => ? t : StaticClass(t, o) & t = Statistic.
+    ! o r : StatisticgetValue(o, r) => ((?t : StaticClass(t, o) & t = Statistic)).
     ! o : ((?t : StaticClass(t, o) & t = Statistic)) => (?1 r : StatisticgetValue(o, r)).
     
     
