@@ -1,6 +1,5 @@
 package theory.theory;
 
-import data.DataUnit;
 import data.Operation;
 import data.PrimitiveType;
 import theory.DiagramStore;
@@ -33,7 +32,7 @@ public class OperationAssertionBuilder
 		String predicateName = className + operation.getName();
 		StringBuilder quantifiers = new StringBuilder("! o ");
 		StringBuilder tuple = new StringBuilder("(o, ");
-		StringBuilder multClassAssertion = new StringBuilder("((?t : StaticClass(t, o) & t = " + className + ")");
+		StringBuilder multClassAssertion = new StringBuilder("(StaticClass(" + className + ", o)");
 		
 		if (operation.getAllParameters().isPresent())
 		{
@@ -44,7 +43,7 @@ public class OperationAssertionBuilder
 				tuple.append(theP + ", ");
 				if (! PrimitiveType.isPrimitiveType(operation.getAllParameters().get().get(i).getTypeName(store)))
 				{
-					multClassAssertion.append(" & (?t : StaticClass(t, " + theP + ") & t = " + operation.getAllParameters().get().get(i).getTypeName(store) + ")");
+					multClassAssertion.append(" & (StaticClass(" + operation.getAllParameters().get().get(i).getTypeName(store) + ", " + theP + "))");
 				}
 			}
 		}
@@ -59,7 +58,7 @@ public class OperationAssertionBuilder
 		if (! PrimitiveType.isPrimitiveType(operation.getResultType().getTypeName(store)))
 		{
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(quantifiers.toString() + predicateName
-					+ tuple.toString() + " => " + multClassAssertion + " & (? t : StaticClass(t, r) & t = " + operation.getResultType().getTypeName(store) + ")).", this.getTabLevel()));
+					+ tuple.toString() + " => " + multClassAssertion + " & (StaticClass(" + operation.getResultType().getTypeName(store) + ", r))).", this.getTabLevel()));
 
 		}
 		else

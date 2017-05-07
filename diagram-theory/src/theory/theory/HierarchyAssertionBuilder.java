@@ -55,6 +55,7 @@ public class HierarchyAssertionBuilder
 					.append(OutputConvenienceFunctions.insertTabsNewLine("! x y o: StaticClass(y, o) <- RuntimeClass(x, o) & IsSupertypeOf(y, x).", this.getTabLevel() + 1))
 					.append(OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel()))
 					.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()))
+					.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()))
 					.toString();
 		}
 		return new StringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("{", this.getTabLevel())

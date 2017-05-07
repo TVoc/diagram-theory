@@ -51,7 +51,7 @@ public class AssociationAssertionBuilder
 			// add to type assertion
 			String theO = "o" + (i+1);
 			allQuantifiers.append(theO + " ");
-			typeAssertion.append("(?t : StaticClass(t, " + theO + ") & t = " + ele.getTypeName(store) + ")");
+			typeAssertion.append("(StaticClass(" + ele.getTypeName(store) + ", " + theO + "))");
 			if (assEnds.hasNext())
 			{
 				typeAssertion.append(" & ");
@@ -146,6 +146,7 @@ public class AssociationAssertionBuilder
 	
 	private String makeTypeAssertion(Set<AssociationEnd> assEnds, AssociationEnd skip, DiagramStore store)
 	{
+		
 		StringBuilder toReturn = new StringBuilder("(");
 		
 		Iterator<AssociationEnd> iterator = assEnds.iterator();
@@ -164,11 +165,14 @@ public class AssociationAssertionBuilder
 				continue;
 			}
 			
-			toReturn.append("(?t : StaticClass(t, " + theO + ") & t = " + ele.getTypeName(store) + ")");
-			if (iterator.hasNext())
-			{
-				toReturn.append(" ");
-			}
+			toReturn.append("(StaticClass(" + ele.getTypeName(store) + ", " + theO + ")) & ");
+			
+			i++;
+		}
+		
+		if (toReturn.substring(toReturn.length() - 3).equals((" & ")))
+		{
+			toReturn.delete(toReturn.length() - 3, toReturn.length());
 		}
 		
 		return toReturn.append(") => ").toString();
