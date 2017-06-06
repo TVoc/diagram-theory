@@ -9,5 +9,7 @@ Bad things to find:
 - in a hierarchy: more relaxed multiplicity constraints further down the hierarchy
 - class subsumption/equivalence
 - equivalent classes ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=497 )
+    -> one-to-one association between superclass and subclass
 - redundant hierarchy ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=1545 )
-- blob: https://sourcemaking.com/antipatterns/the-blob
+- blob/god object: https://sourcemaking.com/antipatterns/the-blob
+- functional decomposition: class designed to perform a simple function — few methods, but a large amount of variables
