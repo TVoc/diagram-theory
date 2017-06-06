@@ -1,7 +1,7 @@
 vocabulary V {
-    type LimitedInt = { 1..20 } isa int
-    type LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5; 9.0; 9.5 } isa float
-    type LimitedString  = { "gR1NaaZmXIL8M8BUhbWO"; "5I78WB1iYdXVVJwS0X8w"; "CzQ6ICVvbAI03RCRULWb"; "oD98pKPcfi34Q2SqASNd"; "2iMpTaaOeKQ0Rxcm8SQW"; "J0o6Anhj3ci2cqhoLuYE"; "lvcIxijf2yOLCSomwsYj"; "FYSHis8SyMoLnaPi1dC6"; "kqjKuSwAUlNgrw4GiIpK"; "IiXjRNaObcmhsh9oOvUp"; "Z2niRUjflH5mIQx5UE4E"; "UuudT3sOsW0PsY46ZIIs"; "bypDnKYfhXkbnUPlHH9j"; "2fqNcIfZMA1G8Tzdbdsf"; "KOEbDoB4Cq6inBdhehsF"; "JPKmua59bAnvqAwyPZRR"; "svJ1LcoV00r4xAmuD1ak"; "27DaPzPa4QuLcQHar1A1"; "SAMDcJBkNQKiAwjMfU1Q"; "L9Ws2NMLpiYCRXRjnNzR" } isa string
+    type LimitedInt = { 1..18 } isa int
+    type LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5 } isa float
+    type LimitedString  = { "SVObSVpOwNsLeM1TCYkx"; "s0mJOUkvFuOYxoypf0e2"; "ucPRTRrfWBdnx8IbebrH"; "IIsx8mkhNB6tFKXhIh01"; "c8FoPQm8gzGloJi352R6"; "QOwcTPcuxqohdJ0OoYI5"; "nNhaMFI1sNq4FM9g9PFK"; "THmoxPvd1k7axZ9Rx3Vo"; "psOJIEnr6CUFa2S1shdP"; "2ykrKTZkDAopHEMGzBgp"; "YrUOvIjCy2OZLs39PE5t"; "LXDiF7O705qElFzEF3WJ"; "NW3yPaSUa5NJERB5bpd0"; "NzD42F9XGUvbUNaZHU0q"; "s9Iudo9RU7iwdNeSJi8t"; "iNl5Hkr0r9krSOlg2KER"; "bkl5G0Ix9OUrFJfV1H7P"; "kC4BfZXQ4VDHxUmJ1O5G" } isa string
     type bool constructed from { true, false }
     type void constructed from { void }
     type Object
@@ -145,7 +145,7 @@ theory T:V {
 }
 
 structure thestruct : V {
-    Object = { 1..20}
+    Object = { 1..18}
 }
 
 procedure main() {

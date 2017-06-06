@@ -1,0 +1,24 @@
+vocabulary V {
+    type Number constructed from {one, two, three}
+    One(Number)
+    Two(Number)
+    A
+    B
+}
+
+theory T:V {
+    ! x [Number] : One(x).
+}
+
+theory U:V {
+    ? x [Number] : One(x).
+}
+
+structure s:V {
+}
+
+procedure main() {
+    stdoptions.verbosity.entails = 2147483647
+    //stdoptions.verbosity.propagation = 2147483647
+    print(entails(T,U))
+}

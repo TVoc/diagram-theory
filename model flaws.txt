@@ -1,0 +1,13 @@
+Bad things to find:
+
+- whole diagram consistency
+  --> finite satisfiability problems ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=1678 )
+- class without associations
+(- attribute that is not a basic type)
+- non-binary associations
+- Many-to-many associations
+- in a hierarchy: more relaxed multiplicity constraints further down the hierarchy
+- class subsumption/equivalence
+- equivalent classes ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=497 )
+- redundant hierarchy ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=1545 )
+- blob: https://sourcemaking.com/antipatterns/the-blob
