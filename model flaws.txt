@@ -13,3 +13,5 @@ Bad things to find:
 - redundant hierarchy ( https://www.cs.bgu.ac.il/~cd-patterns/?page_id=1545 )
 - blob/god object: https://sourcemaking.com/antipatterns/the-blob
 - functional decomposition: class designed to perform a simple function — few methods, but a large amount of variables
+
+- poltergeist: Class whose only functionality is to start a process (relevant to both class diagrams and sequence diagrams)
