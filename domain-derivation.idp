@@ -1,0 +1,118 @@
+vocabulary V {
+    type LimitedInt = { 1..18 } isa int
+    type LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5 } isa float
+    type LimitedString  = { "SVObSVpOwNsLeM1TCYkx"; "s0mJOUkvFuOYxoypf0e2"; "ucPRTRrfWBdnx8IbebrH"; "IIsx8mkhNB6tFKXhIh01"; "c8FoPQm8gzGloJi352R6"; "QOwcTPcuxqohdJ0OoYI5"; "nNhaMFI1sNq4FM9g9PFK"; "THmoxPvd1k7axZ9Rx3Vo"; "psOJIEnr6CUFa2S1shdP"; "2ykrKTZkDAopHEMGzBgp"; "YrUOvIjCy2OZLs39PE5t"; "LXDiF7O705qElFzEF3WJ"; "NW3yPaSUa5NJERB5bpd0"; "NzD42F9XGUvbUNaZHU0q"; "s9Iudo9RU7iwdNeSJi8t"; "iNl5Hkr0r9krSOlg2KER"; "bkl5G0Ix9OUrFJfV1H7P"; "kC4BfZXQ4VDHxUmJ1O5G" } isa string
+
+    type Character
+    type CharacterClass
+    type SupportAffinity
+    type WeaponType
+    type Item
+    type Weapon isa Item
+    type Inventory
+    type Statistic
+    type DerivedStatistic isa Statistic
+    type DerivedStatisticStrategy
+    type WeaponLevel isa Statistic
+    
+    Charactername(Character, LimitedString)
+    SupportAffinityname(SupportAffinity, LimitedString)
+    Weapondamage(Weapon, LimitedInt)
+    Weaponweight(Weapon, LimitedInt)
+    Weaponrange(Weapon, LimitedInt)
+    Itemname(Item, LimitedString)
+    Itemvalue(Item, LimitedInt)
+    CharacterClassname(CharacterClass, LimitedString)
+    Statisticname(Statistic, LimitedString)
+    
+    CharacterdetermineDamageFrom(Character, Weapon, LimitedInt)
+    StatisticgetValue(Statistic, LimitedInt)
+    DerivedStatisticStrategygetValue(DerivedStatisticStrategy, LimitedInt)
+    
+    CharacterandCharacter(Character, Character)
+    CharacterandSupportAffinity(Character, SupportAffinity)
+    WeaponTypeandWeapon(WeaponType, Weapon)
+    InventoryandItem(Inventory, Item)
+    CharacterClassandItem(CharacterClass, Item)
+    CharacterandCharacterClass(Character, CharacterClass)
+    CharacterClassandCharacterClass(CharacterClass, CharacterClass)
+    CharacterandInventory(Character, Inventory)
+    CharacterClassandStatistic(CharacterClass, Statistic)
+    CharacterandStatistic(Character, Statistic)
+    StatisticandDerivedStatisticStategy(Statistic, DerivedStatisticStrategy)
+    DerivedStatisticandDerivedStatisticStrategy(DerivedStatistic, DerivedStatisticStrategy)
+    WeaponTypeandStatistic(WeaponType, Statistic)
+    WeaponTypeandWeaponLevel(WeaponType, WeaponLevel)
+}
+
+theory T:V {
+    ! x [Character] : ?1 y [LimitedString] : Charactername(x, y).
+    
+    ! x [SupportAffinity] : ?1 y [LimitedString] : SupportAffinityname(x, y).
+    
+    ! x [Weapon] : ?1 y [LimitedInt] : Weapondamage(x, y).
+    
+    ! x [Weapon] : ?1 y [LimitedInt] : Weaponweight(x, y).
+    
+    ! x [Weapon] : ?1 y [LimitedInt] : Weaponrange(x, y).
+    
+    ! x [Item] : ?1 y [LimitedString] : Itemname(x, y).
+    
+    ! x [Item] : ?1 y [LimitedInt] : Itemvalue(x, y).
+    
+    ! x [CharacterClass] : ?1 y [LimitedString] : CharacterClassname(x, y).
+    
+    ! x [Statistic] : ?1 y [LimitedString] : Statisticname(x, y).
+    
+    ! x [Character] y [Weapon] : ?1 z [LimitedInt] : CharacterdetermineDamageFrom(x, y, z).
+    
+    ! x [Statistic] : ?1 z [LimitedInt] : StatisticgetValue(x, z).
+    
+    ! x [DerivedStatisticStrategy] : ?1 z [LimitedInt] : DerivedStatisticStrategygetValue(x, z).
+    
+    ! x [Character] : ?1 y [SupportAffinity] : CharacterandSupportAffinity(x, y).
+    ! y [SupportAffinity] : ?1 x [Character] : CharacterandSupportAffinity(x, y).
+    
+    ! y [Weapon] : #{x [WeaponType] : WeaponTypeandWeapon(x, y)} =< 1.
+    
+    ! x [Inventory] : #{y [Item] : InventoryandItem(x, y)} =< 5.
+    ! y [Item] : #{x [Inventory] : InventoryandItem(x, y)} =< 1.
+    
+    ! x [Character] : ?1 y [CharacterClass] : CharacterandCharacterClass(x, y).
+    
+    ! x [Character] : ?1 y [Inventory] : CharacterandInventory(x, y).
+    ! y [Inventory] : ?1 x [Character] : CharacterandInventory(x, y).
+    
+    ! x [CharacterClass] : #{y [Statistic] : CharacterClassandStatistic(x, y)} >= 1.
+    ! y [Statistic] : ?1 x [CharacterClass] : CharacterClassandStatistic(x, y).
+    
+    ! x [Character] : #{y [Statistic] : CharacterandStatistic(x, y)} >= 1.
+    ! y [Statistic] : ?1 x [Character] : CharacterandStatistic(x, y).
+    
+    ! y [DerivedStatisticStrategy] : #{x [Statistic] : StatisticandDerivedStatisticStategy(x, y)} >= 1.
+    
+    ! x [DerivedStatistic] : ?1 y [DerivedStatisticStrategy] : DerivedStatisticandDerivedStatisticStrategy(x, y).
+    ! y [DerivedStatisticStrategy] : ?1 x [DerivedStatistic] : DerivedStatisticandDerivedStatisticStrategy(x, y).
+    
+    ! x [WeaponType] : #{y [Statistic] : WeaponTypeandStatistic(x, y)} =< 1.
+    
+    ! y [WeaponLevel] : ?1 x [WeaponType] : WeaponTypeandWeaponLevel(x, y).
+}
+
+structure S:V {
+    Character = {Character1; Character2; Character3; Character4; Character5}
+    CharacterClass = {CharacterClass1; CharacterClass2; CharacterClass3; CharacterClass4; CharacterClass5}
+    SupportAffinity = {SupportAffinity1; SupportAffinity2; SupportAffinity3; SupportAffinity4; SupportAffinity5}
+    WeaponType = {WeaponType1; WeaponType2; WeaponType3; WeaponType4; WeaponType5}
+    Item = {Item1; Item2; Item3; Item4; Item5; Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
+    Weapon = {Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
+    Inventory = {Inventory1; Inventory2; Inventory3; Inventory4; Inventory5}
+    Statistic = {Statistic1; Statistic2; Statistic3; Statistic4; Statistic5; DerivedStatistic1; DerivedStatistic2; DerivedStatistic3; DerivedStatistic4; DerivedStatistic5; WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5}
+    DerivedStatistic = {DerivedStatistic1; DerivedStatistic2; DerivedStatistic3; DerivedStatistic4; DerivedStatistic5}
+    DerivedStatisticStrategy = {DerivedStatisticStrategy1; DerivedStatisticStrategy2; DerivedStatisticStrategy3; DerivedStatisticStrategy4; DerivedStatisticStrategy5}
+    WeaponLevel = {WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5}
+}
+
+procedure main() {
+    print(modelexpand(T,S)[1])
+}
