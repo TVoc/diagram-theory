@@ -85,14 +85,14 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 	}
 
 	@Override
-	public TempVar resolveTempVar(String id) throws IllegalArgumentException
+	public TempVar resolveTempVar(String name) throws IllegalArgumentException
 	{
-		if (! this.hasId(id))
+		if (! this.hasTempVar(name))
 		{
-			throw new IllegalArgumentException("id not present");
+			throw new IllegalArgumentException("name not present");
 		}
 		
-		return this.internalGetTempVars().get(this.internalGetIdsToNames().get(id));
+		return this.internalGetTempVars().get(name);
 	}
 	
 	public void addTempVar(String name, TempVar temp) throws IllegalArgumentException

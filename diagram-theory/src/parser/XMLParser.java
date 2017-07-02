@@ -24,6 +24,8 @@ import data.classdiagrams.PrimitiveType;
 import data.classdiagrams.Type;
 import data.classdiagrams.TypeParameterType;
 import data.classdiagrams.UserDefinedType;
+import data.sequencediagrams.Message;
+import data.sequencediagrams.TempVar;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -44,6 +46,10 @@ public class XMLParser
 	public static final double STRINGFACTOR_DEFAULT = 1;
 	public static final double INTFACTOR_DEFAULT = 1;
 	public static final double FLOATFACTOR_DEFAULT = 1;
+	
+	public static final boolean SEQ = true;
+	
+	public static final String TEMPVAR_SEPARATOR =  "\\+|\\-|\\&|\\||\\!|(\\()+|(\\))+";
 	
 	public static void main(String[] args) throws ParseException
 	{
@@ -88,8 +94,15 @@ public class XMLParser
 		try
 		{
 			Document doc = saxBuilder.build("C:\\Users\\Thomas\\Desktop\\Werk stuff\\Univ\\Thesis\\voorbeeld\\project.xml");
+			Document seq;
+			Element seqRoot;
+			if (SEQ)
+			{
+				seq = saxBuilder.build("C:\\Users\\Thomas\\Desktop\\Werk stuff\\Univ\\Thesis\\attack\\project.xml");
+				seqRoot = seq.getRootElement().getChild("Models");
+			}
 			XMLParser parser = new XMLParser();
-			parser.parseModel(doc.getRootElement().getChild("Models"), factors);
+			parser.parseModel(doc.getRootElement().getChild("Models"), seqRoot, factors);
 		}
 		catch (JDOMException e)
 		{
@@ -101,9 +114,17 @@ public class XMLParser
 		}
 	}
 	
-	private void parseModel(Element models, Factors factors) throws IOException
+	private void parseModel(Element models, Element seqModels, Factors factors) throws IOException
 	{
-		SymbolStore store = new SymbolStore();
+		SymbolStore store;
+		if (SEQ)
+		{
+			store = new SeqSymbolStore();
+		}
+		else
+		{
+			store = new SymbolStore();
+		}
 		
 		for (Element element : models.getChildren())
 		{
@@ -133,8 +154,18 @@ public class XMLParser
 			}
 		}
 		
-		DiagramStore diagramStore = new DiagramStoreFactory().makeDiagramStore(store);
-		new TheoryGenerator().generateTheory(diagramStore, "generatedtheory.idp", factors);
+		if (SEQ)
+		{
+			SeqSymbolStore seqStore = (SeqSymbolStore) store;
+			this.parseLifelines(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("InteractionLifeLine"), seqStore);
+			this.parseMessages(seqModels.getChild("ModelRelationshipContainer").getChild("ModelChildren").getChild("ModelRelationshipContainer").getChild("ModelChildren").getChildren(), seqStore);
+			this.parseCombinedFragments(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("CombinedFragment"), seqStore);
+		}
+		else
+		{
+			DiagramStore diagramStore = new DiagramStoreFactory().makeDiagramStore(store);
+			new TheoryGenerator().generateTheory(diagramStore, "generatedtheory.idp", factors);
+		}
 	}
 	
 	private void parseClass(Element element, SymbolStore store)
@@ -393,5 +424,103 @@ public class XMLParser
 		UserDefinedType subType = new UserDefinedType(ele.getAttributeValue("To"));
 		
 		store.addGeneralization(new Generalization(superType, subType));
+	}
+	
+	private void parseLifelines(List<Element> lifelines, SeqSymbolStore store)
+	{
+		for (Element lifeline : lifelines)
+		{
+			String name = lifeline.getAttributeValue("Name");
+			String lifeId = lifeline.getAttributeValue("Id");
+			String classId = lifeline.getChild("BaseClassifier").getChild("Class").getAttributeValue("Idref");
+			Type lifeType = new UserDefinedType(classId);
+			TempVar tempVar = new TempVar(lifeType, name);
+			store.addTempVar(name, tempVar);
+			store.addName(lifeId, name);
+		}
+	}
+	
+	private void parseMessages(List<Element> messages, SeqSymbolStore store)
+	{
+		for (Element message : messages)
+		{
+			String id = message.getAttributeValue("Id");
+			String content = message.getAttributeValue("Name").replaceAll("\\s", "");
+			int sdPoint = Integer.parseInt(message.getAttributeValue("SequenceNumber"));
+			Optional<String> fromName = Optional.empty();
+			Optional<String> toName = Optional.empty();
+			boolean isReturn = message.getChild("ActionType") != null && message.getChild("ActionType").getChild("ActionTypeReturn") != null;
+			
+			if (message.getChild("FromEnd").getChild("MessageEnd").getAttributeValue("EndModelElement") != null)
+			{
+				String varName = store.getNameOf(message.getChild("FromEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
+				fromName = Optional.of(varName);
+			}
+			if (message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement") != null)
+			{
+				String varName = store.getNameOf(message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
+				toName = Optional.of(varName);
+			}
+			
+			if (content.contains("="))
+			{
+				String[] sides = content.split("=");
+				
+				if (! store.hasTempVar(sides[0]))
+				{
+					String[] names = sides[1].split(TEMPVAR_SEPARATOR);
+					PrimitiveType type = null;
+					
+					for (String ele : names)
+					{
+						if (ele.equals(""))
+						{
+							continue;
+						}
+						
+						PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
+						
+						if (type == PrimitiveType.FLOAT || type == PrimitiveType.DOUBLE
+								&& (eleType == PrimitiveType.BYTE || eleType == PrimitiveType.SHORT || eleType == PrimitiveType.INTEGER || eleType == PrimitiveType.LONG))
+						{
+							continue;
+						}
+						
+						type = eleType;
+					}
+					
+					store.addTempVar(sides[0], new TempVar(type, sides[0]));
+				}
+			}
+			
+			Message newMessage = new Message(content, sdPoint, isReturn, fromName, toName);
+			store.addMessage(newMessage);
+			store.addIdToMessage(id, newMessage);
+		}
+	}
+	
+	private void parseCombinedFragments(List<Element> fragments, SeqSymbolStore store)
+	{
+		for (Element ele : fragments)
+		{
+			if (ele.getAttributeValue("OperatorKind").equals("alt"))
+			{
+				this.parseAlt(ele, store);
+			}
+			else if (ele.getAttributeValue("OperatorKind").equals("loop"))
+			{
+				this.parseLoop(ele, store);
+			}
+		}
+	}
+	
+	private void parseAlt(Element element, SeqSymbolStore store)
+	{
+		
+	}
+	
+	private void parseLoop(Element element, SeqSymbolStore store)
+	{
+		
 	}
 }
