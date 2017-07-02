@@ -6,13 +6,13 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import data.classdiagrams.Association;
+import data.classdiagrams.Class;
+import data.classdiagrams.DataUnit;
+import data.classdiagrams.Operation;
 import theory.DiagramStore;
 import theory.Factors;
 import theory.OutputConvenienceFunctions;
-import data.Association;
-import data.Class;
-import data.DataUnit;
-import data.Operation;
 
 public class VocabularyBuilder
 {

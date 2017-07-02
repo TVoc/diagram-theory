@@ -1,6 +1,6 @@
 package theory.theory;
 
-import data.Generalization;
+import data.classdiagrams.Generalization;
 import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 

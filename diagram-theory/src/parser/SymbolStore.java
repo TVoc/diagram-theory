@@ -10,18 +10,18 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import data.AssociationBuilder;
-import data.Class;
-import data.ComplexType;
-import data.Generalization;
-import data.NoSuchTypeException;
-import data.PrimitiveClass;
-import data.PrimitiveType;
-import data.Type;
-import data.TypeContext;
-import data.TypeParameterType;
-import data.UserDefinedClassBuilder;
-import data.UserDefinedType;
+import data.classdiagrams.AssociationBuilder;
+import data.classdiagrams.Class;
+import data.classdiagrams.ComplexType;
+import data.classdiagrams.Generalization;
+import data.classdiagrams.NoSuchTypeException;
+import data.classdiagrams.PrimitiveClass;
+import data.classdiagrams.PrimitiveType;
+import data.classdiagrams.Type;
+import data.classdiagrams.TypeContext;
+import data.classdiagrams.TypeParameterType;
+import data.classdiagrams.UserDefinedClassBuilder;
+import data.classdiagrams.UserDefinedType;
 
 /**
  * This class stores the Class, Association and Generalization objects derived

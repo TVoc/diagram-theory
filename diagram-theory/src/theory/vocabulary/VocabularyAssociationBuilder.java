@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import data.Association;
-import data.AssociationEnd;
+import data.classdiagrams.Association;
+import data.classdiagrams.AssociationEnd;
 import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 

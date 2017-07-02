@@ -1,7 +1,7 @@
 package theory.theory;
 
-import data.Operation;
-import data.PrimitiveType;
+import data.classdiagrams.Operation;
+import data.classdiagrams.PrimitiveType;
 import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 

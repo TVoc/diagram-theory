@@ -13,22 +13,23 @@ import org.jdom2.JDOMException;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.input.SAXBuilder;
 
+import data.classdiagrams.AssociationEnd;
+import data.classdiagrams.ComplexType;
+import data.classdiagrams.DataUnit;
+import data.classdiagrams.Generalization;
+import data.classdiagrams.Multiplicity;
+import data.classdiagrams.MultiplicityFactory;
+import data.classdiagrams.Operation;
+import data.classdiagrams.PrimitiveType;
+import data.classdiagrams.Type;
+import data.classdiagrams.TypeParameterType;
+import data.classdiagrams.UserDefinedType;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import data.AssociationEnd;
-import data.ComplexType;
-import data.DataUnit;
-import data.Generalization;
-import data.Multiplicity;
-import data.MultiplicityFactory;
-import data.Operation;
-import data.PrimitiveType;
-import data.Type;
-import data.TypeParameterType;
-import data.UserDefinedType;
 import theory.DiagramStore;
 import theory.DiagramStoreFactory;
 import theory.Factors;

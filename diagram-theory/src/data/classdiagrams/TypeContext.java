@@ -1,4 +1,4 @@
-package data;
+package data.classdiagrams;
 
 /**
  * When given a type, a TypeContext attempts to resolve it to a type's true

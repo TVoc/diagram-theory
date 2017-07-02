@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import data.classdiagrams.Association;
+import data.classdiagrams.AssociationBuilder;
+import data.classdiagrams.Class;
+import data.classdiagrams.Generalization;
+import data.classdiagrams.UserDefinedClassBuilder;
+
 import java.util.Set;
 
-import data.Association;
-import data.AssociationBuilder;
-import data.Generalization;
-import data.UserDefinedClassBuilder;
-import data.Class;
 import parser.SymbolStore;
 
 public class DiagramStoreFactory

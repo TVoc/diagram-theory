@@ -1,4 +1,4 @@
-package data;
+package data.classdiagrams;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package data;
+package data.classdiagrams;
 
 /**
  * Used when specifying a type for an attribute or a parameter. A type can

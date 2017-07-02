@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
-import data.Association;
-import data.AssociationEnd;
+import data.classdiagrams.Association;
+import data.classdiagrams.AssociationEnd;
 import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 import theory.vocabulary.VocabularyAssociationBuilder;

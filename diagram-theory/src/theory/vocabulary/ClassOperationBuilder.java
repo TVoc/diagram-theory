@@ -3,9 +3,9 @@ package theory.vocabulary;
 import java.util.List;
 import java.util.Optional;
 
-import data.DataUnit;
-import data.Operation;
-import data.PrimitiveType;
+import data.classdiagrams.DataUnit;
+import data.classdiagrams.Operation;
+import data.classdiagrams.PrimitiveType;
 import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 
