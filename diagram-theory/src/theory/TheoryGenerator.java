@@ -28,4 +28,11 @@ public class TheoryGenerator
 		
 		file.close();
 	}
+	
+	public void generateLTCTheory(SeqDiagramStore store, String outputPath, Factors factors) throws IOException
+	{
+		FileWriter file = new FileWriter(outputPath, false);
+		
+		file.write("include<LTC>");
+	}
 }

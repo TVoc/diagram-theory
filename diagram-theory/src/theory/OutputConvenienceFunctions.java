@@ -3,6 +3,10 @@ package theory;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+
+import data.sequencediagrams.TempVar;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 
 public abstract class OutputConvenienceFunctions
@@ -61,5 +65,18 @@ public abstract class OutputConvenienceFunctions
 	public static String toIDPOperators(String in)
 	{
 		return StringEscapeUtils.unescapeXml(in).replaceAll("<=", "=<");
+	}
+	
+	public static String[] tempVarPredicateNames(TempVar tempVar)
+	{
+		String[] toReturn = new String[3];
+		
+		String capitalized = WordUtils.capitalize(tempVar.getName()) + "T";
+		
+		toReturn[0] = capitalized;
+		toReturn[1] = "I_" + capitalized;
+		toReturn[2] = "C_" + capitalized;
+		
+		return toReturn;
 	}
 }
