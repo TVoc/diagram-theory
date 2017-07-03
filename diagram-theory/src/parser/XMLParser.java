@@ -56,7 +56,7 @@ public class XMLParser
 	/**
 	 * In an expression such as one=two+three, remove all operators to get the names of the temp vars
 	 */
-	public static final String TEMPVAR_SEPARATOR = "\\+|\\-|\\&|\\||\\!|(\\()+|(\\))+|\\=\\<|\\>\\=|\\<|\\>";
+	public static final String TEMPVAR_SEPARATOR =  "\\+|\\-|\\&|\\||\\!|(\\()+|(\\))+|\\=\\<|\\>\\=|\\<|\\>|=|~";
 	
 	public static void main(String[] args) throws ParseException
 	{

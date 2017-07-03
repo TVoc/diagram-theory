@@ -26,15 +26,17 @@ public class TempVarBuilder
 		return this.stringBuilder;
 	}
 	
-	public void addTempVar(TempVar tempVar, TypeContext context)
+	public TempVarBuilder addTempVar(TempVar tempVar, TypeContext context)
 	{
 		String[] predicateNames = OutputConvenienceFunctions.tempVarPredicateNames(tempVar);
-		String typeName = tempVar.getType().getTypeName(context);
+		String typeName = OutputConvenienceFunctions.toIDPType(tempVar.getType(), context);
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(predicateNames[0] + "(Time, " + typeName + ")", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(predicateNames[1] + "(" + typeName + ")", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(predicateNames[2] + "(Time, " + typeName + ")", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
+		
+		return this;
 	}
 	
 	public String build()

@@ -67,7 +67,7 @@ public class DataUnit
 		return this.name;
 	}
 
-	private Type getType()
+	public Type getType()
 	{
 		return this.type;
 	}

@@ -5,6 +5,9 @@ import java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import data.classdiagrams.PrimitiveType;
+import data.classdiagrams.Type;
+import data.classdiagrams.TypeContext;
 import data.sequencediagrams.TempVar;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -64,19 +67,36 @@ public abstract class OutputConvenienceFunctions
 	
 	public static String toIDPOperators(String in)
 	{
-		return StringEscapeUtils.unescapeXml(in).replaceAll("<=", "=<");
+		return StringEscapeUtils.unescapeXml(in).replaceAll("<=", "=<").replaceAll("==", "=");
+	}
+	
+	public static String toIDPType(Type type, TypeContext context)
+	{
+		String typeName = type.getTypeName(context);
+		
+		if (PrimitiveType.isPrimitiveType(typeName))
+		{
+			return primitiveTypeToLogicType(typeName);
+		}
+		
+		return typeName;
 	}
 	
 	public static String[] tempVarPredicateNames(TempVar tempVar)
 	{
 		String[] toReturn = new String[3];
 		
-		String capitalized = WordUtils.capitalize(tempVar.getName()) + "T";
+		String capitalized = singleTempVarPredicateName(tempVar);
 		
 		toReturn[0] = capitalized;
 		toReturn[1] = "I_" + capitalized;
 		toReturn[2] = "C_" + capitalized;
 		
 		return toReturn;
+	}
+	
+	public static String singleTempVarPredicateName(TempVar tempVar)
+	{
+		return WordUtils.capitalize(tempVar.getName()) + "T";
 	}
 }
