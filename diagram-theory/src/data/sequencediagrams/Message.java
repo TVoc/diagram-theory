@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public class Message
 {
-	public Message(String content, int sdPoint, boolean isReturn, Optional<String> fromId, Optional<String> toId) throws IllegalArgumentException
+	public Message(String content, int sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName) throws IllegalArgumentException
 	{
 		if (content == null)
 		{
@@ -14,19 +14,19 @@ public class Message
 		{
 			throw new IllegalArgumentException("sdPoint cannot be smaller than 1");
 		}
-		if (fromId == null)
+		if (fromName == null)
 		{
 			throw new IllegalArgumentException("fromId cannot be null");
 		}
-		if (toId == null)
+		if (toName == null)
 		{
 			throw new IllegalArgumentException("toId cannot be null");
 		}
 		
 		this.content = content;
 		this.sdPoint = sdPoint;
-		this.fromId = fromId;
-		this.toId = toId;
+		this.fromName = fromName;
+		this.toName = toName;
 		this.isReturn = isReturn;
 	}
 	
@@ -34,9 +34,9 @@ public class Message
 	
 	private final int sdPoint;
 	
-	private final Optional<String> fromId;
+	private final Optional<String> fromName;
 	
-	private final Optional<String> toId;
+	private final Optional<String> toName;
 	
 	private final boolean isReturn;
 
@@ -50,34 +50,34 @@ public class Message
 		return this.sdPoint;
 	}
 
-	public Optional<String> getFromId()
+	public Optional<String> getFromName()
 	{
-		return this.fromId;
+		return this.fromName;
 	}
 	
 	public TempVar getFrom(TempVarContext context) throws IllegalStateException, IllegalArgumentException
 	{
-		if (! this.getFromId().isPresent())
+		if (! this.getFromName().isPresent())
 		{
 			throw new IllegalStateException("fromId not present");
 		}
 		
-		return context.resolveTempVar(this.getFromId().get());
+		return context.resolveTempVar(this.getFromName().get());
 	}
 
-	public Optional<String> getToId()
+	public Optional<String> getToName()
 	{
-		return this.toId;
+		return this.toName;
 	}
 	
 	public TempVar getTo(TempVarContext context) throws IllegalStateException, IllegalArgumentException
 	{
-		if (! this.getToId().isPresent())
+		if (! this.getToName().isPresent())
 		{
 			throw new IllegalStateException("toId not present");
 		}
 		
-		return context.resolveTempVar(this.getToId().get());
+		return context.resolveTempVar(this.getToName().get());
 	}
 	
 	public boolean isReturn()

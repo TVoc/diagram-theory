@@ -3,6 +3,7 @@ package theory;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public abstract class OutputConvenienceFunctions
 {
@@ -55,5 +56,10 @@ public abstract class OutputConvenienceFunctions
 			default:
 				throw new IllegalArgumentException("primitiveType was not a primitive type");
 		}
+	}
+	
+	public static String toIDPOperators(String in)
+	{
+		return StringEscapeUtils.unescapeXml(in).replaceAll("<=", "=<");
 	}
 }

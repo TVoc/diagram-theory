@@ -24,6 +24,8 @@ import data.classdiagrams.PrimitiveType;
 import data.classdiagrams.Type;
 import data.classdiagrams.TypeParameterType;
 import data.classdiagrams.UserDefinedType;
+import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
 
@@ -35,6 +37,8 @@ import org.apache.commons.cli.ParseException;
 import theory.DiagramStore;
 import theory.DiagramStoreFactory;
 import theory.Factors;
+import theory.OutputConvenienceFunctions;
+import theory.SeqDiagramStore;
 import theory.TheoryGenerator;
 
 public class XMLParser
@@ -49,7 +53,10 @@ public class XMLParser
 	
 	public static final boolean SEQ = true;
 	
-	public static final String TEMPVAR_SEPARATOR =  "\\+|\\-|\\&|\\||\\!|(\\()+|(\\))+";
+	/**
+	 * In an expression such as one=two+three, remove all operators to get the names of the temp vars
+	 */
+	public static final String TEMPVAR_SEPARATOR = "\\+|\\-|\\&|\\||\\!|(\\()+|(\\))+|\\=\\<|\\>\\=|\\<|\\>";
 	
 	public static void main(String[] args) throws ParseException
 	{
@@ -160,6 +167,8 @@ public class XMLParser
 			this.parseLifelines(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("InteractionLifeLine"), seqStore);
 			this.parseMessages(seqModels.getChild("ModelRelationshipContainer").getChild("ModelChildren").getChild("ModelRelationshipContainer").getChild("ModelChildren").getChildren(), seqStore);
 			this.parseCombinedFragments(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("CombinedFragment"), seqStore);
+			
+			SeqDiagramStore diagramStore = new DiagramStoreFactory().makeSeqDiagramStore(seqStore);
 		}
 		else
 		{
@@ -445,7 +454,7 @@ public class XMLParser
 		for (Element message : messages)
 		{
 			String id = message.getAttributeValue("Id");
-			String content = message.getAttributeValue("Name").replaceAll("\\s", "");
+			String content = OutputConvenienceFunctions.toIDPOperators(message.getAttributeValue("Name").replaceAll("\\s", ""));
 			int sdPoint = Integer.parseInt(message.getAttributeValue("SequenceNumber"));
 			Optional<String> fromName = Optional.empty();
 			Optional<String> toName = Optional.empty();
@@ -466,9 +475,18 @@ public class XMLParser
 			{
 				String[] sides = content.split("=");
 				
+				StringBuilder merge = new StringBuilder();
+				
+				for (int i = 1; i < sides.length; i++)
+				{
+					merge.append(sides[i]);
+				}
+				
+				String rhs = merge.toString();
+				
 				if (! store.hasTempVar(sides[0]))
 				{
-					String[] names = sides[1].split(TEMPVAR_SEPARATOR);
+					String[] names = rhs.split(TEMPVAR_SEPARATOR);
 					PrimitiveType type = null;
 					
 					for (String ele : names)
@@ -516,11 +534,36 @@ public class XMLParser
 	
 	private void parseAlt(Element element, SeqSymbolStore store)
 	{
+		List<Element> operands = element.getChild("ModelChildren").getChildren();
 		
+		String ifGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(0).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
+		String thenGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(1).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
+		
+		Message ifFirst = store.idToMessage(operands.get(0).getChild("Messages").getChildren().get(0).getAttributeValue("Idref"));
+		
+		List<Element> thenMessages = operands.get(1).getChild("Messages").getChildren();
+		
+		Message thenFirst = store.idToMessage(thenMessages.get(0).getAttributeValue("Idref"));
+		Message thenLast = store.idToMessage(thenMessages.get(thenMessages.size() - 1).getAttributeValue("Idref"));
+		
+		AltCombinedFragment toReturn = new AltCombinedFragment(ifGuard, thenGuard, ifFirst.getSdPoint(), thenFirst.getSdPoint(), thenLast.getSdPoint() + 1);
+		
+		store.addAltCombinedFragment(toReturn);
 	}
 	
 	private void parseLoop(Element element, SeqSymbolStore store)
 	{
+		Element operand = element.getChild("ModelChildren").getChild("InteractionOperand");
 		
+		String guard = OutputConvenienceFunctions.toIDPOperators(operand.getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
+		
+		List<Element> messages = operand.getChild("Messages").getChildren();
+		
+		Message first = store.idToMessage(messages.get(0).getAttributeValue("Idref"));
+		Message last = store.idToMessage(messages.get(messages.size() - 1).getAttributeValue("Idref"));
+		
+		LoopCombinedFragment toReturn = new LoopCombinedFragment(guard, first.getSdPoint(), last.getSdPoint());
+		
+		store.addLoopCombinedFragment(toReturn);
 	}
 }

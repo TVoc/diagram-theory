@@ -194,6 +194,11 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		return this.internalGetAltCombinedFragments().get(index);
 	}
 	
+	public void addAltCombinedFragment(AltCombinedFragment fragment)
+	{
+		this.internalGetAltCombinedFragments().add(fragment);
+	}
+	
 	private final List<LoopCombinedFragment> loopCombinedFragments;
 	
 	private List<LoopCombinedFragment> internalGetLoopCombinedFragments()
@@ -209,5 +214,23 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 	public LoopCombinedFragment getLoopCombinedFragment(int index) throws IndexOutOfBoundsException
 	{
 		return this.internalGetLoopCombinedFragments().get(index);
+	}
+	
+	public void addLoopCombinedFragment(LoopCombinedFragment fragment)
+	{
+		this.internalGetLoopCombinedFragments().add(fragment);
+	}
+	
+	@Override
+	public void reset()
+	{
+		super.reset();
+		
+		this.internalGetIdsToNames().clear();
+		this.internalGetTempVars().clear();
+		this.internalGetIdsToMessages().clear();
+		this.internalGetMessages().clear();
+		this.internalGetAltCombinedFragments().clear();
+		this.internalGetLoopCombinedFragments().clear();
 	}
 }
