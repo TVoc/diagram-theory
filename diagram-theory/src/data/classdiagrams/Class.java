@@ -14,6 +14,13 @@ public interface Class
 	 * @return An unmodifiable view of this class's attributes
 	 */
 	public Optional<Set<DataUnit>> getAllAttributes();
+	
+	/**
+	 * 
+	 * @param name
+	 * @return	The attribute identified by the given name, if it exists
+	 */
+	public Optional<DataUnit> getAttributeByName(String name);
 
 	/**
 	 * 

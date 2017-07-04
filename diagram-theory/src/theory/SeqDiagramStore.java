@@ -17,11 +17,11 @@ import data.sequencediagrams.TempVarContext;
 public class SeqDiagramStore extends DiagramStore implements TempVarContext
 {
 
-	SeqDiagramStore(Map<String, Class> classes, Set<Association> associations, Set<Generalization> generalizations, Map<String,TempVar> tempVars
+	SeqDiagramStore(Map<String, Class> classes, Map<String, Class> classesByName, Set<Association> associations, Set<Generalization> generalizations, Map<String,TempVar> tempVars
 			, List<Message> messages, List<AltCombinedFragment> altCombinedFragments, List<LoopCombinedFragment> loopCombinedFragments)
 			throws IllegalArgumentException
 	{
-		super(classes, associations, generalizations);
+		super(classes, classesByName, associations, generalizations);
 		
 		if (tempVars == null)
 		{

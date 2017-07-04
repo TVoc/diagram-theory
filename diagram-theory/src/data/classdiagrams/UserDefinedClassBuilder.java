@@ -89,6 +89,20 @@ public class UserDefinedClassBuilder implements Class
 		return Optional.of(Collections.unmodifiableSet(this.internalGetAttributes()));
 	}
 	
+	@Override
+	public Optional<DataUnit> getAttributeByName(String name)
+	{
+		for (DataUnit attr : this.internalGetAttributes())
+		{
+			if (attr.getName().equals(name))
+			{
+				return Optional.of(attr);
+			}
+		}
+		
+		return Optional.empty();
+	}
+	
 	/**
 	 * 
 	 * @return An unmodifiable view of the new class's attributes so far

@@ -37,12 +37,16 @@ public class DiagramStore extends TypeContext
 	 * @throws IllegalArgumentException
 	 * 		classes == null || associations == null || generalizations == null
 	 */
-	DiagramStore(Map<String,Class> classes, Set<Association> associations, Set<Generalization> generalizations)
+	DiagramStore(Map<String,Class> classes, Map<String,Class> classesByName, Set<Association> associations, Set<Generalization> generalizations)
 		throws IllegalArgumentException
 	{
 		if (classes == null)
 		{
 			throw new IllegalArgumentException("classes cannot be null");
+		}
+		if (classesByName == null)
+		{
+			throw new IllegalArgumentException("classesByName cannot be null");
 		}
 		if (associations == null)
 		{
@@ -54,6 +58,7 @@ public class DiagramStore extends TypeContext
 		}
 		
 		this.classes = classes;
+		this.classesByName = classesByName;
 		this.associations = associations;
 		this.generalizations = generalizations;
 	}
@@ -73,6 +78,33 @@ public class DiagramStore extends TypeContext
 	public Map<String,Class> getClasses()
 	{
 		return Collections.unmodifiableMap(this.internalGetClasses());
+	}
+	
+	private final Map<String,Class> classesByName;
+	
+	private Map<String,Class> internalGetClassesByName()
+	{
+		return this.classesByName;
+	}
+	
+	public Map<String,Class> getClassesByName()
+	{
+		return Collections.unmodifiableMap(this.internalGetClassesByName());
+	}
+	
+	public boolean hasClass(String name)
+	{
+		return this.internalGetClasses().containsKey(name);
+	}
+	
+	public Class getClassByName(String name) throws IllegalArgumentException
+	{
+		if (! this.hasClass(name))
+		{
+			throw new IllegalArgumentException("did not have class by given name");
+		}
+		
+		return this.internalGetClasses().get(name);
 	}
 	
 	private final Set<Association> associations;

@@ -1,6 +1,8 @@
 package data.classdiagrams;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -63,6 +65,40 @@ public class Association implements Iterable<AssociationEnd>
 	public int getNbOfEnds()
 	{
 		return this.internalGetAssociationEnds().size();
+	}
+	
+	public Set<String> getClassNames(TypeContext context)
+	{
+		Set<String> toReturn = new HashSet<String>();
+		
+		for (AssociationEnd ele : this)
+		{
+			toReturn.add(ele.getTypeName(context));
+		}
+		
+		return toReturn;
+	}
+	
+	public boolean containsAll(TypeContext context, Collection<String> classes)
+	{
+		return this.getClassNames(context).containsAll(classes);
+	}
+	
+	public int positionOf(TypeContext context, String className)
+	{
+		int toReturn = 1;
+		
+		for (AssociationEnd ele : this)
+		{
+			if (ele.getTypeName(context).equals(className))
+			{
+				return toReturn;
+			}
+			
+			toReturn++;
+		}
+		
+		return -1;
 	}
 	
 	public String toString()

@@ -98,6 +98,25 @@ public class UserDefinedClass implements Class
 			return Optional.of(Collections.unmodifiableSet(this.internalGetAttributes().get()));
 		}
 	}
+	
+	@Override
+	public Optional<DataUnit> getAttributeByName(String name)
+	{
+		if (! this.internalGetAttributes().isPresent())
+		{
+			return Optional.empty();
+		}
+		
+		for (DataUnit attr : this.internalGetAttributes().get())
+		{
+			if (attr.getName().equals(name))
+			{
+				return Optional.of(attr);
+			}
+		}
+		
+		return Optional.empty();
+	}
 
 	private Optional<Set<DataUnit>> internalGetAttributes()
 	{

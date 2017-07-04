@@ -55,7 +55,7 @@ public class CheckpointBuilder
 				continue;
 			}
 			
-			TempVar tempVar = store.resolveTempVar(part);
+			TempVar tempVar = store.resolveTempVar(part.replaceAll("\\s", ""));
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 			
 			ifGuardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
@@ -71,7 +71,7 @@ public class CheckpointBuilder
 				continue;
 			}
 			
-			TempVar tempVar = store.resolveTempVar(part);
+			TempVar tempVar = store.resolveTempVar(part.replaceAll("\\s", ""));
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 			
 			thenGuardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
@@ -99,7 +99,7 @@ public class CheckpointBuilder
 				continue;
 			}
 			
-			TempVar tempVar = store.resolveTempVar(part);
+			TempVar tempVar = store.resolveTempVar(part.replaceAll("\\s", ""));
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 			
 			loopGuardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");

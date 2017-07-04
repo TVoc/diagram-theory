@@ -39,6 +39,12 @@ public enum PrimitiveClass implements Class
 	{
 		return Optional.empty();
 	}
+	
+	@Override
+	public Optional<DataUnit> getAttributeByName(String name)
+	{
+		return Optional.empty();
+	}
 
 	@Override
 	public Optional<Set<Operation>> getAllOperations()

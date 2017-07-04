@@ -11,6 +11,7 @@ import data.classdiagrams.Association;
 import data.classdiagrams.AssociationBuilder;
 import data.classdiagrams.Class;
 import data.classdiagrams.Generalization;
+import data.classdiagrams.UserDefinedClass;
 import data.classdiagrams.UserDefinedClassBuilder;
 import data.sequencediagrams.AltCombinedFragment;
 import data.sequencediagrams.LoopCombinedFragment;
@@ -39,12 +40,15 @@ public class DiagramStoreFactory
 		}
 		
 		Map<String,Class> classes = new HashMap<String,Class>();
+		Map<String,Class> classesByName = new HashMap<String,Class>();
 		Set<Association> associations = new HashSet<Association>();
 		Set<Generalization> generalizations = new HashSet<Generalization>();
 		
 		for (Entry<String,UserDefinedClassBuilder> clazz : store.getClassesInProgress().entrySet())
 		{
-			classes.put(clazz.getKey(), clazz.getValue().build());
+			UserDefinedClass newClass = clazz.getValue().build();
+			classes.put(clazz.getKey(), newClass);
+			classesByName.put(newClass.getName(), newClass);
 		}
 		
 		for (AssociationBuilder association : store.getAssociationsInProgress().values())
@@ -56,7 +60,7 @@ public class DiagramStoreFactory
 		
 		store.reset();
 		
-		return new DiagramStore(classes, associations, generalizations);
+		return new DiagramStore(classes, classesByName, associations, generalizations);
 	}
 	
 	public SeqDiagramStore makeSeqDiagramStore(SeqSymbolStore store) throws IllegalArgumentException
@@ -67,6 +71,7 @@ public class DiagramStoreFactory
 		}
 		
 		Map<String,Class> classes = new HashMap<String,Class>();
+		Map<String,Class> classesByName = new HashMap<String,Class>();
 		Set<Association> associations = new HashSet<Association>();
 		Set<Generalization> generalizations = new HashSet<Generalization>();
 		Map<String,TempVar> tempVars = new HashMap<String,TempVar>();
@@ -76,7 +81,9 @@ public class DiagramStoreFactory
 		
 		for (Entry<String,UserDefinedClassBuilder> clazz : store.getClassesInProgress().entrySet())
 		{
-			classes.put(clazz.getKey(), clazz.getValue().build());
+			UserDefinedClass newClass = clazz.getValue().build();
+			classes.put(clazz.getKey(), newClass);
+			classesByName.put(newClass.getName(), newClass);
 		}
 		
 		for (AssociationBuilder association : store.getAssociationsInProgress().values())
@@ -92,6 +99,6 @@ public class DiagramStoreFactory
 		
 		store.reset();
 		
-		return new SeqDiagramStore(classes, associations, generalizations, tempVars, messages, alts, loops);
+		return new SeqDiagramStore(classes, classesByName, associations, generalizations, tempVars, messages, alts, loops);
 	}
 }
