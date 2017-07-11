@@ -82,7 +82,7 @@ public class TheoryGenerator
 		file.write(theoryBuilder.build());
 		file.write(structBuilder.build());		
 		file.write("procedure main() {" + System.lineSeparator());
-		file.write(OutputConvenienceFunctions.insertTabsNewLine("print(modelexpand(T,thestruct)[1])", 1));
+		file.write(OutputConvenienceFunctions.insertTabsNewLine("print(modelexpand(T,S)[1])", 1));
 		file.write("}");
 		
 		file.close();
