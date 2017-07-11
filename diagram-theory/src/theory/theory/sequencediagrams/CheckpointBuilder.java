@@ -50,7 +50,7 @@ public class CheckpointBuilder
 		
 		for (String part : ifGuardParts)
 		{
-			if (part.equals(""))
+			if (part.equals("") || ! store.hasTempVar(part.replaceAll("\\s", "")))
 			{
 				continue;
 			}
@@ -66,7 +66,7 @@ public class CheckpointBuilder
 		
 		for (String part : thenGuardParts)
 		{
-			if (part.equals(""))
+			if (part.equals("") || ! store.hasTempVar(part.replaceAll("\\s", "")))
 			{
 				continue;
 			}

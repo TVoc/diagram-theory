@@ -89,7 +89,7 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 	{
 		if (! this.hasTempVar(name))
 		{
-			throw new IllegalArgumentException("name not present");
+			throw new IllegalArgumentException("name: " + name + " not present");
 		}
 		
 		return this.internalGetTempVars().get(name);

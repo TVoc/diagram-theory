@@ -8,6 +8,8 @@ import org.apache.commons.lang3.text.WordUtils;
 import data.classdiagrams.PrimitiveType;
 import data.classdiagrams.Type;
 import data.classdiagrams.TypeContext;
+import data.classdiagrams.Class;
+import data.classdiagrams.DataUnit;
 import data.sequencediagrams.TempVar;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -40,7 +42,7 @@ public abstract class OutputConvenienceFunctions
 	{
 		switch (primitiveType)
 		{
-			case "bool":
+			case "boolean":
 				return primitiveType;
 			case "int":
 				return "LimitedInt";
@@ -61,7 +63,7 @@ public abstract class OutputConvenienceFunctions
 			case "string":
 				return "LimitedString";
 			default:
-				throw new IllegalArgumentException("primitiveType was not a primitive type");
+				throw new IllegalArgumentException("primitiveType: " + primitiveType + " was not a primitive type");
 		}
 	}
 	
@@ -98,5 +100,25 @@ public abstract class OutputConvenienceFunctions
 	public static String singleTempVarPredicateName(TempVar tempVar)
 	{
 		return WordUtils.capitalize(tempVar.getName()) + "T";
+	}
+	
+	public static String attributePredicateName(DataUnit attr, Class clazz)
+	{
+		return clazz.getName() + attr.getName();
+	}
+	
+	public static String catchIDPBoolean(String string)
+	{
+		if (string.equals("true"))
+		{
+			return "T";
+		}
+		
+		if (string.equals("false"))
+		{
+			return "F";
+		}
+		
+		return string;
 	}
 }

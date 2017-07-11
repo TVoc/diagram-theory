@@ -1,0 +1,447 @@
+include<LTC>
+
+LTCvocabulary V {
+    type Time isa nat
+    Start: Time
+    partial Next(Time) : Time
+    
+    type SDPoint = { 1..21 }
+    
+    SDPointAt(Time,SDPoint)
+    I_SDPointAt(SDPoint)
+    C_SDPointAt(Time,SDPoint)
+    
+    type LimitedInt isa int
+    type LimitedFloat isa float
+    type LimitedString isa string
+    type boolean
+    type void
+    
+    type Position
+    type DerivedStatisticStrategy
+    type DerivedStatistic isa Statistic
+    type WeaponType
+    type CharacterClass
+    type Inventory
+    type Weapon isa Item
+    type Character
+    type SupportAffinity
+    type WeaponLevel isa Statistic
+    type Statistic
+    type Item
+    
+    DamageT(Time, LimitedInt)
+    I_DamageT(LimitedInt)
+    C_DamageT(Time, LimitedInt)
+    
+    StrengthT(Time, Statistic)
+    I_StrengthT(Statistic)
+    C_StrengthT(Time, Statistic)
+    
+    DefenceT(Time, Statistic)
+    I_DefenceT(Statistic)
+    C_DefenceT(Time, Statistic)
+    
+    DefenceValT(Time, LimitedInt)
+    I_DefenceValT(LimitedInt)
+    C_DefenceValT(Time, LimitedInt)
+    
+    HpT(Time, Statistic)
+    I_HpT(Statistic)
+    C_HpT(Time, Statistic)
+    
+    AttackerT(Time, Character)
+    I_AttackerT(Character)
+    C_AttackerT(Time, Character)
+    
+    TargetT(Time, Character)
+    I_TargetT(Character)
+    C_TargetT(Time, Character)
+    
+    WeaponT(Time, Weapon)
+    I_WeaponT(Weapon)
+    C_WeaponT(Time, Weapon)
+    
+    HpValT(Time, LimitedInt)
+    I_HpValT(LimitedInt)
+    C_HpValT(Time, LimitedInt)
+    
+    NewHpT(Time, LimitedInt)
+    I_NewHpT(LimitedInt)
+    C_NewHpT(Time, LimitedInt)
+    
+    StrengthValT(Time, LimitedInt)
+    I_StrengthValT(LimitedInt)
+    C_StrengthValT(Time, LimitedInt)
+    
+    InflictedT(Time, LimitedInt)
+    I_InflictedT(LimitedInt)
+    C_InflictedT(Time, LimitedInt)
+    
+    Positionyco(Time, Position, LimitedInt)
+    I_Positionyco(Position, LimitedInt)
+    C_Positionyco(Time, Position, LimitedInt)
+    Cn_Positionyco(Time, Position, LimitedInt)
+    
+    Positionxco(Time, Position, LimitedInt)
+    I_Positionxco(Position, LimitedInt)
+    C_Positionxco(Time, Position, LimitedInt)
+    Cn_Positionxco(Time, Position, LimitedInt)
+    
+    CharacterClassname(Time, CharacterClass, LimitedString)
+    I_CharacterClassname(CharacterClass, LimitedString)
+    C_CharacterClassname(Time, CharacterClass, LimitedString)
+    Cn_CharacterClassname(Time, CharacterClass, LimitedString)
+    
+    Weapondamage(Time, Weapon, LimitedInt)
+    I_Weapondamage(Weapon, LimitedInt)
+    C_Weapondamage(Time, Weapon, LimitedInt)
+    Cn_Weapondamage(Time, Weapon, LimitedInt)
+    
+    Weaponweight(Time, Weapon, LimitedInt)
+    I_Weaponweight(Weapon, LimitedInt)
+    C_Weaponweight(Time, Weapon, LimitedInt)
+    Cn_Weaponweight(Time, Weapon, LimitedInt)
+    
+    Weaponrange(Time, Weapon, LimitedInt)
+    I_Weaponrange(Weapon, LimitedInt)
+    C_Weaponrange(Time, Weapon, LimitedInt)
+    Cn_Weaponrange(Time, Weapon, LimitedInt)
+    
+    Characterdead(Time, Character, boolean)
+    I_Characterdead(Character, boolean)
+    C_Characterdead(Time, Character, boolean)
+    Cn_Characterdead(Time, Character, boolean)
+    
+    Charactername(Time, Character, LimitedString)
+    I_Charactername(Character, LimitedString)
+    C_Charactername(Time, Character, LimitedString)
+    Cn_Charactername(Time, Character, LimitedString)
+    
+    SupportAffinityname(Time, SupportAffinity, LimitedString)
+    I_SupportAffinityname(SupportAffinity, LimitedString)
+    C_SupportAffinityname(Time, SupportAffinity, LimitedString)
+    Cn_SupportAffinityname(Time, SupportAffinity, LimitedString)
+    
+    Statisticvalue(Time, Statistic, LimitedInt)
+    I_Statisticvalue(Statistic, LimitedInt)
+    C_Statisticvalue(Time, Statistic, LimitedInt)
+    Cn_Statisticvalue(Time, Statistic, LimitedInt)
+    
+    Statisticname(Time, Statistic, LimitedString)
+    I_Statisticname(Statistic, LimitedString)
+    C_Statisticname(Time, Statistic, LimitedString)
+    Cn_Statisticname(Time, Statistic, LimitedString)
+    
+    Itemvalue(Time, Item, LimitedInt)
+    I_Itemvalue(Item, LimitedInt)
+    C_Itemvalue(Time, Item, LimitedInt)
+    Cn_Itemvalue(Time, Item, LimitedInt)
+    
+    Itemname(Time, Item, LimitedString)
+    I_Itemname(Item, LimitedString)
+    C_Itemname(Time, Item, LimitedString)
+    Cn_Itemname(Time, Item, LimitedString)
+    
+    CharacterandPosition(Character, Position)
+    WeaponTypeandWeaponLevel(WeaponType, WeaponLevel)
+    CharacterClassandCharacterClass(CharacterClass, CharacterClass)
+    CharacterandSupportAffinity(Character, SupportAffinity)
+    DerivedStatisticStrategyandDerivedStatistic(DerivedStatisticStrategy, DerivedStatistic)
+    CharacterandCharacter(Character, Character)
+    StatisticandCharacterClass(Statistic, CharacterClass)
+    DerivedStatisticStrategyandStatistic(DerivedStatisticStrategy, Statistic)
+    CharacterandStatistic(Character, Statistic)
+    CharacterandCharacterClass(Character, CharacterClass)
+    ItemandCharacterClass(Item, CharacterClass)
+    StatisticandWeaponType(Statistic, WeaponType)
+    CharacterandInventory(Character, Inventory)
+    WeaponTypeandWeapon(WeaponType, Weapon)
+    ItemandInventory(Item, Inventory)
+}
+theory T:V {
+    {
+            ! t [Time] x [Weapon] v [LimitedInt] : C_Weaponrange(t, x, v) <- false.
+            ! t [Time] x [Weapon] v [LimitedInt] : Cn_Weaponrange(t, x, v) <- false.
+        
+            ! t [Time] x [Position] v [LimitedInt] : C_Positionxco(t, x, v) <- false.
+            ! t [Time] x [Position] v [LimitedInt] : Cn_Positionxco(t, x, v) <- false.
+        
+            ! t [Time] x [Position] v [LimitedInt] : C_Positionyco(t, x, v) <- false.
+            ! t [Time] x [Position] v [LimitedInt] : Cn_Positionyco(t, x, v) <- false.
+        
+                    ! t [Time] x [Statistic] : C_Statisticvalue(t, x, 0) <- SDPointAt(t, 18) & HpT(t, x).
+        ! t [Time] x [Statistic] v [LimitedInt] : C_Statisticvalue(t, x, v) <- SDPointAt(t, 20) & HpT(t, x) & NewHpT(t, v).
+
+                    ! t [Time] x [Statistic] v [LimitedInt] : Cn_Statisticvalue(Next(t), x, v) <- SDPointAt(Next(t), 18) & HpT(t, x) & Statisticvalue(t, x, v) & ~(v = 0).
+        ! t [Time] x [Statistic] v [LimitedInt] : C_Statisticvalue(Next(t), x, v) <- SDPointAt(Next(t), 20) & HpT(t, x) & Statisticvalue(t, x, v) & ~NewHpT(Next(t), v).
+
+        
+            ! t [Time] x [Weapon] v [LimitedInt] : C_Weaponweight(t, x, v) <- false.
+            ! t [Time] x [Weapon] v [LimitedInt] : Cn_Weaponweight(t, x, v) <- false.
+        
+            ! t [Time] x [Item] v [LimitedString] : C_Itemname(t, x, v) <- false.
+            ! t [Time] x [Item] v [LimitedString] : Cn_Itemname(t, x, v) <- false.
+        
+            ! t [Time] x [CharacterClass] v [LimitedString] : C_CharacterClassname(t, x, v) <- false.
+            ! t [Time] x [CharacterClass] v [LimitedString] : Cn_CharacterClassname(t, x, v) <- false.
+        
+            ! t [Time] x [Character] v [LimitedString] : C_Charactername(t, x, v) <- false.
+            ! t [Time] x [Character] v [LimitedString] : Cn_Charactername(t, x, v) <- false.
+        
+            ! t [Time] x [Item] v [LimitedInt] : C_Itemvalue(t, x, v) <- false.
+            ! t [Time] x [Item] v [LimitedInt] : Cn_Itemvalue(t, x, v) <- false.
+        
+            ! t [Time] x [Weapon] v [LimitedInt] : C_Weapondamage(t, x, v) <- false.
+            ! t [Time] x [Weapon] v [LimitedInt] : Cn_Weapondamage(t, x, v) <- false.
+        
+                    ! t [Time] x [Character] : C_Characterdead(t, x, T) <- SDPointAt(t, 19) & TargetT(t, x).
+
+                    ! t [Time] x [Character] v [boolean] : Cn_Characterdead(Next(t), x, v) <- SDPointAt(Next(t), 19) & TargetT(t, x) & Characterdead(t, x, v) & ~(v = T).
+
+        
+            ! t [Time] x [Statistic] v [LimitedString] : C_Statisticname(t, x, v) <- false.
+            ! t [Time] x [Statistic] v [LimitedString] : Cn_Statisticname(t, x, v) <- false.
+        
+            ! t [Time] x [SupportAffinity] v [LimitedString] : C_SupportAffinityname(t, x, v) <- false.
+            ! t [Time] x [SupportAffinity] v [LimitedString] : Cn_SupportAffinityname(t, x, v) <- false.
+        ! t [Time] : C_SDPointAt(Next(t), 2) <- SDPointAt(t, 1).
+        ! t [Time] : C_SDPointAt(Next(t), 3) <- SDPointAt(t, 2).
+        ! t [Time] : C_SDPointAt(Next(t), 4) <- SDPointAt(t, 3).
+        ! t [Time] : C_SDPointAt(Next(t), 5) <- SDPointAt(t, 4).
+        ! t [Time] : C_SDPointAt(Next(t), 6) <- SDPointAt(t, 5).
+        ! t [Time] : C_SDPointAt(Next(t), 7) <- SDPointAt(t, 6).
+        ! t [Time] : C_SDPointAt(Next(t), 8) <- SDPointAt(t, 7).
+        ! t [Time] : C_SDPointAt(Next(t), 9) <- SDPointAt(t, 8).
+        ! t [Time] : C_SDPointAt(Next(t), 10) <- SDPointAt(t, 9).
+        ! t [Time] : C_SDPointAt(Next(t), 11) <- SDPointAt(t, 10).
+        ! t [Time] : C_SDPointAt(Next(t), 12) <- SDPointAt(t, 11).
+        ! t [Time] : C_SDPointAt(Next(t), 13) <- SDPointAt(t, 12).
+        ! t [Time] : C_SDPointAt(Next(t), 14) <- SDPointAt(t, 13).
+        ! t [Time] : C_SDPointAt(Next(t), 15) <- SDPointAt(t, 14).
+        ! t [Time] : C_SDPointAt(Next(t), 16) <- SDPointAt(t, 15).
+        ! t [Time] : C_SDPointAt(Next(t), 17) <- SDPointAt(t, 16).
+        ! t [Time] : C_SDPointAt(Next(t), 18) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp =< 0).
+        ! t [Time] : C_SDPointAt(Next(t), 19) <- SDPointAt(t, 18).
+        ! t [Time] : C_SDPointAt(Next(t), 20) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp > 0).
+        ! t [Time] : C_SDPointAt(Next(t), 21) <- SDPointAt(t, 19 | SDPointAt(t, 20).
+        
+         ! t [Time] defence [Statistic] : C_DefenceT(t, defence) <- SDPointAt(t, 3) & (? x [Character] : TargetT(t, x) & CharacterandStatistic(target, defence) & Statisticname(t, defence, "defence")).
+         ! t [Time] strength [Statistic] : C_StrengthT(Next(t), strength) <- SDPointAt(t, 4) & (? x [Character] : AttackerT(t, x) & CharacterandStatistic(attacker, strength) & Statisticname(t, strength, "strength")).
+        ! t [Time] x [LimitedInt] : C_DefenceValT(Next(t), x) <- SDPointAt(t, 6) & (? o [Statistic] : DefenceT(t, o) & Statisticvalue(t, o, x)).
+        ! t [Time] x [LimitedInt] : C_StrengthValT(Next(t), x) <- SDPointAt(t, 8) & (? o [Statistic] : StrengthT(t, o) & Statisticvalue(t, o, x)).
+        ! t [Time] x [LimitedInt] : C_DamageT(Next(t), x) <- SDPointAt(t, 10) & (? o [Weapon] : WeaponT(t, o) & Weapondamage(t, o, x)).
+        ! t [Time] inflicted [LimitedInt] : C_InflictedT(t, inflicted) <- SDPointAt(t, 12) & (? damage [LimitedInt] strengthVal [LimitedInt] defenceVal [LimitedInt] : DamageT(t, damage) & StrengthValT(t, strengthVal) & DefenceValT(t, defenceVal) & inflicted=damage+strengthVal-defenceVal).
+         ! t [Time] hp [Statistic] : C_HpT(t, hp) <- SDPointAt(t, 14) & (? x [Character] : TargetT(t, x) & CharacterandStatistic(target, hp) & Statisticname(t, hp, "hp")).
+        ! t [Time] x [LimitedInt] : C_HpValT(Next(t), x) <- SDPointAt(t, 15) & (? o [Statistic] : HpT(t, o) & Statisticvalue(t, o, x)).
+        ! t [Time] newHp [LimitedInt] : C_NewHpT(t, newHp) <- SDPointAt(t, 17) & (? hpVal [LimitedInt] inflicted [LimitedInt] : HpValT(t, hpVal) & InflictedT(t, inflicted) & newHp=hpVal-inflicted).
+    }
+    {
+            ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPoint(s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPoint(Next(t), s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPoint(Next(t), s1)).
+            
+            ! x [LimitedInt] : DamageT(Start, x) <- I_DamageT(x).
+            ! t [Time] x [LimitedInt] : DamageT(t, x) <- C_DamageT(t, x).
+            ! t [Time] x [LimitedInt] : DamageT(Next(t), x) <- DamageT(t, x) & ~( ? x1 [LimitedInt] : C_DamageT(t, x1) & ~(x = x1)).
+            
+            ! x [Statistic] : StrengthT(Start, x) <- I_StrengthT(x).
+            ! t [Time] x [Statistic] : StrengthT(t, x) <- C_StrengthT(t, x).
+            ! t [Time] x [Statistic] : StrengthT(Next(t), x) <- StrengthT(t, x) & ~( ? x1 [Statistic] : C_StrengthT(t, x1) & ~(x = x1)).
+            
+            ! x [Statistic] : DefenceT(Start, x) <- I_DefenceT(x).
+            ! t [Time] x [Statistic] : DefenceT(t, x) <- C_DefenceT(t, x).
+            ! t [Time] x [Statistic] : DefenceT(Next(t), x) <- DefenceT(t, x) & ~( ? x1 [Statistic] : C_DefenceT(t, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] : DefenceValT(Start, x) <- I_DefenceValT(x).
+            ! t [Time] x [LimitedInt] : DefenceValT(t, x) <- C_DefenceValT(t, x).
+            ! t [Time] x [LimitedInt] : DefenceValT(Next(t), x) <- DefenceValT(t, x) & ~( ? x1 [LimitedInt] : C_DefenceValT(t, x1) & ~(x = x1)).
+            
+            ! x [Statistic] : HpT(Start, x) <- I_HpT(x).
+            ! t [Time] x [Statistic] : HpT(t, x) <- C_HpT(t, x).
+            ! t [Time] x [Statistic] : HpT(Next(t), x) <- HpT(t, x) & ~( ? x1 [Statistic] : C_HpT(t, x1) & ~(x = x1)).
+            
+            ! x [Character] : AttackerT(Start, x) <- I_AttackerT(x).
+            ! t [Time] x [Character] : AttackerT(t, x) <- C_AttackerT(t, x).
+            ! t [Time] x [Character] : AttackerT(Next(t), x) <- AttackerT(t, x) & ~( ? x1 [Character] : C_AttackerT(t, x1) & ~(x = x1)).
+            
+            ! x [Character] : TargetT(Start, x) <- I_TargetT(x).
+            ! t [Time] x [Character] : TargetT(t, x) <- C_TargetT(t, x).
+            ! t [Time] x [Character] : TargetT(Next(t), x) <- TargetT(t, x) & ~( ? x1 [Character] : C_TargetT(t, x1) & ~(x = x1)).
+            
+            ! x [Weapon] : WeaponT(Start, x) <- I_WeaponT(x).
+            ! t [Time] x [Weapon] : WeaponT(t, x) <- C_WeaponT(t, x).
+            ! t [Time] x [Weapon] : WeaponT(Next(t), x) <- WeaponT(t, x) & ~( ? x1 [Weapon] : C_WeaponT(t, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] : HpValT(Start, x) <- I_HpValT(x).
+            ! t [Time] x [LimitedInt] : HpValT(t, x) <- C_HpValT(t, x).
+            ! t [Time] x [LimitedInt] : HpValT(Next(t), x) <- HpValT(t, x) & ~( ? x1 [LimitedInt] : C_HpValT(t, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] : NewHpT(Start, x) <- I_NewHpT(x).
+            ! t [Time] x [LimitedInt] : NewHpT(t, x) <- C_NewHpT(t, x).
+            ! t [Time] x [LimitedInt] : NewHpT(Next(t), x) <- NewHpT(t, x) & ~( ? x1 [LimitedInt] : C_NewHpT(t, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] : StrengthValT(Start, x) <- I_StrengthValT(x).
+            ! t [Time] x [LimitedInt] : StrengthValT(t, x) <- C_StrengthValT(t, x).
+            ! t [Time] x [LimitedInt] : StrengthValT(Next(t), x) <- StrengthValT(t, x) & ~( ? x1 [LimitedInt] : C_StrengthValT(t, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] : InflictedT(Start, x) <- I_InflictedT(x).
+            ! t [Time] x [LimitedInt] : InflictedT(t, x) <- C_InflictedT(t, x).
+            ! t [Time] x [LimitedInt] : InflictedT(Next(t), x) <- InflictedT(t, x) & ~( ? x1 [LimitedInt] : C_InflictedT(t, x1) & ~(x = x1)).
+            
+            ! x [Position] y [LimitedInt] : Positionyco(Start, x, y) <- I_Positionyco(x, y).
+            ! t [Time] x [Position] y [LimitedInt] : Positionyco(t, x, y) <- C_Positionyco(t, x, y).
+            ! t [Time] x [Position] y [LimitedInt] : Positionyco(Next(t), x, y) <- Positionyco(t, x, y) & ~Cn_Positionyco(t, x, y).
+            
+            ! x [Position] y [LimitedInt] : Positionxco(Start, x, y) <- I_Positionxco(x, y).
+            ! t [Time] x [Position] y [LimitedInt] : Positionxco(t, x, y) <- C_Positionxco(t, x, y).
+            ! t [Time] x [Position] y [LimitedInt] : Positionxco(Next(t), x, y) <- Positionxco(t, x, y) & ~Cn_Positionxco(t, x, y).
+            
+            ! x [CharacterClass] y [LimitedString] : CharacterClassname(Start, x, y) <- I_CharacterClassname(x, y).
+            ! t [Time] x [CharacterClass] y [LimitedString] : CharacterClassname(t, x, y) <- C_CharacterClassname(t, x, y).
+            ! t [Time] x [CharacterClass] y [LimitedString] : CharacterClassname(Next(t), x, y) <- CharacterClassname(t, x, y) & ~Cn_CharacterClassname(t, x, y).
+            
+            ! x [Weapon] y [LimitedInt] : Weapondamage(Start, x, y) <- I_Weapondamage(x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weapondamage(t, x, y) <- C_Weapondamage(t, x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weapondamage(Next(t), x, y) <- Weapondamage(t, x, y) & ~Cn_Weapondamage(t, x, y).
+            
+            ! x [Weapon] y [LimitedInt] : Weaponweight(Start, x, y) <- I_Weaponweight(x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weaponweight(t, x, y) <- C_Weaponweight(t, x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weaponweight(Next(t), x, y) <- Weaponweight(t, x, y) & ~Cn_Weaponweight(t, x, y).
+            
+            ! x [Weapon] y [LimitedInt] : Weaponrange(Start, x, y) <- I_Weaponrange(x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weaponrange(t, x, y) <- C_Weaponrange(t, x, y).
+            ! t [Time] x [Weapon] y [LimitedInt] : Weaponrange(Next(t), x, y) <- Weaponrange(t, x, y) & ~Cn_Weaponrange(t, x, y).
+            
+            ! x [Character] y [boolean] : Characterdead(Start, x, y) <- I_Characterdead(x, y).
+            ! t [Time] x [Character] y [boolean] : Characterdead(t, x, y) <- C_Characterdead(t, x, y).
+            ! t [Time] x [Character] y [boolean] : Characterdead(Next(t), x, y) <- Characterdead(t, x, y) & ~Cn_Characterdead(t, x, y).
+            
+            ! x [Character] y [LimitedString] : Charactername(Start, x, y) <- I_Charactername(x, y).
+            ! t [Time] x [Character] y [LimitedString] : Charactername(t, x, y) <- C_Charactername(t, x, y).
+            ! t [Time] x [Character] y [LimitedString] : Charactername(Next(t), x, y) <- Charactername(t, x, y) & ~Cn_Charactername(t, x, y).
+            
+            ! x [SupportAffinity] y [LimitedString] : SupportAffinityname(Start, x, y) <- I_SupportAffinityname(x, y).
+            ! t [Time] x [SupportAffinity] y [LimitedString] : SupportAffinityname(t, x, y) <- C_SupportAffinityname(t, x, y).
+            ! t [Time] x [SupportAffinity] y [LimitedString] : SupportAffinityname(Next(t), x, y) <- SupportAffinityname(t, x, y) & ~Cn_SupportAffinityname(t, x, y).
+            
+            ! x [Statistic] y [LimitedInt] : Statisticvalue(Start, x, y) <- I_Statisticvalue(x, y).
+            ! t [Time] x [Statistic] y [LimitedInt] : Statisticvalue(t, x, y) <- C_Statisticvalue(t, x, y).
+            ! t [Time] x [Statistic] y [LimitedInt] : Statisticvalue(Next(t), x, y) <- Statisticvalue(t, x, y) & ~Cn_Statisticvalue(t, x, y).
+            
+            ! x [Statistic] y [LimitedString] : Statisticname(Start, x, y) <- I_Statisticname(x, y).
+            ! t [Time] x [Statistic] y [LimitedString] : Statisticname(t, x, y) <- C_Statisticname(t, x, y).
+            ! t [Time] x [Statistic] y [LimitedString] : Statisticname(Next(t), x, y) <- Statisticname(t, x, y) & ~Cn_Statisticname(t, x, y).
+            
+            ! x [Item] y [LimitedInt] : Itemvalue(Start, x, y) <- I_Itemvalue(x, y).
+            ! t [Time] x [Item] y [LimitedInt] : Itemvalue(t, x, y) <- C_Itemvalue(t, x, y).
+            ! t [Time] x [Item] y [LimitedInt] : Itemvalue(Next(t), x, y) <- Itemvalue(t, x, y) & ~Cn_Itemvalue(t, x, y).
+            
+            ! x [Item] y [LimitedString] : Itemname(Start, x, y) <- I_Itemname(x, y).
+            ! t [Time] x [Item] y [LimitedString] : Itemname(t, x, y) <- C_Itemname(t, x, y).
+            ! t [Time] x [Item] y [LimitedString] : Itemname(Next(t), x, y) <- Itemname(t, x, y) & ~Cn_Itemname(t, x, y).
+            
+            
+    }
+        ! x [Position] : ?1 v [LimitedInt] : I_Positionyco(x, v).
+        ! t [Time] x [Position] : ?1 v [LimitedInt] : Positionyco(t, x, v).
+        
+        ! x [Position] : ?1 v [LimitedInt] : I_Positionxco(x, v).
+        ! t [Time] x [Position] : ?1 v [LimitedInt] : Positionxco(t, x, v).
+        
+        ! x [CharacterClass] : ?1 v [LimitedString] : I_CharacterClassname(x, v).
+        ! t [Time] x [CharacterClass] : ?1 v [LimitedString] : CharacterClassname(t, x, v).
+        
+        ! x [Weapon] : ?1 v [LimitedInt] : I_Weapondamage(x, v).
+        ! t [Time] x [Weapon] : ?1 v [LimitedInt] : Weapondamage(t, x, v).
+        
+        ! x [Weapon] : ?1 v [LimitedInt] : I_Weaponweight(x, v).
+        ! t [Time] x [Weapon] : ?1 v [LimitedInt] : Weaponweight(t, x, v).
+        
+        ! x [Weapon] : ?1 v [LimitedInt] : I_Weaponrange(x, v).
+        ! t [Time] x [Weapon] : ?1 v [LimitedInt] : Weaponrange(t, x, v).
+        
+        ! x [Character] : ?1 v [boolean] : I_Characterdead(x, v).
+        ! t [Time] x [Character] : ?1 v [boolean] : Characterdead(t, x, v).
+        
+        ! x [Character] : ?1 v [LimitedString] : I_Charactername(x, v).
+        ! t [Time] x [Character] : ?1 v [LimitedString] : Charactername(t, x, v).
+        
+        ! x [SupportAffinity] : ?1 v [LimitedString] : I_SupportAffinityname(x, v).
+        ! t [Time] x [SupportAffinity] : ?1 v [LimitedString] : SupportAffinityname(t, x, v).
+        
+        ! x [Statistic] : ?1 v [LimitedInt] : I_Statisticvalue(x, v).
+        ! t [Time] x [Statistic] : ?1 v [LimitedInt] : Statisticvalue(t, x, v).
+        
+        ! x [Statistic] : ?1 v [LimitedString] : I_Statisticname(x, v).
+        ! t [Time] x [Statistic] : ?1 v [LimitedString] : Statisticname(t, x, v).
+        
+        ! x [Item] : ?1 v [LimitedInt] : I_Itemvalue(x, v).
+        ! t [Time] x [Item] : ?1 v [LimitedInt] : Itemvalue(t, x, v).
+        
+        ! x [Item] : ?1 v [LimitedString] : I_Itemname(x, v).
+        ! t [Time] x [Item] : ?1 v [LimitedString] : Itemname(t, x, v).
+        
+        ! x2 [Position] : #{ x1 [Character] : CharacterandPosition(x1, x2)} =< 1.
+        ! x1 [Character] : #{ x2 [Position] : CharacterandPosition(x1, x2)} =< 1.
+        
+        ! x2 [WeaponLevel] : ?1 x1 [WeaponType] : WeaponTypeandWeaponLevel(x1, x2).
+        
+        
+        ! x2 [SupportAffinity] : ?1 x1 [Character] : CharacterandSupportAffinity(x1, x2).
+        ! x1 [Character] : ?1 x2 [SupportAffinity] : CharacterandSupportAffinity(x1, x2).
+        
+        ! x2 [DerivedStatistic] : ?1 x1 [DerivedStatisticStrategy] : DerivedStatisticStrategyandDerivedStatistic(x1, x2).
+        ! x1 [DerivedStatisticStrategy] : ?1 x2 [DerivedStatistic] : DerivedStatisticStrategyandDerivedStatistic(x1, x2).
+        
+        
+        ! x2 [CharacterClass] : #{ x1 [Statistic] : StatisticandCharacterClass(x1, x2)} >= 1.
+        ! x1 [Statistic] : ?1 x2 [CharacterClass] : StatisticandCharacterClass(x1, x2).
+        
+        ! x1 [DerivedStatisticStrategy] : #{ x2 [Statistic] : DerivedStatisticStrategyandStatistic(x1, x2)} >= 1.
+        
+        ! x2 [Statistic] : ?1 x1 [Character] : CharacterandStatistic(x1, x2).
+        ! x1 [Character] : #{ x2 [Statistic] : CharacterandStatistic(x1, x2)} >= 1.
+        
+        ! x1 [Character] : ?1 x2 [CharacterClass] : CharacterandCharacterClass(x1, x2).
+        
+        
+        ! x2 [WeaponType] : #{ x1 [Statistic] : StatisticandWeaponType(x1, x2)} =< 1.
+        
+        ! x2 [Inventory] : ?1 x1 [Character] : CharacterandInventory(x1, x2).
+        ! x1 [Character] : ?1 x2 [Inventory] : CharacterandInventory(x1, x2).
+        
+        ! x2 [Weapon] : #{ x1 [WeaponType] : WeaponTypeandWeapon(x1, x2)} =< 1.
+        
+        ! x2 [Inventory] : #{ x1 [Item] : ItemandInventory(x1, x2)} =< 5.
+        ! x1 [Item] : #{ x2 [Inventory] : ItemandInventory(x1, x2)} =< 1.
+        
+}
+structure S:V {
+    Time = { 0..21 }
+    Start = 0
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21 }
+
+    I_SDPoint = { 1 }
+
+    LimitedInt = { -3.5..3.5 }
+    LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5}
+    LimitedString = { "T1iFxYOBp4cESaDJMXD3"; "HnHH84LFYf1KNx6pW5M4"; "EfoEwC7zKtBAsmDgLrcA"; "R7rTUj9RoLqAulCwuqWy"; "cl4alMuryTSfiYSIDAHW"}
+    boolean = { T; F}
+    
+    Position = { Position1; Position2; Position3; Position4; Position5}
+    DerivedStatisticStrategy = { DerivedStatisticStrategy1; DerivedStatisticStrategy2; DerivedStatisticStrategy3; DerivedStatisticStrategy4; DerivedStatisticStrategy5}
+    DerivedStatistic = { DerivedStatistic1; DerivedStatistic2; DerivedStatistic3; DerivedStatistic4; DerivedStatistic5}
+    WeaponType = { WeaponType1; WeaponType2; WeaponType3; WeaponType4; WeaponType5}
+    CharacterClass = { CharacterClass1; CharacterClass2; CharacterClass3; CharacterClass4; CharacterClass5}
+    Inventory = { Inventory1; Inventory2; Inventory3; Inventory4; Inventory5}
+    Weapon = { Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
+    Character = { Character1; Character2; Character3; Character4; Character5}
+    SupportAffinity = { SupportAffinity1; SupportAffinity2; SupportAffinity3; SupportAffinity4; SupportAffinity5}
+    WeaponLevel = { WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5}
+    Statistic = { Statistic1; Statistic2; Statistic3; Statistic4; Statistic5; WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5; DerivedStatistic1; DerivedStatistic2; DerivedStatistic3; DerivedStatistic4; DerivedStatistic5}
+    Item = { Item1; Item2; Item3; Item4; Item5; Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
+}
+procedure main() {
+    print(modelexpand(T,thestruct)[1])
+}

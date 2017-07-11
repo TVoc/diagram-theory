@@ -13,7 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public enum PrimitiveType implements Type
 {
 
-	BOOLEAN("bool"), BYTE("byte"), CHAR("char"), DOUBLE("double"), FLOAT("float"), INTEGER("int"), LONG("long"), SHORT(
+	BOOLEAN("boolean"), BYTE("byte"), CHAR("char"), DOUBLE("double"), FLOAT("float"), INTEGER("int"), LONG("long"), SHORT(
 			"short"), STRING("string"), VOID("void");
 
 	private final String name;

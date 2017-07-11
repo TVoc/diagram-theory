@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public enum PrimitiveClass implements Class
 {
-	BOOLEAN("bool"), BYTE("byte"), CHAR("char"), DOUBLE("double"),
+	BOOLEAN("boolean"), BYTE("byte"), CHAR("char"), DOUBLE("double"),
 	FLOAT("float"), INTEGER("int"), LONG("long"), SHORT("short"),
 	STRING("string"), VOID("void");
 

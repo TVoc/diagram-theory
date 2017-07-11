@@ -84,7 +84,7 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("Start: Time", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("partial Next(Time) : Time", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type SDPoint = { 1.." + store.getMessages().size() + 1, this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type SDPoint = { 1.." + (store.getMessages().size() + 1) + " }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("SDPointAt(Time,SDPoint)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("I_SDPointAt(SDPoint)", this.getTabLevel() + 1)
@@ -93,11 +93,14 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedInt isa int", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedFloat isa float", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedString isa string", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("type bool", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type boolean", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ this.getSeqClassBuilder().build()
+				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ this.getTempVarBuilder().build()
 				+ this.getSeqClassAttributeBuilder().build()
-				+ this.getSeqAssociationBuilder().build();
+				+ this.getSeqAssociationBuilder().build()
+				+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel());
 	}
 }

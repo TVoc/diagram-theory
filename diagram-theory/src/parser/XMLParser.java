@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jdom2.Document;
@@ -24,6 +25,7 @@ import data.classdiagrams.PrimitiveType;
 import data.classdiagrams.Type;
 import data.classdiagrams.TypeParameterType;
 import data.classdiagrams.UserDefinedType;
+import data.classdiagrams.Class;
 import data.sequencediagrams.AltCombinedFragment;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
@@ -39,6 +41,7 @@ import theory.DiagramStoreFactory;
 import theory.Factors;
 import theory.OutputConvenienceFunctions;
 import theory.SeqDiagramStore;
+import theory.SeqFactors;
 import theory.TheoryGenerator;
 
 public class XMLParser
@@ -50,6 +53,7 @@ public class XMLParser
 	public static final double STRINGFACTOR_DEFAULT = 1;
 	public static final double INTFACTOR_DEFAULT = 1;
 	public static final double FLOATFACTOR_DEFAULT = 1;
+	public static final int TIMESTEPS_DEFAULT = 21;
 	
 	public static final boolean SEQ = true;
 	
@@ -65,11 +69,13 @@ public class XMLParser
 		options.addOption("stringfactor", true, "Number of strings in generated structure will be ceil(stringfactor * numobjects); default is 1");
 		options.addOption("intfactor", true, "Number of ints in generated structure will be ceil(intfactor * numobjects); default is 1");
 		options.addOption("floatfactor", true, "Number of floats in generated structure will be ceil(floatfactor * numobjects; default is 1");
+		options.addOption("timesteps", true, "Number of time steps that the generated theory will range over; default is 21");
 		
 		int numObjects = 0;
 		double stringFactor = STRINGFACTOR_DEFAULT;
 		double intFactor = INTFACTOR_DEFAULT;
 		double floatFactor = FLOATFACTOR_DEFAULT;
+		int timeSteps = TIMESTEPS_DEFAULT;
 		
 		try
 		{
@@ -83,11 +89,15 @@ public class XMLParser
 			}
 			if (cmd.hasOption("intfactor"))
 			{
-				stringFactor = Double.parseDouble(cmd.getOptionValue("intfactor"));
+				intFactor = Double.parseDouble(cmd.getOptionValue("intfactor"));
 			}
 			if (cmd.hasOption("floatfactor"))
 			{
-				stringFactor = Double.parseDouble(cmd.getOptionValue("floatfactor"));
+				floatFactor = Double.parseDouble(cmd.getOptionValue("floatfactor"));
+			}
+			if (cmd.hasOption("timesteps"))
+			{
+				timeSteps = Integer.parseInt(cmd.getOptionValue("timesteps"));
 			}
 		}
 		catch (ParseException e)
@@ -95,7 +105,8 @@ public class XMLParser
 			throw e;
 		}
 		
-		Factors factors = new Factors(numObjects, stringFactor, intFactor, floatFactor);
+		//Factors factors = new Factors(numObjects, stringFactor, intFactor, floatFactor);
+		SeqFactors seqFactors = new SeqFactors(numObjects, stringFactor, intFactor, floatFactor, timeSteps);
 		
 		SAXBuilder saxBuilder = new SAXBuilder();
 		try
@@ -109,7 +120,7 @@ public class XMLParser
 				seqRoot = seq.getRootElement().getChild("Models");
 			}
 			XMLParser parser = new XMLParser();
-			parser.parseModel(doc.getRootElement().getChild("Models"), seqRoot, factors);
+			parser.parseModel(doc.getRootElement().getChild("Models"), seqRoot, seqFactors);
 		}
 		catch (JDOMException e)
 		{
@@ -169,6 +180,7 @@ public class XMLParser
 			this.parseCombinedFragments(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("CombinedFragment"), seqStore);
 			
 			SeqDiagramStore diagramStore = new DiagramStoreFactory().makeSeqDiagramStore(seqStore);
+			new TheoryGenerator().generateLTCTheory(diagramStore, "generatedltctheory.idp", (SeqFactors) factors);
 		}
 		else
 		{
@@ -509,6 +521,16 @@ public class XMLParser
 					
 					store.addTempVar(sides[0], new TempVar(type, sides[0]));
 				}
+			}
+			
+			if (isReturn && ! content.contains("=") && ! store.hasTempVar(content))
+			{
+				Message prev = store.getMessage(sdPoint - 2);
+				String name = StringUtils.uncapitalize(prev.getContent().replaceAll("get", "").split("\\(")[0]);
+				Class fromClass = store.getClassByName(store.resolveTempVar(fromName.get()).getType().getTypeName(store)).get();
+				DataUnit attr = fromClass.getAttributeByName(name).get();
+				
+				store.addTempVar(content, new TempVar(attr.getType(), content));
 			}
 			
 			Message newMessage = new Message(content, sdPoint, isReturn, fromName, toName);

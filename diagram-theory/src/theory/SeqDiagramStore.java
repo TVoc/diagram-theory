@@ -68,7 +68,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 	{
 		if (! this.hasTempVar(id))
 		{
-			throw new IllegalArgumentException("name not present");
+			throw new IllegalArgumentException("name: " + id + " not present");
 		}
 		
 		return this.internalGetTempVars().get(id);

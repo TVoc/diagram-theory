@@ -35,15 +35,23 @@ public class SymbolStore extends TypeContext
 	public SymbolStore()
 	{
 		this.classesInProgress = new HashMap<String, UserDefinedClassBuilder>();
+		this.classesByName = new HashMap<String, UserDefinedClassBuilder>();
 		this.associationsInProgress = new HashMap<String, AssociationBuilder>();
 		this.generalizations = new HashSet<Generalization>();
 	}
 
 	private final Map<String, UserDefinedClassBuilder> classesInProgress;
+	
+	private final Map<String, UserDefinedClassBuilder> classesByName;
 
 	private Map<String, UserDefinedClassBuilder> internalGetClassesInProgress()
 	{
 		return this.classesInProgress;
+	}
+	
+	private Map<String, UserDefinedClassBuilder> internalGetClassesByName()
+	{
+		return this.classesByName;
 	}
 
 	/**
@@ -53,6 +61,11 @@ public class SymbolStore extends TypeContext
 	public Map<String, UserDefinedClassBuilder> getClassesInProgress()
 	{
 		return Collections.unmodifiableMap(this.internalGetClassesInProgress());
+	}
+	
+	public Map<String, UserDefinedClassBuilder> getClassesByName()
+	{
+		return Collections.unmodifiableMap(this.internalGetClassesByName());
 	}
 	
 	/**
@@ -82,12 +95,20 @@ public class SymbolStore extends TypeContext
 			throw new IllegalArgumentException("name cannot be empty");
 		}
 		
-		this.internalGetClassesInProgress().put(id, new UserDefinedClassBuilder(name));
+		UserDefinedClassBuilder newClass = new UserDefinedClassBuilder(name);
+		
+		this.internalGetClassesInProgress().put(id, newClass);
+		this.internalGetClassesByName().put(name, newClass);
 	}
 	
 	public Optional<UserDefinedClassBuilder> getClass(String id)
 	{
 		return Optional.ofNullable(this.internalGetClassesInProgress().get(id));
+	}
+	
+	public Optional<UserDefinedClassBuilder> getClassByName(String name)
+	{
+		return Optional.ofNullable(this.internalGetClassesByName().get(name));
 	}
 	
 

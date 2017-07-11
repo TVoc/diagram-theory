@@ -97,14 +97,19 @@ public class DiagramStore extends TypeContext
 		return this.internalGetClasses().containsKey(name);
 	}
 	
+	public boolean hasClassName(String name)
+	{
+		return this.internalGetClassesByName().containsKey(name);
+	}
+	
 	public Class getClassByName(String name) throws IllegalArgumentException
 	{
-		if (! this.hasClass(name))
+		if (! this.hasClassName(name))
 		{
-			throw new IllegalArgumentException("did not have class by given name");
+			throw new IllegalArgumentException("did not have class by given name: " + name);
 		}
 		
-		return this.internalGetClasses().get(name);
+		return this.internalGetClassesByName().get(name);
 	}
 	
 	private final Set<Association> associations;
