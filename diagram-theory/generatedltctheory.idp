@@ -424,9 +424,9 @@ structure S:V {
 
     I_SDPoint = { 1 }
 
-    LimitedInt = { -3.5..3.5 }
+    LimitedInt = { -3..3 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "T1iFxYOBp4cESaDJMXD3"; "HnHH84LFYf1KNx6pW5M4"; "EfoEwC7zKtBAsmDgLrcA"; "R7rTUj9RoLqAulCwuqWy"; "cl4alMuryTSfiYSIDAHW"}
+    LimitedString = { "JUcqG2iX5BCzdweQ2MxT"; "Tc8OGYYYuWSDufo3YE5s"; "aElw1fBdYUfqFIDjFa7W"; "fMjdkyRxiRr1I5NJeLJg"; "xUe1ckUNAAS3mlh2Xk0h"}
     boolean = { T; F}
     
     Position = { Position1; Position2; Position3; Position4; Position5}
@@ -443,5 +443,5 @@ structure S:V {
     Item = { Item1; Item2; Item3; Item4; Item5; Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
 }
 procedure main() {
-    print(modelexpand(T,thestruct)[1])
+    print(modelexpand(T,S)[1])
 }

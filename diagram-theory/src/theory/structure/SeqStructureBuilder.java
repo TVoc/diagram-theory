@@ -44,8 +44,8 @@ public class SeqStructureBuilder
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("I_SDPoint = { 1 }", tabLevel + 1));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
-		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("LimitedInt = { " + (- factors.getNumObjects() * factors.getIntFactor() * 0.5 - 1)
-				+ ".." + (factors.getNumObjects() * factors.getIntFactor() * 0.5 + 1) + " }", tabLevel + 1));
+		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("LimitedInt = { " + (int) (- factors.getNumObjects() * factors.getIntFactor() * 0.5 - 1)
+				+ ".." + (int) (factors.getNumObjects() * factors.getIntFactor() * 0.5 + 1) + " }", tabLevel + 1));
 		
 		StringBuilder floatBuilder = new StringBuilder("LimitedFloat = { 0.0; ");
 		
