@@ -164,7 +164,7 @@ public class ClassVariableCausationBuilder
 						+ message.getSdPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf) + "(t, x) & "
 						+ OutputConvenienceFunctions.singleTempVarPredicateName(temp) + "(t, v).";
 				String uncauseAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(setOf.getType(), store) + "] v ["
-						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : C_" + predName + "(Next(t), x, v) <- SDPointAt(Next(t), "
+						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : Cn_" + predName + "(Next(t), x, v) <- SDPointAt(Next(t), "
 						+ message.getSdPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf) + "(t, x) & "
 						+ predName + "(t, x, v) & ~"
 						+ OutputConvenienceFunctions.singleTempVarPredicateName(temp) + "(Next(t), v).";

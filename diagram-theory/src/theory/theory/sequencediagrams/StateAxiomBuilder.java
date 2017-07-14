@@ -43,7 +43,7 @@ public class StateAxiomBuilder
 		
 		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! x [" + typeName + "] : " + predicates[0] + "(Start, x) <- " + predicates[1] + "(x).", this.getTabLevel() + 1));
 		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + typeName + "] : " + predicates[0] + "(t, x) <- " + predicates[2] + "(t, x).", this.getTabLevel() + 1));
-		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + typeName + "] : " + predicates[0] + "(Next(t), x) <- " + predicates[0] + "(t, x) & ~( ? x1 [" + typeName + "] : " + predicates[2] + "(t, x1) & ~(x = x1)).", this.getTabLevel() + 1));
+		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + typeName + "] : " + predicates[0] + "(Next(t), x) <- " + predicates[0] + "(t, x) & ~( ? x1 [" + typeName + "] : " + predicates[2] + "(Next(t), x1) & ~(x = x1)).", this.getTabLevel() + 1));
 		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1));
 		
 		return this;
@@ -60,7 +60,7 @@ public class StateAxiomBuilder
 				
 				this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! x [" + clazz.getName() + "] y [" + typeName + "] : " + baseName + "(Start, x, y) <- I_" + baseName + "(x, y).", this.getTabLevel() + 1));
 				this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + clazz.getName() + "] y [" + typeName + "] : " + baseName + "(t, x, y) <- C_" + baseName + "(t, x, y).", this.getTabLevel() + 1));
-				this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + clazz.getName() + "] y [" + typeName + "] : " + baseName + "(Next(t), x, y) <- " + baseName + "(t, x, y) & ~Cn_" + baseName + "(t, x, y).", this.getTabLevel() + 1));
+				this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + clazz.getName() + "] y [" + typeName + "] : " + baseName + "(Next(t), x, y) <- " + baseName + "(t, x, y) & ~Cn_" + baseName + "(Next(t), x, y).", this.getTabLevel() + 1));
 				this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1));
 			}
 		}

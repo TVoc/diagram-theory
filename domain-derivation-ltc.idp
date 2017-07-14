@@ -15,7 +15,7 @@ LTCvocabulary V {
     type LimitedInt isa int
     //type LimitedFloat isa float
     type LimitedString isa string
-    type bool
+    type bool constructed from { T, F }
     //type void
 
     type Character
@@ -171,6 +171,7 @@ theory T:V {
     /*************************************************************************
      *                     LTC: Causations                                   *
      *************************************************************************/
+    /*
     {
         /**** Class variables ****/
         /*
@@ -218,9 +219,10 @@ theory T:V {
     {
         ! t [Time] s [Statistic] : C_StatisticgetValue(Next(t), s, 0) <- SDPointAt(t, 18) & HpT(t, s).
         ! t [Time] s [Statistic] n [LimitedInt] : C_StatisticgetValue(Next(t), s, n) <- SDPointAt(t,20) & HpT(t, s) & NewHpT(t, n).
-        ! t [Time] s [Statistic] n [LimitedInt] : Cn_StatisticgetValue(Next(t), s, n) <- SDPointAt(t, 18) & HpT(t, s) & StatisticgetValue(t, s, n) & ~(n = 0).
-        ! t [Time] s [Statistic] n [LimitedInt] : Cn_StatisticgetValue(Next(t), s, n) <- SDPointAt(t, 20) & HpT(t, s) & StatisticgetValue(t, s, n) & ~NewHpT(t, n).
+        ! t [Time] s [Statistic] n [LimitedInt] : Cn_StatisticgetValue(Next(t), s, n) <- SDPointAt(Next(t), 18) & HpT(t, s) & StatisticgetValue(t, s, n) & ~(n = 0).
+        ! t [Time] s [Statistic] n [LimitedInt] : Cn_StatisticgetValue(Next(t), s, n) <- SDPointAt(Next(t), 20) & HpT(t, s) & StatisticgetValue(t, s, n) & ~NewHpT(t, n).
     }
+    */
        
     {
         /**** Sequence diagram checkpoints ****/
@@ -247,6 +249,7 @@ theory T:V {
     
     }
     
+    /*
     {
         /**** Sequence diagram temp variables ****/
         !t [Time] s [Statistic] : C_DefenceT(Next(t), s) <- SDPointAt(t, 3) & (? c [Character] : TargetT(t, c) & CharacterandStatistic(c, s) & Statisticname(t, s, "defence")).
@@ -259,10 +262,12 @@ theory T:V {
         !t [Time] n [LimitedInt] : C_HpValT(Next(t), n) <- SDPointAt(t, 16) & (? s [Statistic] : HpT(t, s) & StatisticgetValue(t, s, n)).
         !t [Time] n [LimitedInt] : C_NewHpT(t, n) <- SDPointAt(t, 17) & (? hpv [LimitedInt] inf [LimitedInt] : HpValT(t, hpv) & InflictedT(t, inf) & n = hpv - inf).
     }
+    */
     
     /*************************************************************************
      *                     LTC: State axioms                                 *
      *************************************************************************/
+    
     
     {
         /*** Sequence diagram checkpoints ***/
@@ -271,6 +276,7 @@ theory T:V {
         ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPoint(Next(t), s1)).
     }
     
+    /*
     {
         
         /**** Sequence diagram temp variables ****/
@@ -366,16 +372,17 @@ theory T:V {
         ! t [Time] s [Statistic] n [LimitedInt] : StatisticgetValue(Next(t), s, n) <- C_StatisticgetValue(Next(t), s, n).
         ! t [Time] s [Statistic] n [LimitedInt] : StatisticgetValue(Next(t), s, n) <- StatisticgetValue(t, s, n) & ~Cn_StatisticgetValue(Next(t), s, n).
     }
+    */
 
     /*
     ! x [Character] : ?1 y [LimitedString] : I_Charactername(x, y).
     
     ! x [SupportAffinity] : ?1 y [LimitedString] : I_SupportAffinityname(x, y).
-    */
+    
     
     ! x [Weapon] : ?1 y [LimitedInt] : I_Weapondamage(x, y).
     
-    /*
+    
     ! x [Weapon] : ?1 y [LimitedInt] : I_Weaponweight(x, y).
     
     ! x [Weapon] : ?1 y [LimitedInt] : I_Weaponrange(x, y).
@@ -385,19 +392,19 @@ theory T:V {
     ! x [Item] : ?1 y [LimitedInt] : I_Itemvalue(x, y).
     
     ! x [CharacterClass] : ?1 y [LimitedString] : I_CharacterClassname(x, y).
-    */
+    
     
     ! x [Statistic] : ?1 y [LimitedString] : I_Statisticname(x, y).
     
     ! x [Statistic] : ?1 z [LimitedInt] : I_StatisticgetValue(x, z).
     
-    /*
+    
     ! x [Character] y [Weapon] : ?1 z [LimitedInt] : CharacterdetermineDamageFrom(x, y, z).
     
     ! x [DerivedStatisticStrategy] : ?1 z [LimitedInt] : DerivedStatisticStrategygetValue(x, z).
-    */
     
-    /*
+    
+    
     ! x [Character] : ?1 y [SupportAffinity] : CharacterandSupportAffinity(x, y).
     ! y [SupportAffinity] : ?1 x [Character] : CharacterandSupportAffinity(x, y).
     
@@ -413,12 +420,12 @@ theory T:V {
     
     ! x [CharacterClass] : #{y [Statistic] : CharacterClassandStatistic(x, y)} >= 1.
     ! y [Statistic] : ?1 x [CharacterClass] : CharacterClassandStatistic(x, y).
-    */
+    
     
     ! x [Character] : #{y [Statistic] : CharacterandStatistic(x, y)} >= 1.
     ! y [Statistic] : ?1 x [Character] : CharacterandStatistic(x, y).
     
-    /*
+    
     ! y [DerivedStatisticStrategy] : #{x [Statistic] : StatisticandDerivedStatisticStategy(x, y)} >= 1.
     
     ! x [DerivedStatistic] : ?1 y [DerivedStatisticStrategy] : DerivedStatisticandDerivedStatisticStrategy(x, y).
@@ -442,7 +449,6 @@ structure S:V {
     //LimitedFloat = { 0.0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0; 5.5; 6.0; 6.5; 7.0; 7.5; 8.0; 8.5 }
     LimitedString  = { "defence"; "defenceVal"; "strength"; "strengthVal"; "damage"; "inflicted"; "hp"; "hpVal"; "newHp"; "alice"; "bob";"weapon1" }
     //LimitedString  = { "defence"; "defenceVal"; "strength"; "strengthVal"; "damage"; "inflicted"; "hp"; "hpVal"; "newHp"; "alice"; "bob"; "charlie"; "dave"; "eve"; "ice"; "fire"; "thunder"; "light"; "dark"; "item1"; "item2"; "item3"; "item4"; "item5"; "weapon1"; "weapon2"; "weapon3"; "weapon4"; "weapon5"; "fighter"; "mage"; "soldier"; "cavalier"; "archer"; "statistic4"; "statistic5"; "dstat1"; "dstat2"; "dstat3"; "dstat4"; "dstat5"; "wlev1"; "wlev2"; "wlev3"; "wlev4"; "wlev5"; "SVObSVpOwNsLeM1TCYkx"; "s0mJOUkvFuOYxoypf0e2"; "ucPRTRrfWBdnx8IbebrH"; "IIsx8mkhNB6tFKXhIh01"; "c8FoPQm8gzGloJi352R6"; "QOwcTPcuxqohdJ0OoYI5"; "nNhaMFI1sNq4FM9g9PFK"; "THmoxPvd1k7axZ9Rx3Vo"; "psOJIEnr6CUFa2S1shdP"; "2ykrKTZkDAopHEMGzBgp"; "YrUOvIjCy2OZLs39PE5t"; "LXDiF7O705qElFzEF3WJ"; "NW3yPaSUa5NJERB5bpd0"; "NzD42F9XGUvbUNaZHU0q"; "s9Iudo9RU7iwdNeSJi8t"; "iNl5Hkr0r9krSOlg2KER"; "bkl5G0Ix9OUrFJfV1H7P"; "kC4BfZXQ4VDHxUmJ1O5G" }
-    bool = { T; F}
     //void = { null}
    
     Character = {Character1; Character2}

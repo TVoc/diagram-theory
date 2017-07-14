@@ -1,0 +1,55 @@
+include<LTC>
+
+LTCvocabulary V {
+    type Time isa nat
+    Start: Time
+    partial Next(Time) : Time
+    
+    // Designates the checkpoints of the sequence diagram
+    type SDPoint = { 1..21 } isa nat
+    type LimitedInt isa int
+    
+    SDPointAt(Time,SDPoint)
+    I_SDPointAt(SDPoint)
+    C_SDPointAt(Time,SDPoint)
+    
+    NewHpT(Time, LimitedInt)
+    I_NewHpT(LimitedInt)
+    C_NewHpT(Time, LimitedInt)
+}
+
+theory T:V {
+    {
+        !t [Time] s [SDPoint] : C_SDPointAt(Next(t), (s+1)) <- SDPointAt(t, s) & ~((s = 17) | (s = 19)).
+        ! t [Time] : C_SDPointAt(Next(t), 18) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp =< 0).
+        ! t [Time] : C_SDPointAt(Next(t), 20) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp > 0).
+        ! t [Time] : C_SDPointAt(Next(t), 21) <- SDPointAt(t, 19).
+    } 
+    
+    {
+        ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPointAt(s).
+        ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPointAt(Next(t), s).
+        ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPointAt(Next(t), s1)).
+        
+            ! x [LimitedInt] : NewHpT(Start, x) <- I_NewHpT(x).
+            ! t [Time] x [LimitedInt] : NewHpT(t, x) <- C_NewHpT(t, x).
+            ! t [Time] x [LimitedInt] : NewHpT(Next(t), x) <- NewHpT(t, x) & ~( ? x1 [LimitedInt] : C_NewHpT(Next(t), x1) & ~(x = x1)).
+    }
+}
+
+structure S:V {
+    Time = { 0..30 }
+    Start = 0
+    //Next = {0->1}
+    Next = {0->1;1->2;2->3;3->4;4->5;5->6;6->7;7->8;8->9;9->10;10->11;11->12;12->13;13->14;14->15;15->16;16->17;17->18;18->19;19->20;20->21;21->22;22->23;23->24;24->25;25->26;26->27;27->28;28->29;29->30}
+
+    LimitedInt = { -3..3 }
+    
+    I_SDPointAt = { 1 }
+    I_NewHpT = { 0 }
+    C_NewHpT = {}
+}
+
+procedure main() {
+    print(modelexpand(T,S)[1])
+}
