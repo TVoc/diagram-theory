@@ -5,7 +5,7 @@ LTCvocabulary V {
     Start: Time
     partial Next(Time) : Time
     
-    type SDPoint = { 1..21 }
+    type SDPoint = { 1..21 } isa nat
     
     SDPointAt(Time,SDPoint)
     I_SDPointAt(SDPoint)
@@ -14,9 +14,11 @@ LTCvocabulary V {
     type LimitedInt isa int
     type LimitedFloat isa float
     type LimitedString isa string
-    type boolean
-    type void
+    type boolean constructed from { T, F }
+    type void constructed from { null }
     
+    type Statistic
+    type Item
     type Position
     type DerivedStatisticStrategy
     type DerivedStatistic isa Statistic
@@ -27,8 +29,6 @@ LTCvocabulary V {
     type Character
     type SupportAffinity
     type WeaponLevel isa Statistic
-    type Statistic
-    type Item
     
     DamageT(Time, LimitedInt)
     I_DamageT(LimitedInt)
@@ -205,41 +205,26 @@ theory T:V {
         
             ! t [Time] x [SupportAffinity] v [LimitedString] : C_SupportAffinityname(t, x, v) <- false.
             ! t [Time] x [SupportAffinity] v [LimitedString] : Cn_SupportAffinityname(t, x, v) <- false.
-        ! t [Time] : C_SDPointAt(Next(t), 2) <- SDPointAt(t, 1).
-        ! t [Time] : C_SDPointAt(Next(t), 3) <- SDPointAt(t, 2).
-        ! t [Time] : C_SDPointAt(Next(t), 4) <- SDPointAt(t, 3).
-        ! t [Time] : C_SDPointAt(Next(t), 5) <- SDPointAt(t, 4).
-        ! t [Time] : C_SDPointAt(Next(t), 6) <- SDPointAt(t, 5).
-        ! t [Time] : C_SDPointAt(Next(t), 7) <- SDPointAt(t, 6).
-        ! t [Time] : C_SDPointAt(Next(t), 8) <- SDPointAt(t, 7).
-        ! t [Time] : C_SDPointAt(Next(t), 9) <- SDPointAt(t, 8).
-        ! t [Time] : C_SDPointAt(Next(t), 10) <- SDPointAt(t, 9).
-        ! t [Time] : C_SDPointAt(Next(t), 11) <- SDPointAt(t, 10).
-        ! t [Time] : C_SDPointAt(Next(t), 12) <- SDPointAt(t, 11).
-        ! t [Time] : C_SDPointAt(Next(t), 13) <- SDPointAt(t, 12).
-        ! t [Time] : C_SDPointAt(Next(t), 14) <- SDPointAt(t, 13).
-        ! t [Time] : C_SDPointAt(Next(t), 15) <- SDPointAt(t, 14).
-        ! t [Time] : C_SDPointAt(Next(t), 16) <- SDPointAt(t, 15).
-        ! t [Time] : C_SDPointAt(Next(t), 17) <- SDPointAt(t, 16).
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), (s+1)) <- SDPointAt(t, s)& ~((s = 17) | (s = 19) | (s = 21)).
         ! t [Time] : C_SDPointAt(Next(t), 18) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp =< 0).
-        ! t [Time] : C_SDPointAt(Next(t), 19) <- SDPointAt(t, 18).
         ! t [Time] : C_SDPointAt(Next(t), 20) <- SDPointAt(t, 17) & ( ? newHp [LimitedInt] : NewHpT(t, newHp) & newHp > 0).
-        ! t [Time] : C_SDPointAt(Next(t), 21) <- SDPointAt(t, 19 | SDPointAt(t, 20).
+        ! t [Time] : C_SDPointAt(Next(t), 21) <- SDPointAt(t, 19) | SDPointAt(t, 20).
+        ! t [Time] : C_SDPointAt(Next(t), 1) <- SDPointAt(t, 21).
         
-         ! t [Time] defence [Statistic] : C_DefenceT(t, defence) <- SDPointAt(t, 3) & (? x [Character] : TargetT(t, x) & CharacterandStatistic(target, defence) & Statisticname(t, defence, "defence")).
-         ! t [Time] strength [Statistic] : C_StrengthT(Next(t), strength) <- SDPointAt(t, 4) & (? x [Character] : AttackerT(t, x) & CharacterandStatistic(attacker, strength) & Statisticname(t, strength, "strength")).
+         ! t [Time] defence [Statistic] : C_DefenceT(t, defence) <- SDPointAt(t, 3) & (? target [Character] : TargetT(t, target) & CharacterandStatistic(target, defence) & Statisticname(t, defence, "defence")).
+         ! t [Time] strength [Statistic] : C_StrengthT(Next(t), strength) <- SDPointAt(t, 4) & (? attacker [Character] : AttackerT(t, attacker) & CharacterandStatistic(attacker, strength) & Statisticname(t, strength, "strength")).
         ! t [Time] x [LimitedInt] : C_DefenceValT(Next(t), x) <- SDPointAt(t, 6) & (? o [Statistic] : DefenceT(t, o) & Statisticvalue(t, o, x)).
         ! t [Time] x [LimitedInt] : C_StrengthValT(Next(t), x) <- SDPointAt(t, 8) & (? o [Statistic] : StrengthT(t, o) & Statisticvalue(t, o, x)).
         ! t [Time] x [LimitedInt] : C_DamageT(Next(t), x) <- SDPointAt(t, 10) & (? o [Weapon] : WeaponT(t, o) & Weapondamage(t, o, x)).
         ! t [Time] inflicted [LimitedInt] : C_InflictedT(t, inflicted) <- SDPointAt(t, 12) & (? damage [LimitedInt] strengthVal [LimitedInt] defenceVal [LimitedInt] : DamageT(t, damage) & StrengthValT(t, strengthVal) & DefenceValT(t, defenceVal) & inflicted=damage+strengthVal-defenceVal).
-         ! t [Time] hp [Statistic] : C_HpT(t, hp) <- SDPointAt(t, 14) & (? x [Character] : TargetT(t, x) & CharacterandStatistic(target, hp) & Statisticname(t, hp, "hp")).
+         ! t [Time] hp [Statistic] : C_HpT(t, hp) <- SDPointAt(t, 14) & (? target [Character] : TargetT(t, target) & CharacterandStatistic(target, hp) & Statisticname(t, hp, "hp")).
         ! t [Time] x [LimitedInt] : C_HpValT(Next(t), x) <- SDPointAt(t, 15) & (? o [Statistic] : HpT(t, o) & Statisticvalue(t, o, x)).
         ! t [Time] newHp [LimitedInt] : C_NewHpT(t, newHp) <- SDPointAt(t, 17) & (? hpVal [LimitedInt] inflicted [LimitedInt] : HpValT(t, hpVal) & InflictedT(t, inflicted) & newHp=hpVal-inflicted).
     }
     {
-            ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPoint(s).
-            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPoint(Next(t), s).
-            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPoint(Next(t), s1)).
+            ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPointAt(s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPointAt(Next(t), s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPointAt(Next(t), s1)).
             
             ! x [LimitedInt] : DamageT(Start, x) <- I_DamageT(x).
             ! t [Time] x [LimitedInt] : DamageT(t, x) <- C_DamageT(t, x).
@@ -418,16 +403,15 @@ theory T:V {
         
 }
 structure S:V {
-    Time = { 0..21 }
+    Time = { 0..40 }
     Start = 0
-    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21 }
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22; 22->23; 23->24; 24->25; 25->26; 26->27; 27->28; 28->29; 29->30; 30->31; 31->32; 32->33; 33->34; 34->35; 35->36; 36->37; 37->38; 38->39; 39->40 }
 
-    I_SDPoint = { 1 }
+    I_SDPointAt = { 1 }
 
     LimitedInt = { -3..3 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "KL7jdd4MLL5Ymby4C5uG"; "1vWHx66wCPorHFos0GE2"; "lEXkIZHeUtdKfCDEiXnt"; "U7ZWNEvKzSNnDSbJLLQx"; "T4i32Jud6E89Nhd5sOpY"}
-    boolean = { T; F}
+    LimitedString = { "FcPBe4HTw3ZpeLBKRbR6"; "UNsSbSrxxg21BWTZuV41"; "iEcKqyJxivjFU0w1E6uH"; "bruGumhm1weHaeDf5zVh"; "hE4a0GaH2xRHShwIASw7"; "damage"; "strength"; "defence"; "defenceVal"; "hp"; "attacker"; "target"; "weapon"; "hpVal"; "newHp"; "strengthVal"; "inflicted"} 
     
     Position = { Position1; Position2; Position3; Position4; Position5}
     DerivedStatisticStrategy = { DerivedStatisticStrategy1; DerivedStatisticStrategy2; DerivedStatisticStrategy3; DerivedStatisticStrategy4; DerivedStatisticStrategy5}
@@ -441,6 +425,30 @@ structure S:V {
     WeaponLevel = { WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5}
     Statistic = { Statistic1; Statistic2; Statistic3; Statistic4; Statistic5; WeaponLevel1; WeaponLevel2; WeaponLevel3; WeaponLevel4; WeaponLevel5; DerivedStatistic1; DerivedStatistic2; DerivedStatistic3; DerivedStatistic4; DerivedStatistic5}
     Item = { Item1; Item2; Item3; Item4; Item5; Weapon1; Weapon2; Weapon3; Weapon4; Weapon5}
+    
+    I_Statisticname<ct> = {Statistic1,"strength";Statistic2,"defence";Statistic3,"hp"}
+    I_Statisticvalue<ct> = {Statistic1,2;Statistic2,1;Statistic3,3}
+    I_Weapondamage = {Weapon1,1;Weapon2,1;Weapon3,1;Weapon4,1;Weapon5,1}
+    
+    I_TargetT = { Character2 }
+    I_AttackerT = { Character1 }
+    I_WeaponT = { Weapon1 }
+    I_DefenceT = {}
+    I_StrengthT = {}
+    I_DefenceValT = {}
+    I_StrengthValT = {}
+    I_DamageT = {}
+    I_InflictedT = {}
+    I_HpT = {}
+    I_HpValT = {}
+    I_NewHpT = {}
+    
+    C_WeaponT = {}
+    C_TargetT = {}
+    C_AttackerT = {}
+    
+    CharacterandStatistic<ct> = { Character1,Statistic1; Character2,Statistic2; Character2,Statistic3 }
+    I_Characterdead<ct> = { Character2,F() }
 }
 procedure main() {
     print(modelexpand(T,S)[1])

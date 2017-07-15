@@ -2,6 +2,7 @@ package theory.structure;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class SeqStructureBuilder
 {
 	public final double FLOAT_STEP = 0.5;
 	
-	public SeqStructureBuilder(int tabLevel, SeqFactors factors)
+	public SeqStructureBuilder(int tabLevel, SeqFactors factors, Set<String> tempVarNames)
 	{
 		this.tabLevel = tabLevel;
 		this.stringBuilder = new StringBuilder(OutputConvenienceFunctions.insertTabsNewLine("structure S:V {", tabLevel));
@@ -42,7 +43,7 @@ public class SeqStructureBuilder
 		
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine(nextBuilder.toString(), tabLevel + 1));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
-		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("I_SDPoint = { 1 }", tabLevel + 1));
+		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("I_SDPointAt = { 1 }", tabLevel + 1));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("LimitedInt = { " + (int) (- factors.getNumObjects() * factors.getIntFactor() * 0.5 - 1)
 				+ ".." + (int) (factors.getNumObjects() * factors.getIntFactor() * 0.5 + 1) + " }", tabLevel + 1));
@@ -85,9 +86,10 @@ public class SeqStructureBuilder
 				
 				generated.add(ran);
 				
-				if (i == (factors.getNumObjects() * factors.getStringFactor()) - 1)
+				if ((i == (factors.getNumObjects() * factors.getStringFactor()) - 1) & tempVarNames.isEmpty())
 				{
-					stringDomainBuilder.append("\"" + ran + "\"}");
+					System.out.println("reached");
+					stringDomainBuilder.append("\"" + ran + "\" }");
 				}
 				else
 				{
@@ -98,8 +100,23 @@ public class SeqStructureBuilder
 			}
 		}
 		
+		Iterator<String> tempVarIterator = tempVarNames.iterator();
+		
+		while (tempVarIterator.hasNext())
+		{
+			String ele = tempVarIterator.next();
+			
+			if (tempVarIterator.hasNext())
+			{
+				stringDomainBuilder.append("\"" + ele + "\"; ");
+			}
+			else
+			{
+				stringDomainBuilder.append("\"" + ele + "\"} ");
+			}
+		}
+		
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine(stringDomainBuilder.toString(), tabLevel + 1));
-		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("boolean = { T; F}", tabLevel + 1));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel + 1));
 	}
 	

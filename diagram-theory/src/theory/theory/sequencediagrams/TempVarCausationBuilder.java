@@ -141,8 +141,8 @@ public class TempVarCausationBuilder
 	private String makeGetterPredicate(TempVar assigned, TempVar getFrom, String toGetClassName, String predicateName,
 				int fromPos, int toPos, boolean by, SeqDiagramStore store)
 	{
-		StringBuilder toReturn = new StringBuilder("(? x [" + getFrom.getType().getTypeName(store) + "] : "
-				+ OutputConvenienceFunctions.singleTempVarPredicateName(getFrom) + "(t, x) & ");
+		StringBuilder toReturn = new StringBuilder("(? " + getFrom.getName() + " [" + getFrom.getType().getTypeName(store) + "] : "
+				+ OutputConvenienceFunctions.singleTempVarPredicateName(getFrom) + "(t, " + getFrom.getName() + ") & ");
 		String byAdd = by ? " & " : ").";
 		
 		if (fromPos == toPos)

@@ -1,7 +1,8 @@
 package theory.theory.sequencediagrams;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import data.sequencediagrams.AltCombinedFragment;
@@ -17,12 +18,8 @@ public class CheckpointBuilder
 	{
 		this.tabLevel = tabLevel;
 		
-		this.checkpoints = new TreeMap<Integer,String>();
-		
-		for (int i = 2; i <= store.getMessages().size(); i++)
-		{
-			this.checkpoints.put(i, "! t [Time] : C_SDPointAt(Next(t), " + i + ") <- SDPointAt(t, " + (i-1) + ").");
-		}
+		this.nonStandardPoints = new ArrayList<Integer>();
+		this.checkpoints = new TreeMap<Integer, String>();
 	}
 	
 	private final int tabLevel;
@@ -32,9 +29,16 @@ public class CheckpointBuilder
 		return this.tabLevel;
 	}
 	
+	private final List<Integer> nonStandardPoints;
+	
+	private final List<Integer> getNonStandardPoints() 
+	{
+		return this.nonStandardPoints;
+	}
+	
 	private final Map<Integer, String> checkpoints;
 	
-	private Map<Integer, String> getCheckpoints()
+	private final Map<Integer, String> getCheckpoints()
 	{
 		return this.checkpoints;
 	}
@@ -80,7 +84,10 @@ public class CheckpointBuilder
 
 		this.getCheckpoints().put(frag.getSdIf(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdIf() + ") <- SDPointAt(t, " + (frag.getSdIf() - 1) + ") & " + ifGuardQuantifiers.toString() + ifGuardBuilder.toString() + frag.getIfGuard() + ").");
 		this.getCheckpoints().put(frag.getSdThen(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdThen() + ") <- SDPointAt(t, " + (frag.getSdIf() - 1) + ") & " + thenGuardQuantifiers.toString() + thenGuardBuilder.toString() + frag.getThenGuard() + ").");
-		this.getCheckpoints().put(frag.getSdExit(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdExit() + ") <- SDPointAt(t, " + (frag.getSdThen() - 1) + " | SDPointAt(t, " + (frag.getSdExit() - 1) + ").");
+		this.getCheckpoints().put(frag.getSdExit(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdExit() + ") <- SDPointAt(t, " + (frag.getSdThen() - 1) + ") | SDPointAt(t, " + (frag.getSdExit() - 1) + ").");
+		
+		this.getNonStandardPoints().add(frag.getSdIf() - 1);
+		this.getNonStandardPoints().add(frag.getSdThen() - 1);
 		
 		return this;
 	}
@@ -107,6 +114,10 @@ public class CheckpointBuilder
 		}
 		
 		this.getCheckpoints().put(frag.getSdStart(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdStart() + ") <- (SDPointAt(t, " + (frag.getSdStart() - 1) + ") | SDPointAt(t, " + (frag.getSdEnd() - 1) + ")) & " + loopGuardQuantifiers.toString() + loopGuardBuilder.toString() + frag.getGuard() + ").");
+		this.getCheckpoints().put(frag.getSdEnd(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdEnd() + ") <- (SDPointAt(t, " + (frag.getSdStart() - 1) + ") | SDPointAt(t, " + (frag.getSdEnd() - 1) + ")) & ~" + loopGuardQuantifiers.toString() + loopGuardBuilder.toString() + frag.getGuard() + ").");
+		
+		this.getNonStandardPoints().add(frag.getSdStart() - 1);
+		this.getNonStandardPoints().add(frag.getSdEnd() - 1);
 		
 		return this;
 	}
@@ -114,6 +125,31 @@ public class CheckpointBuilder
 	public String build()
 	{
 		StringBuilder toReturn = new StringBuilder();
+		
+		StringBuilder general = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), (s+1)) <- SDPointAt(t, s)");
+		
+		if (! this.getNonStandardPoints().isEmpty())
+		{
+			general.append("& ~(");
+			
+			for (int i = 0; i < this.getNonStandardPoints().size(); i++)
+			{
+				if (i == this.getNonStandardPoints().size() - 1)
+				{
+					general.append("(s = " + this.getNonStandardPoints().get(i) + ")).");
+				}
+				else
+				{
+					general.append("(s = " + this.getNonStandardPoints().get(i) + ") | ");
+				}
+			}
+		}
+		else
+		{
+			general.append(".");
+		}
+		
+		toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(general.toString(), this.getTabLevel()));
 		
 		for (String ele : this.getCheckpoints().values())
 		{

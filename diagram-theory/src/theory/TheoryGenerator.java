@@ -43,7 +43,7 @@ public class TheoryGenerator
 		
 		theory.theory.sequencediagrams.TheoryBuilder theoryBuilder = new theory.theory.sequencediagrams.TheoryBuilder(0, store);
 		SeqVocabularyBuilder vocBuilder = new SeqVocabularyBuilder(0);
-		SeqStructureBuilder structBuilder = new SeqStructureBuilder(0, factors);
+		SeqStructureBuilder structBuilder = new SeqStructureBuilder(0, factors, store.getTempVars().keySet());
 		
 		structBuilder.processClasses(store);
 		

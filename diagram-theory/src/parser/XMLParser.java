@@ -584,7 +584,7 @@ public class XMLParser
 		Message first = store.idToMessage(messages.get(0).getAttributeValue("Idref"));
 		Message last = store.idToMessage(messages.get(messages.size() - 1).getAttributeValue("Idref"));
 		
-		LoopCombinedFragment toReturn = new LoopCombinedFragment(guard, first.getSdPoint(), last.getSdPoint());
+		LoopCombinedFragment toReturn = new LoopCombinedFragment(guard, first.getSdPoint(), last.getSdPoint() + 1);
 		
 		store.addLoopCombinedFragment(toReturn);
 	}

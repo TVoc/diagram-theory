@@ -70,9 +70,9 @@ public class StateAxiomBuilder
 	
 	public String build()
 	{
-		return OutputConvenienceFunctions.insertTabsNewLine("! s [SDPoint] : SDPointAt(Start, s) <- I_SDPoint(s).", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPoint(Next(t), s).", this.getTabLevel() + 1)
-				+ OutputConvenienceFunctions.insertTabsNewLine("! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPoint(Next(t), s1)).", this.getTabLevel() + 1)
+		return OutputConvenienceFunctions.insertTabsNewLine("! s [SDPoint] : SDPointAt(Start, s) <- I_SDPointAt(s).", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPointAt(Next(t), s).", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPointAt(Next(t), s1)).", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ this.getTempVarStringBuilder().toString()
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
