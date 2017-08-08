@@ -1,9 +1,25 @@
 package data.sequencediagrams;
 
-public class LoopCombinedFragment
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import theory.SeqDiagramStore;
+
+public class LoopCombinedFragment extends CombinedFragment
 {
-	public LoopCombinedFragment(String guard, int sdStart, int sdEnd) throws IllegalArgumentException
+	public LoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
+			, String guard, int sdStart, int sdEnd) throws IllegalArgumentException
 	{
+		super(parent);
+
 		if (guard == null)
 		{
 			throw new IllegalArgumentException("guard cannot be null");
@@ -16,16 +32,18 @@ public class LoopCombinedFragment
 		{
 			throw new IllegalArgumentException("sdEnd cannot be less than or equal to sdStart");
 		}
-		
+
 		this.guard = guard;
 		this.sdStart = sdStart;
 		this.sdEnd = sdEnd;
+		this.children = children.isPresent() ? children.get() : Collections.emptyList();
+		this.messages = messages.isPresent() ? messages.get() : Collections.emptyList();
 	}
-	
+
 	private final String guard;
-	
+
 	private final int sdStart;
-	
+
 	private final int sdEnd;
 
 	public String getGuard()
@@ -41,5 +59,227 @@ public class LoopCombinedFragment
 	public int getSdEnd()
 	{
 		return this.sdEnd;
+	}
+
+	private final List<CombinedFragment> children;
+
+	private List<CombinedFragment> internalGetChildren()
+	{
+		return this.children;
+	}
+
+	public List<CombinedFragment> getChildren()
+	{
+		return this.internalGetChildren();
+	}
+
+	public CombinedFragment getChild(int index) throws IndexOutOfBoundsException
+	{
+		return this.internalGetChildren().get(index);
+	}
+
+	private final List<Message> messages;
+
+	private List<Message> internalGetMessages()
+	{
+		return this.messages;
+	}
+
+	public List<Message> getMessages()
+	{
+		return Collections.unmodifiableList(this.internalGetMessages());
+	}
+
+	public Message getMessage(int index) throws IndexOutOfBoundsException
+	{
+		return this.internalGetMessages().get(index);
+	}
+
+	public boolean containsMessage(Message message)
+	{
+		return this.internalGetMessages().contains(message);
+	}
+
+	public List<Message> flattenMessages()
+	{
+		List<Message> toReturn = new ArrayList<Message>(this.internalGetMessages());
+
+		for (CombinedFragment ele : this.internalGetChildren())
+		{
+			toReturn.addAll(ele.flattenMessages());
+		}
+
+		Collections.sort(toReturn);
+
+		return toReturn;
+	}
+
+	@Override
+	public TreeMap<Message, String> getEntryPoints()
+	{
+		TreeMap<Message, String> output = new TreeMap<Message, String>();
+
+		this.getEntryPointsRec(output, "");
+
+		return output;
+	}
+
+	protected void getEntryPointsRec(TreeMap<Message, String> output, String intermediate)
+	{
+		List<Message> messages = this.flattenMessages();
+
+		if (this.internalGetMessages().isEmpty() ||
+				(! messages.isEmpty() && this.internalGetMessages().get(0).getSdPoint() > messages.get(0).getSdPoint()))
+		{
+			CombinedFragment first = this.internalGetChildren().get(0);
+			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
+			
+			if (first instanceof LoopCombinedFragment)
+			{
+				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
+				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetChildren(), true);
+			}
+			
+			else
+			{
+				this.internalGetChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+			}
+			
+			Iterator<CombinedFragment> it = this.internalGetChildren().iterator();
+			it.next();
+
+			while (it.hasNext())
+			{
+				CombinedFragment ele = it.next();
+
+				if (! seen.contains(ele))
+				{
+					ele.getEntryPointsRec(output, "");
+				}
+			}
+		}
+		else
+		{
+			output.put(this.internalGetMessages().get(0), intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+
+			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
+			
+			this.wrapLoops(output, seen, "", this.internalGetChildren(), false);
+			
+			for (CombinedFragment ele : this.internalGetChildren())
+			{
+				if (! seen.contains(ele))
+				{
+					ele.getEntryPointsRec(output, "");
+				}
+			}
+		}
+	}
+	
+
+	
+	@Override
+	public TreeMap<Message, String> getFirstEntryPoints()
+	{
+		TreeMap<Message, String> output = new TreeMap<Message, String>();
+		
+		this.getFirstEntryPointsRec(output, "");
+		
+		return output;
+	}
+	
+	protected void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate)
+	{
+		List<Message> msgs = this.flattenMessages();
+
+		if (this.internalGetMessages().isEmpty() || 
+				(! this.internalGetChildren().isEmpty() && this.internalGetMessages().get(0).getSdPoint() > msgs.get(0).getSdPoint()))
+		{
+
+			this.internalGetChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+		}
+		else
+		{
+			output.put(this.getMessage(0), intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+		}
+	}
+
+	protected void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output)
+	{
+		List<Message> messages = this.flattenMessages();
+
+		if (this.internalGetMessages().get(this.internalGetMessages().size() - 1).getSdPoint() == messages.get(messages.size() - 1).getSdPoint())
+		{
+			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getMessage(this.internalGetMessages().size() - 1));
+
+			this.processExit(store, output, exitFor);
+		}
+
+		for (CombinedFragment ele : this.internalGetChildren())
+		{
+			ele.calcExitForMessagesRec(store, output);
+		}
+	}
+
+	private void processExit(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit)
+	{
+		if (this.getParent().isPresent())
+		{
+			this.getParent().get().traverseUp(store, output, exit, "~(" + this.getGuard() + ")");
+		}
+		else
+		{
+			this.exitToOutside(store, output, exit, Optional.of("~(" + this.getGuard() + ")"));
+		}
+	}
+
+	protected void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate)
+	{
+		List<Message> msgs = this.flattenMessages();
+
+		Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), msgs);
+
+		if (messageAfter.isPresent())
+		{
+			CombinedFragment frag = messageAfter.get().getFragment().get();
+
+			while (! frag.equals(this) && ! frag.getParent().get().equals(this))
+			{
+				frag = frag.getParent().get();
+			}
+
+			if (frag.equals(this))
+			{
+				exit.putExit(messageAfter.get(), intermediate);
+				return;
+			}
+
+			Map<Message, String> entryPoints = frag.getEntryPoints();
+
+			for (Entry<Message, String> ele : entryPoints.entrySet())
+			{
+				if (ele.getValue().equals(""))
+				{
+					ele.setValue(intermediate);
+				}
+				else
+				{
+					ele.setValue(intermediate + " & " + ele.getValue());
+				}
+			}
+
+			exit.putExits(entryPoints);
+		}
+
+		if (this.getParent().isPresent())
+		{
+			this.traverseUp(store, output, exit, intermediate);
+		}
+		else
+		{
+			this.exitToOutside(store, output, exit, intermediate.equals("") ? Optional.empty() : Optional.of(intermediate));
+		}
 	}
 }
