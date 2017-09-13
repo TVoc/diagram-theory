@@ -2,6 +2,7 @@ package data.sequencediagrams;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +78,32 @@ public class LoopCombinedFragment extends CombinedFragment
 	{
 		return this.internalGetChildren().get(index);
 	}
+	
+	public List<CombinedFragment> getChildrenAfter(CombinedFragment frag) throws IllegalArgumentException
+	{
+		if (! this.internalGetChildren().contains(frag))
+		{
+			throw new IllegalArgumentException("did not have frag as child");
+		}
+		
+		List<CombinedFragment> toReturn = new ArrayList<CombinedFragment>(this.internalGetChildren());
+		
+		Iterator<CombinedFragment> it = toReturn.iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment ele = it.next();
+			
+			if (frag.equals(ele))
+			{
+				break;
+			}
+			
+			it.remove();
+		}
+		
+		return toReturn;
+	}
 
 	private final List<Message> messages;
 
@@ -95,6 +122,7 @@ public class LoopCombinedFragment extends CombinedFragment
 		return this.internalGetMessages().get(index);
 	}
 
+	@Override
 	public boolean containsMessage(Message message)
 	{
 		return this.internalGetMessages().contains(message);
@@ -256,7 +284,15 @@ public class LoopCombinedFragment extends CombinedFragment
 				return;
 			}
 
-			Map<Message, String> entryPoints = frag.getEntryPoints();
+			List<CombinedFragment> nextFragments = this.getChildrenAfter(frag);
+			this.extractConsecutiveLoops(nextFragments);
+			
+			Map<Message, String> entryPoints = new HashMap<Message, String>();
+			
+			for (CombinedFragment ele : nextFragments)
+			{
+				entryPoints.putAll(ele.getEntryPoints());
+			}
 
 			for (Entry<Message, String> ele : entryPoints.entrySet())
 			{

@@ -2,6 +2,7 @@ package data.sequencediagrams;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -122,6 +123,32 @@ public class AltCombinedFragment extends CombinedFragment
 	{
 		return this.internalGetIfChildren().get(index);
 	}
+	
+	public List<CombinedFragment> getIfChildrenAfter(CombinedFragment frag) throws IllegalArgumentException
+	{
+		if (! this.internalGetIfChildren().contains(frag))
+		{
+			throw new IllegalArgumentException("did not have frag as child");
+		}
+		
+		List<CombinedFragment> toReturn = new ArrayList<CombinedFragment>(this.internalGetIfChildren());
+		
+		Iterator<CombinedFragment> it = toReturn.iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment ele = it.next();
+			
+			if (frag.equals(ele))
+			{
+				break;
+			}
+			
+			it.remove();
+		}
+		
+		return toReturn;
+	}
 
 	private final List<CombinedFragment> internalGetThenChildren()
 	{
@@ -131,6 +158,32 @@ public class AltCombinedFragment extends CombinedFragment
 	public CombinedFragment getThenChild(int index) throws IndexOutOfBoundsException
 	{
 		return this.internalGetThenChildren().get(index);
+	}
+	
+	public List<CombinedFragment> getThenChildrenAfter(CombinedFragment frag) throws IllegalArgumentException
+	{
+		if (! this.internalGetThenChildren().contains(frag))
+		{
+			throw new IllegalArgumentException("did not have frag as child");
+		}
+		
+		List<CombinedFragment> toReturn = new ArrayList<CombinedFragment>(this.internalGetThenChildren());
+		
+		Iterator<CombinedFragment> it = toReturn.iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment ele = it.next();
+			
+			if (frag.equals(ele))
+			{
+				break;
+			}
+			
+			it.remove();
+		}
+		
+		return toReturn;
 	}
 
 	public List<CombinedFragment> getThenChildren()
@@ -189,6 +242,11 @@ public class AltCombinedFragment extends CombinedFragment
 		toReturn.addAll(this.internalGetThenMessages());
 		
 		return toReturn;
+	}
+	
+	public boolean containsMessage(Message message)
+	{
+		return this.ifContains(message) || this.thenContains(message);
 	}
 
 	public List<Message> flattenMessages()
@@ -452,7 +510,15 @@ public class AltCombinedFragment extends CombinedFragment
 					return;
 				}
 				
-				Map<Message, String> entryPoints = frag.getEntryPoints();
+				List<CombinedFragment> nextFragments = this.getIfChildrenAfter(frag);
+				this.extractConsecutiveLoops(nextFragments);
+				
+				Map<Message, String> entryPoints = new HashMap<Message, String>();
+				
+				for (CombinedFragment ele : nextFragments)
+				{
+					entryPoints.putAll(ele.getEntryPoints());
+				}
 				
 				for (Entry<Message, String> ele : entryPoints.entrySet())
 				{
@@ -499,7 +565,15 @@ public class AltCombinedFragment extends CombinedFragment
 					return;
 				}
 				
-				Map<Message, String> entryPoints = frag.getEntryPoints();
+				List<CombinedFragment> nextFragments = this.getThenChildrenAfter(frag);
+				this.extractConsecutiveLoops(nextFragments);
+				
+				Map<Message, String> entryPoints = new HashMap<Message, String>();
+				
+				for (CombinedFragment ele : nextFragments)
+				{
+					entryPoints.putAll(ele.getEntryPoints());
+				}
 				
 				for (Entry<Message, String> ele : entryPoints.entrySet())
 				{

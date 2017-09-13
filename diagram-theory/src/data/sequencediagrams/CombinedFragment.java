@@ -35,6 +35,8 @@ public abstract class CombinedFragment
 	
 	public abstract List<Message> getMessages();
 	
+	public abstract boolean containsMessage(Message message);
+	
 	public abstract List<Message> flattenMessages();
 	
 	protected abstract void getEntryPointsRec(TreeMap<Message, String> output, String intermediate);
@@ -64,6 +66,25 @@ public abstract class CombinedFragment
 				intermediate = "";
 			}
 		}
+	}
+	
+	protected void extractConsecutiveLoops(List<CombinedFragment> fragments)
+	{
+		int upTo = 1;
+		
+		for (int i = 1; i < fragments.size(); i++)
+		{
+			CombinedFragment ele = fragments.get(i);
+			
+			if (! (ele instanceof LoopCombinedFragment))
+			{
+				break;
+			}
+			
+			upTo++;
+		}
+		
+		fragments.subList(0, upTo).clear();
 	}
 	
 	public abstract TreeMap<Message, String> getFirstEntryPoints();
