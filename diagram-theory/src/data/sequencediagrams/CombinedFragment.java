@@ -189,6 +189,8 @@ public abstract class CombinedFragment
 		}
 	}
 	
+	protected List<CombinedFragment> gatherNextLoops()
+	
 	protected Optional<Message> getMessageAfter(Message message, List<Message> messages)
 	{
 		Optional<Message> toReturn = Optional.empty();
