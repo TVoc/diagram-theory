@@ -150,6 +150,34 @@ public abstract class CombinedFragment
 		
 		if (finalMsg.getSdPoint() < store.getMessages().size())
 		{
+			List<LoopCombinedFragment> loops = this.gatherNextLoops(store);
+			Map<Message, String> entryPoints = new TreeMap<Message, String>();
+			
+			if (! loops.isEmpty())
+			{
+				for (LoopCombinedFragment ele : loops)
+				{
+					Map<Message, String> elePoints = ele.getEntryPoints();
+					
+					if (exitGuard.isPresent())
+					{
+						for (Entry<Message, String> entry : elePoints.entrySet())
+						{
+							if (entry.getValue().equals(""))
+							{
+								entry.setValue(exitGuard.get());
+							}
+							else
+							{
+								entry.setValue(exitGuard.get() + " & " + entry.getValue());
+							}
+						}
+					}
+				}
+				
+				return;
+			}
+			
 			Message next = store.getMessage(finalMsg.getSdPoint());
 			
 			if (next.getFragment().isPresent())
@@ -161,7 +189,7 @@ public abstract class CombinedFragment
 					frag = frag.getParent().get();
 				}
 				
-				Map<Message, String> entryPoints = next.getFragment().get().getEntryPoints();
+				entryPoints.putAll(next.getFragment().get().getEntryPoints());
 				
 				if (exitGuard.isPresent())
 				{
