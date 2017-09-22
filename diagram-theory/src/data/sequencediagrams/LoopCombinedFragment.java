@@ -307,6 +307,7 @@ public class LoopCombinedFragment extends CombinedFragment
 			}
 
 			exit.putExits(entryPoints);
+			return;
 		}
 
 		if (this.getParent().isPresent())

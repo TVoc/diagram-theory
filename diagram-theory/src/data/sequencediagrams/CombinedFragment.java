@@ -37,6 +37,11 @@ public abstract class CombinedFragment
 	
 	public abstract boolean containsMessage(Message message);
 	
+	public Message getFinalMessage()
+	{
+		return this.flattenMessages().get(this.flattenMessages().size() - 1);
+	}
+	
 	public abstract List<Message> flattenMessages();
 	
 	protected abstract void getEntryPointsRec(TreeMap<Message, String> output, String intermediate);
@@ -189,7 +194,51 @@ public abstract class CombinedFragment
 		}
 	}
 	
-	protected List<CombinedFragment> gatherNextLoops()
+	protected List<LoopCombinedFragment> gatherNextLoops(SeqDiagramStore store)
+	{
+		List<LoopCombinedFragment> toReturn = new ArrayList<LoopCombinedFragment>();
+		
+		Message message = this.getFinalMessage();
+		
+		boolean done = false;
+		
+		while (! done)
+		{
+			if (message.getSdPoint() >= store.numMessages())
+			{
+				done = true;
+			}
+			else
+			{
+				message = store.getMessage(message.getSdPoint());
+				
+				if (message.getFragment().isPresent())
+				{
+					CombinedFragment frag = message.getFragment().get();
+					
+					while (frag.getParent().isPresent())
+					{
+						frag = frag.getParent().get();
+					}
+					
+					if ((frag instanceof LoopCombinedFragment))
+					{
+						toReturn.add((LoopCombinedFragment) frag);
+					}
+					else
+					{
+						done = true;
+					}
+				}
+				else
+				{
+					done = true;
+				}
+			}
+		}
+		
+		return toReturn;
+	}
 	
 	protected Optional<Message> getMessageAfter(Message message, List<Message> messages)
 	{

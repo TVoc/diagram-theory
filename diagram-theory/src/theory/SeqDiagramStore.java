@@ -91,6 +91,11 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return this.internalGetMessages().get(index);
 	}
 	
+	public int numMessages()
+	{
+		return this.internalGetMessages().size();
+	}
+	
 	private final List<AltCombinedFragment> altCombinedFragments;
 	
 	private List<AltCombinedFragment> internalGetAltCombinedFragments()

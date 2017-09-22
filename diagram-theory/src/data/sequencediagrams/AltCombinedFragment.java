@@ -533,6 +533,7 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 
 				exit.putExits(entryPoints);
+				return;
 			}
 			
 			if (this.getParent().isPresent())
@@ -588,6 +589,7 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 				
 				exit.putExits(entryPoints);
+				return;
 			}
 			
 			if (this.getParent().isPresent())

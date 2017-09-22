@@ -533,7 +533,7 @@ public class XMLParser
 				store.addTempVar(content, new TempVar(attr.getType(), content));
 			}
 			
-			Message newMessage = new Message(content, sdPoint, isReturn, fromName, toName);
+			Message newMessage = new Message(content, id, sdPoint, isReturn, fromName, toName);
 			store.addMessage(newMessage);
 			store.addIdToMessage(id, newMessage);
 		}
