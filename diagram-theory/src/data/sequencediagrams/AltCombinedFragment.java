@@ -61,9 +61,30 @@ public class AltCombinedFragment extends CombinedFragment
 
 		this.ifGuard = ifGuard;
 		this.thenGuard = thenGuard;
-		this.sdIf = sdIf;
-		this.sdThen = sdThen;
-		this.sdExit = sdExit;
+		
+		String diagramName;
+		
+		if (ifMessages.isPresent())
+		{
+			diagramName = ifMessages.get().get(0).getDiagramName();
+		}
+		else if (ifChildren.isPresent())
+		{
+			diagramName = ifChildren.get().get(0).getDiagramName();
+		}
+		else if (thenMessages.isPresent())
+		{
+			diagramName = thenMessages.get().get(0).getDiagramName();
+		}
+		else
+		{
+			diagramName = thenChildren.get().get(0).getDiagramName();
+		}
+		
+		this.sdIf = diagramName + "_" + sdIf;
+		this.sdThen = diagramName + "_" + sdThen;
+		this.sdExit = diagramName + "_" + sdExit;
+		
 		this.ifChildren = ifChildren.isPresent() ? ifChildren.get() : Collections.emptyList();
 		this.thenChildren = thenChildren.isPresent() ? thenChildren.get() : Collections.emptyList();
 		this.ifMessages = ifMessages.isPresent() ? ifMessages.get() : Collections.emptyList();
@@ -74,11 +95,11 @@ public class AltCombinedFragment extends CombinedFragment
 
 	private final String thenGuard;
 
-	private final int sdIf;
+	private final String sdIf;
 
-	private final int sdThen;
+	private final String sdThen;
 
-	private final int sdExit;
+	private final String sdExit;
 
 	public String getIfGuard()
 	{
@@ -90,17 +111,17 @@ public class AltCombinedFragment extends CombinedFragment
 		return this.thenGuard;
 	}
 
-	public int getSdIf()
+	public String getSdIf()
 	{
 		return this.sdIf;
 	}
 
-	public int getSdThen()
+	public String getSdThen()
 	{
 		return this.sdThen;
 	}
 
-	public int getSdExit()
+	public String getSdExit()
 	{
 		return this.sdExit;
 	}
@@ -242,6 +263,23 @@ public class AltCombinedFragment extends CombinedFragment
 		toReturn.addAll(this.internalGetThenMessages());
 		
 		return toReturn;
+	}
+	
+	public String getDiagramName()
+	{
+		if (! this.internalGetIfMessages().isEmpty())
+		{
+			return this.internalGetIfMessages().get(0).getDiagramName();
+		}
+		else if (! this.internalGetIfChildren().isEmpty())
+		{
+			return this.internalGetIfChildren().get(0).getDiagramName();
+		}
+		else if (! this.internalGetThenMessages().isEmpty())
+		{
+			return this.internalGetThenMessages().get(0).getDiagramName();
+		}
+		return this.internalGetThenChildren().get(0).getDiagramName();
 	}
 	
 	public boolean containsMessage(Message message)

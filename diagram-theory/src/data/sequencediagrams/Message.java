@@ -54,8 +54,6 @@ public class Message implements Comparable<Message>
 	
 	private final Optional<String> toName;
 	
-	private Optional<CombinedFragment> fragment;
-	
 	private final boolean isReturn;
 	
 	private final String diagramName;
@@ -76,7 +74,7 @@ public class Message implements Comparable<Message>
 	}
 	
 	public String getFullSDPoint() {
-		return this.getDiagramName() + "-" + (int) this.getSdPoint();
+		return this.getDiagramName() + "_" + (int) this.getSdPoint();
 	}
 	
 	public String getSDPointAsCallPoint()

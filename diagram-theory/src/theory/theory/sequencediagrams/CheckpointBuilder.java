@@ -19,7 +19,7 @@ public class CheckpointBuilder
 	{
 		this.tabLevel = tabLevel;
 		
-		this.nonStandardPoints = new ArrayList<Integer>();
+		this.nonStandardPoints = new ArrayList<String>();
 		this.checkpoints = new TreeMap<Integer, String>();
 	}
 	
@@ -123,10 +123,10 @@ public class CheckpointBuilder
 		return this;
 	}
 	
-	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)
-	{
-		
-	}
+//	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)
+//	{
+//		this.getNonStandardPoints().add
+//	}
 	
 	public String build()
 	{

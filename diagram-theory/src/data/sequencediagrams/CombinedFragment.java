@@ -35,6 +35,8 @@ public abstract class CombinedFragment
 	
 	public abstract List<Message> getMessages();
 	
+	public abstract String getDiagramName();
+	
 	public abstract boolean containsMessage(Message message);
 	
 	public Message getFinalMessage()

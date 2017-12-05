@@ -63,13 +63,36 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 			}
 		}
 		
-		//TODO initialize callPoints
+		for (Message message : this.messages)
+		{
+			if (message.getSdPoint() != 1)
+			{
+				for (Entry<String, Message> entry : firstInstructions.entrySet())
+				{
+					if (message.getContent().contains(entry.getKey()))
+					{
+						callPoints.put(message, entry.getValue());
+					}
+				}
+			}
+		}
 		
 		for (Message key : this.callPoints.keySet())
 		{
 			int i = this.messages.indexOf(key);
 			this.messages.add(i + 1, new Message("", key.getSDPointAsCallPoint(), key.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
 					key.getDiagramName()));
+		}
+		
+		this.diagramMessages = new HashMap<String, List<Message>>();
+		
+		for (Message message : this.messages)
+		{
+			if (! diagramMessages.containsKey(message.getDiagramName()))
+			{
+				diagramMessages.put(message.getDiagramName(), new ArrayList<Message>());
+			}
+			diagramMessages.get(message.getDiagramName()).add(message);
 		}
 	}
 	
@@ -123,26 +146,47 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return this.internalGetMessages().size();
 	}
 	
+	private final Map<String, List<Message>> diagramMessages;
+	
+	private Map<String, List<Message>> internalGetDiagramMessages()
+	{
+		return this.diagramMessages;
+	}
+	
+	public Map<String, List<Message>> getDiagramMessages()
+	{
+		return Collections.unmodifiableMap(this.internalGetDiagramMessages());
+	}
+	
 	public List<Message> getMessagesForDiagram(String diagramName) throws IllegalArgumentException
 	{
 		if (diagramName == null)
 		{
 			throw new IllegalArgumentException("diagramName cannot be null");
 		}
-		
-		List<Message> toReturn = new ArrayList<Message>();
-		
-		for (Message message : this.internalGetMessages())
+		if (! this.internalGetDiagramMessages().containsKey(diagramName))
 		{
-			if (message.getDiagramName().equals(diagramName))
-			{
-				toReturn.add(message);
-			}
+			throw new IllegalArgumentException("diagram does not contain messages for diagram name: " + diagramName);
 		}
-		
-		Collections.sort(toReturn);
-		
-		return toReturn;
+		return this.internalGetDiagramMessages().get(diagramName);
+//		if (diagramName == null)
+//		{
+//			throw new IllegalArgumentException("diagramName cannot be null");
+//		}
+//		
+//		List<Message> toReturn = new ArrayList<Message>();
+//		
+//		for (Message message : this.internalGetMessages())
+//		{
+//			if (message.getDiagramName().equals(diagramName))
+//			{
+//				toReturn.add(message);
+//			}
+//		}
+//		
+//		Collections.sort(toReturn);
+//		
+//		return toReturn;
 	}
 	
 	public Optional<Message> getNextMessage(Message message)
@@ -181,6 +225,24 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 	public Map<Message, Message> getCallPoints()
 	{
 		return Collections.unmodifiableMap(this.internalGetCallPoints());
+	}
+	
+	public void expandWithCallPoints(List<Message> messages)
+	{
+		for (int i = 0; i < messages.size(); i++)
+		{
+			Message ele = messages.get(i);
+			
+			for (Message cpMessage : this.internalGetCallPoints().keySet())
+			{
+				if (ele.equals(cpMessage))
+				{
+					messages.add((i+1), new Message("", ele.getSDPointAsCallPoint(), ele.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
+					ele.getDiagramName()));
+					i++;
+				}
+			}
+		}
 	}
 	
 	private final Set<String> diagramNames;

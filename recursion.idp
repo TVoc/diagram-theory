@@ -12,7 +12,7 @@ vocabulary V {
     C_SDPoint(Time,SDPoint)
     
     type LimitedInt = { 0..5 } isa int
-    type StackLevel = { 1..100 } isa nat
+    type StackLevel = { 1..10 } isa nat
     type bool constructed from { T,F }
     
     type A
