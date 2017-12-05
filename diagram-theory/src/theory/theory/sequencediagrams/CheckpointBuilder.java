@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import data.sequencediagrams.AltCombinedFragment;
 import data.sequencediagrams.LoopCombinedFragment;
+import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
 import parser.XMLParser;
 import theory.OutputConvenienceFunctions;
@@ -120,6 +121,11 @@ public class CheckpointBuilder
 		this.getNonStandardPoints().add(frag.getSdEnd() - 1);
 		
 		return this;
+	}
+	
+	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)
+	{
+		
 	}
 	
 	public String build()

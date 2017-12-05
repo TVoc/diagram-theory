@@ -1,8 +1,13 @@
 package theory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import data.classdiagrams.Association;
@@ -44,6 +49,28 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		this.messages = messages;
 		this.altCombinedFragments = altCombinedFragments;
 		this.loopCombinedFragments = loopCombinedFragments;
+		this.diagramNames = new HashSet<String>();
+		this.callPoints = new HashMap<Message, Message>();
+		
+		Map<String, Message> firstInstructions = new HashMap<String, Message>();
+		
+		for (Message message : this.messages)
+		{
+			diagramNames.add(message.getDiagramName());
+			if (((int) message.getSdPoint()) == 1)
+			{
+				firstInstructions.put(message.getDiagramName(), message);
+			}
+		}
+		
+		//TODO initialize callPoints
+		
+		for (Message key : this.callPoints.keySet())
+		{
+			int i = this.messages.indexOf(key);
+			this.messages.add(i + 1, new Message("", key.getSDPointAsCallPoint(), key.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
+					key.getDiagramName()));
+		}
 	}
 	
 	private final Map<String,TempVar> tempVars;
@@ -94,6 +121,103 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 	public int numMessages()
 	{
 		return this.internalGetMessages().size();
+	}
+	
+	public List<Message> getMessagesForDiagram(String diagramName) throws IllegalArgumentException
+	{
+		if (diagramName == null)
+		{
+			throw new IllegalArgumentException("diagramName cannot be null");
+		}
+		
+		List<Message> toReturn = new ArrayList<Message>();
+		
+		for (Message message : this.internalGetMessages())
+		{
+			if (message.getDiagramName().equals(diagramName))
+			{
+				toReturn.add(message);
+			}
+		}
+		
+		Collections.sort(toReturn);
+		
+		return toReturn;
+	}
+	
+	public Optional<Message> getNextMessage(Message message)
+	{
+		List<Message> messages = this.getMessagesForDiagram(message.getDiagramName());
+		
+		try
+		{
+			return Optional.of(messages.get((int) message.getSdPoint()));
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			return Optional.empty();
+		}
+	}
+	
+	public Set<String> getAllSdPoints()
+	{
+		Set<String> toReturn = new HashSet<String>();
+		
+		for (Message message : this.internalGetMessages())
+		{
+			toReturn.add(message.getFullSDPoint());
+		}
+		
+		return toReturn;
+	}
+	
+	private final Map<Message, Message> callPoints;
+	
+	private Map<Message, Message> internalGetCallPoints()
+	{
+		return this.callPoints;
+	}
+	
+	public Map<Message, Message> getCallPoints()
+	{
+		return Collections.unmodifiableMap(this.internalGetCallPoints());
+	}
+	
+	private final Set<String> diagramNames;
+	
+	private Set<String> internalGetDiagramNames()
+	{
+		return this.diagramNames;
+	}
+	
+	public Set<String> getDiagramNames()
+	{
+		return Collections.unmodifiableSet(this.diagramNames);
+	}
+	
+	public boolean matchesDiagram(String content)
+	{
+		for (String diagramName : this.internalGetDiagramNames())
+		{
+			if (content.contains(diagramName))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean callsDiagram(Message message)
+	{
+		if (message.getSdPoint() == 1)
+		{
+			return false;
+		}
+		else
+		{
+			return this.matchesDiagram(message.getContent());
+		}
 	}
 	
 	private final List<AltCombinedFragment> altCombinedFragments;

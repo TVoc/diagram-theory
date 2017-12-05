@@ -2,6 +2,9 @@ package theory.vocabulary.sequencediagrams;
 
 import theory.OutputConvenienceFunctions;
 import theory.SeqDiagramStore;
+
+import java.util.Iterator;
+
 import data.classdiagrams.Association;
 import data.classdiagrams.Class;
 import data.classdiagrams.DataUnit;
@@ -79,6 +82,19 @@ public class SeqVocabularyBuilder
 			this.getSeqAssociationBuilder().addAssociation(ele, store);
 		}
 		
+		StringBuilder sdPoints = new StringBuilder();
+		
+		Iterator<String> sdIt = store.getAllSdPoints().iterator();
+		
+		while (sdIt.hasNext())
+		{
+			sdPoints.append(sdIt.next());
+			if (sdIt.hasNext())
+			{
+				sdPoints.append(", ");
+			}
+		}
+		
 		return OutputConvenienceFunctions.insertTabsNewLine("LTCvocabulary V {", this.getTabLevel())
 				+ OutputConvenienceFunctions.insertTabsNewLine("type Time isa nat", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("Start: Time", this.getTabLevel() + 1)
@@ -93,9 +109,13 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedInt isa int", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedFloat isa float", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedString isa string", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type SDPointString constructed from { " + sdPoints.toString() + " }", this.getTabLevel())
 				+ OutputConvenienceFunctions.insertTabsNewLine("type boolean constructed from { T, F }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void constructed from { null }", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type Stacklevel = { 1..100} isa nat", this.getTabLevel() + 1) // TODO Stacklevel max is hardcoded
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("CurrentStacklevel(Time,Stacklevel)", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("ReturnPoint(Time,Stacklevel,SDPointString)", this.getTabLevel() + 1)
 				+ this.getSeqClassBuilder().build()
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ this.getTempVarBuilder().build()

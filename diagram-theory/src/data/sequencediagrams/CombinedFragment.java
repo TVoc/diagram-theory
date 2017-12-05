@@ -147,10 +147,11 @@ public abstract class CombinedFragment
 	{
 		List<Message> messages = this.flattenMessages();
 		Message finalMsg = messages.get(messages.size() - 1);
+		List<Message> diagramMessages = store.getMessagesForDiagram(finalMsg.getDiagramName());
 		
-		if (finalMsg.getSdPoint() < store.getMessages().size())
+		if (finalMsg.getSdPoint() < diagramMessages.size())
 		{
-			List<LoopCombinedFragment> loops = this.gatherNextLoops(store);
+			List<LoopCombinedFragment> loops = this.gatherNextLoops(diagramMessages);
 			Map<Message, String> entryPoints = new TreeMap<Message, String>();
 			
 			if (! loops.isEmpty())
@@ -178,7 +179,7 @@ public abstract class CombinedFragment
 				return;
 			}
 			
-			Message next = store.getMessage(finalMsg.getSdPoint());
+			Message next = diagramMessages.get((int) finalMsg.getSdPoint());
 			
 			if (next.getFragment().isPresent())
 			{
@@ -222,7 +223,7 @@ public abstract class CombinedFragment
 		}
 	}
 	
-	protected List<LoopCombinedFragment> gatherNextLoops(SeqDiagramStore store)
+	protected List<LoopCombinedFragment> gatherNextLoops(List<Message> diagramMessages)
 	{
 		List<LoopCombinedFragment> toReturn = new ArrayList<LoopCombinedFragment>();
 		
@@ -232,13 +233,13 @@ public abstract class CombinedFragment
 		
 		while (! done)
 		{
-			if (message.getSdPoint() >= store.numMessages())
+			if (message.getSdPoint() >= diagramMessages.size())
 			{
 				done = true;
 			}
 			else
 			{
-				message = store.getMessage(message.getSdPoint());
+				message = diagramMessages.get((int) message.getSdPoint());
 				
 				if (message.getFragment().isPresent())
 				{

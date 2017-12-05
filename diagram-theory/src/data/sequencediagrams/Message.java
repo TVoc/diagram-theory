@@ -1,10 +1,13 @@
 package data.sequencediagrams;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class Message implements Comparable<Message>
 {
-	public Message(String content, String id, int sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName) throws IllegalArgumentException
+	public static final Pattern getterSetternPattern = Pattern.compile("(get|set).*");
+	
+	public Message(String content, String id, double sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName, String diagramName) throws IllegalArgumentException
 	{
 		if (content == null)
 		{
@@ -26,6 +29,10 @@ public class Message implements Comparable<Message>
 		{
 			throw new IllegalArgumentException("toId cannot be null");
 		}
+		if (diagramName == null)
+		{
+			throw new IllegalArgumentException("diagramName cannot be null");
+		}
 		
 		this.content = content;
 		this.id = id;
@@ -34,13 +41,14 @@ public class Message implements Comparable<Message>
 		this.toName = toName;
 		this.fragment = Optional.empty();
 		this.isReturn = isReturn;
+		this.diagramName = diagramName;
 	}
 	
 	private final String content;
 	
 	private final String id;
 	
-	private final int sdPoint;
+	private final double sdPoint;
 	
 	private final Optional<String> fromName;
 	
@@ -49,6 +57,8 @@ public class Message implements Comparable<Message>
 	private Optional<CombinedFragment> fragment;
 	
 	private final boolean isReturn;
+	
+	private final String diagramName;
 
 	public String getContent()
 	{
@@ -60,9 +70,18 @@ public class Message implements Comparable<Message>
 		return this.id;
 	}
 
-	public int getSdPoint()
+	public double getSdPoint()
 	{
 		return this.sdPoint;
+	}
+	
+	public String getFullSDPoint() {
+		return this.getDiagramName() + "-" + (int) this.getSdPoint();
+	}
+	
+	public String getSDPointAsCallPoint()
+	{
+		return this.getDiagramName() + "_" + (this.getSdPoint() + "post");
 	}
 
 	public Optional<String> getFromName()
@@ -114,6 +133,13 @@ public class Message implements Comparable<Message>
 	{
 		return this.isReturn;
 	}
+	
+	
+	
+	public String getDiagramName()
+	{
+		return this.diagramName;
+	}
 
 	@Override
 	public int hashCode()
@@ -147,6 +173,6 @@ public class Message implements Comparable<Message>
 	@Override
 	public int compareTo(Message arg0)
 	{
-		return Integer.compare(this.getSdPoint(), arg0.getSdPoint());
+		return this.getFullSDPoint().compareTo(arg0.getFullSDPoint());
 	}
 }
