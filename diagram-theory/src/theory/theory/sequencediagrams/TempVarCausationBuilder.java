@@ -50,7 +50,7 @@ public class TempVarCausationBuilder
 		}
 		else if (message.getContent().split("\\(")[0].contains("get"))
 		{
-			TempVar assigned = store.resolveTempVar(store.getMessage((int) message.getSdPoint()).getContent());
+			TempVar assigned = store.resolveTempVar(store.getMessage(message.getSdPoint().getSequenceNumber()).getContent());
 			
 			return this.handleGetStatement(message, false, store, assigned, message.getContent());
 		}

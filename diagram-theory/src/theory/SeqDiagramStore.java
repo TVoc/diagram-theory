@@ -65,7 +65,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		
 		for (Message message : this.messages)
 		{
-			if (message.getSdPoint() != 1)
+			if (message.getSdPoint().getSequenceNumber() != 1)
 			{
 				for (Entry<String, Message> entry : firstInstructions.entrySet())
 				{
@@ -80,8 +80,8 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		for (Message key : this.callPoints.keySet())
 		{
 			int i = this.messages.indexOf(key);
-			this.messages.add(i + 1, new Message("", key.getSDPointAsCallPoint(), key.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
-					key.getDiagramName()));
+			this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
+					key.getDiagramName(), key.getFragment().get()));
 		}
 		
 		this.diagramMessages = new HashMap<String, List<Message>>();

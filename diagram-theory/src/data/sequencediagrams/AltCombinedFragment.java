@@ -18,7 +18,7 @@ public class AltCombinedFragment extends CombinedFragment
 {
 	public AltCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> ifChildren
 			, Optional<List<CombinedFragment>> thenChildren, Optional<List<Message>> ifMessages, Optional<List<Message>> thenMessages
-			, String ifGuard, String thenGuard, int sdIf, int sdThen, int sdExit) throws IllegalArgumentException
+			, String ifGuard, String thenGuard, SDPoint sdIf, SDPoint sdThen, SDPoint sdExit) throws IllegalArgumentException
 	{
 		super(parent);
 
@@ -30,15 +30,15 @@ public class AltCombinedFragment extends CombinedFragment
 		{
 			throw new IllegalArgumentException("thenGuard cannot be null");
 		}
-		if (sdIf < 1)
+		if (sdIf.getSequenceNumber() < 1)
 		{
 			throw new IllegalArgumentException("sdIf cannot be smaller than 1");
 		}
-		if (sdThen <= sdIf)
+		if (sdThen.getSequenceNumber() <= sdIf.getSequenceNumber())
 		{
 			throw new IllegalArgumentException("sdThen cannot be less than or equal to sdIf");
 		}
-		if (sdExit <= sdThen)
+		if (sdExit.getSequenceNumber() <= sdThen.getSequenceNumber())
 		{
 			throw new IllegalArgumentException("sdExit cannot be less than or equal to sdThen");
 		}
@@ -81,9 +81,9 @@ public class AltCombinedFragment extends CombinedFragment
 			diagramName = thenChildren.get().get(0).getDiagramName();
 		}
 		
-		this.sdIf = diagramName + "_" + sdIf;
-		this.sdThen = diagramName + "_" + sdThen;
-		this.sdExit = diagramName + "_" + sdExit;
+		this.sdIf = sdIf;
+		this.sdThen = sdThen;
+		this.sdExit = sdExit;
 		
 		this.ifChildren = ifChildren.isPresent() ? ifChildren.get() : Collections.emptyList();
 		this.thenChildren = thenChildren.isPresent() ? thenChildren.get() : Collections.emptyList();
@@ -95,11 +95,11 @@ public class AltCombinedFragment extends CombinedFragment
 
 	private final String thenGuard;
 
-	private final String sdIf;
+	private final SDPoint sdIf;
 
-	private final String sdThen;
+	private final SDPoint sdThen;
 
-	private final String sdExit;
+	private final SDPoint sdExit;
 
 	public String getIfGuard()
 	{
@@ -111,17 +111,17 @@ public class AltCombinedFragment extends CombinedFragment
 		return this.thenGuard;
 	}
 
-	public String getSdIf()
+	public SDPoint getSdIf()
 	{
 		return this.sdIf;
 	}
 
-	public String getSdThen()
+	public SDPoint getSdThen()
 	{
 		return this.sdThen;
 	}
 
-	public String getSdExit()
+	public SDPoint getSdExit()
 	{
 		return this.sdExit;
 	}
@@ -265,6 +265,7 @@ public class AltCombinedFragment extends CombinedFragment
 		return toReturn;
 	}
 	
+	@Override
 	public String getDiagramName()
 	{
 		if (! this.internalGetIfMessages().isEmpty())

@@ -17,7 +17,7 @@ import theory.SeqDiagramStore;
 public class LoopCombinedFragment extends CombinedFragment
 {
 	public LoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
-			, String guard, int sdStart, int sdEnd) throws IllegalArgumentException
+			, String guard, SDPoint sdStart, SDPoint sdEnd) throws IllegalArgumentException
 	{
 		super(parent);
 
@@ -25,39 +25,52 @@ public class LoopCombinedFragment extends CombinedFragment
 		{
 			throw new IllegalArgumentException("guard cannot be null");
 		}
-		if (sdStart < 1)
+		if (sdStart.getSequenceNumber() < 1)
 		{
 			throw new IllegalArgumentException("sdStart cannot be less than 1");
 		}
-		if (sdEnd <= sdStart)
+		if (sdEnd.getSequenceNumber() <= sdStart.getSequenceNumber())
 		{
 			throw new IllegalArgumentException("sdEnd cannot be less than or equal to sdStart");
 		}
 
 		this.guard = guard;
-		this.sdStart = sdStart;
-		this.sdEnd = sdEnd;
+		
 		this.children = children.isPresent() ? children.get() : Collections.emptyList();
 		this.messages = messages.isPresent() ? messages.get() : Collections.emptyList();
+		
+		String diagramName;
+		
+		if (! this.messages.isEmpty())
+		{
+			diagramName = this.messages.get(0).getDiagramName();
+		}
+		else
+		{
+			diagramName = this.children.get(0).getDiagramName();
+		}
+		
+		this.sdStart = sdStart;
+		this.sdEnd = sdEnd;
 	}
 
 	private final String guard;
 
-	private final int sdStart;
+	private final SDPoint sdStart;
 
-	private final int sdEnd;
+	private final SDPoint sdEnd;
 
 	public String getGuard()
 	{
 		return this.guard;
 	}
 
-	public int getSdStart()
+	public SDPoint getSdStart()
 	{
 		return this.sdStart;
 	}
 
-	public int getSdEnd()
+	public SDPoint getSdEnd()
 	{
 		return this.sdEnd;
 	}
@@ -140,6 +153,17 @@ public class LoopCombinedFragment extends CombinedFragment
 		Collections.sort(toReturn);
 
 		return toReturn;
+	}
+	
+	@Override
+	public String getDiagramName()
+	{
+		if (! this.internalGetMessages().isEmpty())
+		{
+			return this.internalGetMessages().get(0).getDiagramName();
+		}
+		
+		return this.internalGetChildren().get(0).getDiagramName();
 	}
 
 	@Override

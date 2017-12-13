@@ -70,8 +70,8 @@ theory T:V {
     ! t [Time] s [StackLevel] obj [A] : C_Obj2T(Next(t), s, obj) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, methodTwo_3) & Obj2T(t, (s-1), obj).
     
     ! t [Time] s [StackLevel] : C_MTwoArgT(Next(t), s, 1) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, methodOne_3).
-    ! t [Time] s [StackLevel] n [LimitedInt] : C_MTwoArgT(Next(t), s, n) <- (CurrentStackLevel(t) = s) & SDPointAt(t, methodTwo_2) & (? n1 [LimitedInt] : MTwoArgT(t, s, n1) & (n = n1 + 1)).
     ! t [Time] s [StackLevel] n [LimitedInt] : C_MTwoArgT(Next(t), s, n) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, methodTwo_3) & MTwoArgT(t, (s-1), n).
+    ! t [Time] s [StackLevel] n [LimitedInt] : C_MTwoArgT(Next(t), s, n) <- (CurrentStackLevel(t) = s) & SDPointAt(t, methodTwo_2) & (? n1 [LimitedInt] : MTwoArgT(t, s, n1) & (n = n1 + 1)).
     }
     
     {

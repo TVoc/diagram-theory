@@ -7,7 +7,8 @@ public class Message implements Comparable<Message>
 {
 	public static final Pattern getterSetternPattern = Pattern.compile("(get|set).*");
 	
-	public Message(String content, String id, double sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName, String diagramName) throws IllegalArgumentException
+	public Message(String content, String id, int sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName,
+			String diagramName, boolean post) throws IllegalArgumentException
 	{
 		if (content == null)
 		{
@@ -36,7 +37,7 @@ public class Message implements Comparable<Message>
 		
 		this.content = content;
 		this.id = id;
-		this.sdPoint = sdPoint;
+		this.sdPoint = new SDPoint(diagramName, sdPoint, post);
 		this.fromName = fromName;
 		this.toName = toName;
 		this.fragment = Optional.empty();
@@ -44,11 +45,24 @@ public class Message implements Comparable<Message>
 		this.diagramName = diagramName;
 	}
 	
+	public Message(String content, String id, int sdPoint, boolean isReturn, Optional<String> fromName, Optional<String> toName,
+			String diagramName, boolean post, CombinedFragment fragment) throws IllegalArgumentException
+	{
+		this(content, id, sdPoint, isReturn, fromName, toName, diagramName, post);
+		
+		if (fragment == null)
+		{
+			throw new IllegalArgumentException("fragment cannot be null");
+		}
+		
+		this.fragment = Optional.of(fragment);
+	}
+	
 	private final String content;
 	
 	private final String id;
 	
-	private final double sdPoint;
+	private final SDPoint sdPoint;
 	
 	private final Optional<String> fromName;
 	
@@ -57,6 +71,8 @@ public class Message implements Comparable<Message>
 	private final boolean isReturn;
 	
 	private final String diagramName;
+	
+	private Optional<CombinedFragment> fragment;
 
 	public String getContent()
 	{
@@ -68,18 +84,9 @@ public class Message implements Comparable<Message>
 		return this.id;
 	}
 
-	public double getSdPoint()
+	public SDPoint getSDPoint()
 	{
 		return this.sdPoint;
-	}
-	
-	public String getFullSDPoint() {
-		return this.getDiagramName() + "_" + (int) this.getSdPoint();
-	}
-	
-	public String getSDPointAsCallPoint()
-	{
-		return this.getDiagramName() + "_" + (this.getSdPoint() + "post");
 	}
 
 	public Optional<String> getFromName()
@@ -114,7 +121,7 @@ public class Message implements Comparable<Message>
 	
 	public Optional<CombinedFragment> getFragment()
 	{
-		return this.getFragment();
+		return this.fragment;
 	}
 	
 	public void setFragment(Optional<CombinedFragment> fragment) throws IllegalArgumentException
@@ -131,8 +138,6 @@ public class Message implements Comparable<Message>
 	{
 		return this.isReturn;
 	}
-	
-	
 	
 	public String getDiagramName()
 	{
@@ -171,6 +176,6 @@ public class Message implements Comparable<Message>
 	@Override
 	public int compareTo(Message arg0)
 	{
-		return this.getFullSDPoint().compareTo(arg0.getFullSDPoint());
+		return this.getSDPoint().compareTo(arg0.getSDPoint());
 	}
 }
