@@ -9,10 +9,13 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
 import data.sequencediagrams.TempVarContext;
+
+//TODO processing DiagramInfo objects
 
 public class SeqSymbolStore extends SymbolStore implements TempVarContext
 {
@@ -96,6 +99,32 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		}
 		
 		return this.internalGetTempVars().get(name);
+	}
+	
+	private final Map<String, DiagramInfo> diagrams;
+	
+	private Map<String, DiagramInfo> internalGetDiagrams()
+	{
+		return this.diagrams;
+	}
+	
+	public Map<String, DiagramInfo> getDiagrams()
+	{
+		return Collections.unmodifiableMap(this.internalGetDiagrams());
+	}
+	
+	public void addDiagramInfo(String diagramName, DiagramInfo info) throws IllegalArgumentException
+	{
+		if (diagramName == null)
+		{
+			throw new IllegalArgumentException("diagramName cannot be null");
+		}
+		if (info == null)
+		{
+			throw new IllegalArgumentException("info cannot be null");
+		}
+		
+		this.internalGetDiagrams().put(diagramName, info);
 	}
 	
 	public void addTempVar(String name, TempVar temp) throws IllegalArgumentException
@@ -208,7 +237,7 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		
 		try
 		{
-			return Optional.of(messages.get((int) message.getSdPoint()));
+			return Optional.of(messages.get(message.getSDPoint().getSequenceNumber()));
 		}
 		catch (IndexOutOfBoundsException e)
 		{

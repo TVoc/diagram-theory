@@ -14,6 +14,7 @@ import data.classdiagrams.Association;
 import data.classdiagrams.Class;
 import data.classdiagrams.Generalization;
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
@@ -23,7 +24,8 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 {
 
 	SeqDiagramStore(Map<String, Class> classes, Map<String, Class> classesByName, Set<Association> associations, Set<Generalization> generalizations, Map<String,TempVar> tempVars
-			, List<Message> messages, List<AltCombinedFragment> altCombinedFragments, List<LoopCombinedFragment> loopCombinedFragments)
+			, List<Message> messages, List<AltCombinedFragment> altCombinedFragments, List<LoopCombinedFragment> loopCombinedFragments
+			, Map<String,DiagramInfo> diagrams)
 			throws IllegalArgumentException
 	{
 		super(classes, classesByName, associations, generalizations);
@@ -44,11 +46,16 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		{
 			throw new IllegalArgumentException("loopCombinedFragments cannot be null");
 		}
+		if (diagrams == null)
+		{
+			throw new IllegalArgumentException("diagrams cannot be null");
+		}
 		
 		this.tempVars = tempVars;
 		this.messages = messages;
 		this.altCombinedFragments = altCombinedFragments;
 		this.loopCombinedFragments = loopCombinedFragments;
+		this.diagrams = diagrams;
 		this.diagramNames = new HashSet<String>();
 		this.callPoints = new HashMap<Message, Message>();
 		
@@ -57,7 +64,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		for (Message message : this.messages)
 		{
 			diagramNames.add(message.getDiagramName());
-			if (((int) message.getSdPoint()) == 1)
+			if (message.getSDPoint().getSequenceNumber() == 1)
 			{
 				firstInstructions.put(message.getDiagramName(), message);
 			}
@@ -65,7 +72,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		
 		for (Message message : this.messages)
 		{
-			if (message.getSdPoint().getSequenceNumber() != 1)
+			if (message.getSDPoint().getSequenceNumber() != 1)
 			{
 				for (Entry<String, Message> entry : firstInstructions.entrySet())
 				{
@@ -80,8 +87,8 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		for (Message key : this.callPoints.keySet())
 		{
 			int i = this.messages.indexOf(key);
-			this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
-					key.getDiagramName(), key.getFragment().get()));
+			this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+					key.getDiagramName(), true, key.getFragment().get()));
 		}
 		
 		this.diagramMessages = new HashMap<String, List<Message>>();
@@ -141,6 +148,18 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return this.internalGetMessages().get(index);
 	}
 	
+	private final Map<String, DiagramInfo> diagrams;
+	
+	private Map<String, DiagramInfo> internalGetDiagrams()
+	{
+		return this.diagrams;
+	}
+	
+	public Map<String, DiagramInfo> getDiagrams()
+	{
+		return Collections.unmodifiableMap(this.internalGetDiagrams());
+	}
+	
 	public int numMessages()
 	{
 		return this.internalGetMessages().size();
@@ -195,7 +214,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		
 		try
 		{
-			return Optional.of(messages.get((int) message.getSdPoint()));
+			return Optional.of(messages.get(message.getSDPoint().getSequenceNumber()));
 		}
 		catch (IndexOutOfBoundsException e)
 		{
@@ -209,7 +228,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		
 		for (Message message : this.internalGetMessages())
 		{
-			toReturn.add(message.getFullSDPoint());
+			toReturn.add(message.getSDPoint().toString());
 		}
 		
 		return toReturn;
@@ -237,8 +256,16 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 			{
 				if (ele.equals(cpMessage))
 				{
-					messages.add((i+1), new Message("", ele.getSDPointAsCallPoint(), ele.getSdPoint() + 0.5, false, Optional.empty(), Optional.empty(),
-					ele.getDiagramName()));
+					if (ele.getFragment().isPresent())
+					{
+						messages.add((i+1), new Message("", ele.getSDPoint().toString(), ele.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+								ele.getDiagramName(), true, ele.getFragment().get()));
+					}
+					else
+					{
+						messages.add((i+1), new Message("", ele.getSDPoint().toString(), ele.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+								ele.getDiagramName(), true));
+					}
 					i++;
 				}
 			}
@@ -272,7 +299,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 	
 	public boolean callsDiagram(Message message)
 	{
-		if (message.getSdPoint() == 1)
+		if (message.getSDPoint().getSequenceNumber() == 1)
 		{
 			return false;
 		}

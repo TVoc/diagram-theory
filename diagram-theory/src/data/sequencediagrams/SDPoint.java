@@ -65,4 +65,39 @@ public class SDPoint implements Comparable<SDPoint>
 		
 		return Integer.compare(this.getSequenceNumber(), o.getSequenceNumber());
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((diagramName == null) ? 0 : diagramName.hashCode());
+		result = prime * result + (post ? 1231 : 1237);
+		result = prime * result + sequenceNumber;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SDPoint other = (SDPoint) obj;
+		if (diagramName == null)
+		{
+			if (other.diagramName != null)
+				return false;
+		}
+		else if (!diagramName.equals(other.diagramName))
+			return false;
+		if (post != other.post)
+			return false;
+		if (sequenceNumber != other.sequenceNumber)
+			return false;
+		return true;
+	}
 }

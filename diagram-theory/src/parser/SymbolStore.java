@@ -30,6 +30,7 @@ import data.classdiagrams.UserDefinedType;
  * @author Thomas
  *
  */
+
 public class SymbolStore extends TypeContext
 {
 	public SymbolStore()

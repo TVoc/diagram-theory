@@ -126,6 +126,13 @@ public class CheckpointBuilder
 		return this;
 	}
 	
+	public CheckpointBuilder handleCallPoint(Message call)
+	{
+		this.getNonStandardPoints().add(call.getSDPoint());
+		
+		return this;
+	}
+	
 //	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)
 //	{
 //		this.getNonStandardPoints().add
@@ -135,7 +142,7 @@ public class CheckpointBuilder
 	{
 		StringBuilder toReturn = new StringBuilder();
 		
-		StringBuilder general = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), (s+1)) <- SDPointAt(t, s)");
+		StringBuilder general = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)");
 		
 		if (! this.getNonStandardPoints().isEmpty())
 		{
