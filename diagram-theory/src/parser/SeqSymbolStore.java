@@ -26,6 +26,7 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		idsToNames = new HashMap<String,String>();
 		tempVars = new HashMap<String,TempVar>();
 		messages = new ArrayList<Message>();
+		diagrams = new HashMap<String, DiagramInfo>();
 		idsToMessages = new HashMap<String,Message>();
 		callPoints = new TreeMap<Message, Message>();
 		altCombinedFragments = new ArrayList<AltCombinedFragment>();

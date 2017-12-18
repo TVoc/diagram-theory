@@ -187,7 +187,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		{
 			throw new IllegalArgumentException("diagram does not contain messages for diagram name: " + diagramName);
 		}
-		return this.internalGetDiagramMessages().get(diagramName);
+		return Collections.unmodifiableList(this.internalGetDiagramMessages().get(diagramName));
 //		if (diagramName == null)
 //		{
 //			throw new IllegalArgumentException("diagramName cannot be null");
@@ -206,6 +206,20 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 //		Collections.sort(toReturn);
 //		
 //		return toReturn;
+	}
+	
+	public Message getLastMessageForDiagram(String diagramName) throws IllegalArgumentException
+	{
+		if (diagramName == null)
+		{
+			throw new IllegalArgumentException("diagramName cannot be null");
+		}
+		if (! this.internalGetDiagramMessages().containsKey(diagramName))
+		{
+			throw new IllegalArgumentException("diagram does not contain messages for diagram name: " + diagramName);
+		}
+		
+		return this.internalGetDiagramMessages().get(diagramName).get(this.internalGetDiagramMessages().get(diagramName).size() - 1);
 	}
 	
 	public Optional<Message> getNextMessage(Message message)

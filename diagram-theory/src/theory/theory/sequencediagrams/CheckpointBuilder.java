@@ -15,6 +15,7 @@ import theory.SeqDiagramStore;
 import data.sequencediagrams.SDPoint;
 
 // TODO update for more complex combined fragment handling
+// TODO add causes from return points
 
 public class CheckpointBuilder
 {
@@ -23,6 +24,7 @@ public class CheckpointBuilder
 		this.tabLevel = tabLevel;
 		
 		this.nonStandardPoints = new ArrayList<SDPoint>();
+		this.returnPoints = new ArrayList<SDPoint>();
 		this.checkpoints = new TreeMap<SDPoint, String>();
 	}
 	
@@ -38,6 +40,13 @@ public class CheckpointBuilder
 	private final List<SDPoint> getNonStandardPoints() 
 	{
 		return this.nonStandardPoints;
+	}
+	
+	private final List<SDPoint> returnPoints;
+	
+	private final List<SDPoint> getReturnPoints()
+	{
+		return this.returnPoints;
 	}
 	
 	private final Map<SDPoint, String> checkpoints;
@@ -126,9 +135,12 @@ public class CheckpointBuilder
 		return this;
 	}
 	
-	public CheckpointBuilder handleCallPoint(Message call)
+	public CheckpointBuilder handleCallPoint(Message call, SeqDiagramStore store)
 	{
 		this.getNonStandardPoints().add(call.getSDPoint());
+		this.getNonStandardPoints().add(store.getLastMessageForDiagram(call.getDiagramName()).getSDPoint());
+		
+		this.getReturnPoints().add(store.getLastMessageForDiagram(call.getDiagramName()).getSDPoint());
 		
 		return this;
 	}
