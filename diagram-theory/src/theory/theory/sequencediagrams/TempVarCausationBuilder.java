@@ -78,6 +78,10 @@ public class TempVarCausationBuilder
 		{
 			return handleGetStatement(message, true, store, assigned, rhs);
 		}
+		else if (store.isCallPoint(message))
+		{
+			// TODO split into assignment call and procedure call
+		}
 		else // of type "one + two"
 		{
 			return handleArithStatement(message, store, assigned, rhs);

@@ -160,6 +160,16 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return Collections.unmodifiableMap(this.internalGetDiagrams());
 	}
 	
+	public DiagramInfo getDiagramCallInfo(Message message) throws IllegalArgumentException
+	{
+		if (! this.isCallPoint(message))
+		{
+			throw new IllegalArgumentException("message was not a call point");
+		}
+		
+		return this.internalGetDiagrams().get(this.internalGetCallPoints().get(message).getDiagramName());
+	}
+	
 	public int numMessages()
 	{
 		return this.internalGetMessages().size();
@@ -258,6 +268,11 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 	public Map<Message, Message> getCallPoints()
 	{
 		return Collections.unmodifiableMap(this.internalGetCallPoints());
+	}
+	
+	public boolean isCallPoint(Message message)
+	{
+		return this.internalGetCallPoints().containsKey(message);
 	}
 	
 	public void expandWithCallPoints(List<Message> messages)

@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public class DiagramInfo
 {
-	public DiagramInfo(String name, TempVar callObject, Optional<List<TempVar>> parameters) throws IllegalArgumentException
+	public DiagramInfo(String name, TempVar callObject, Optional<List<TempVar>> parameters, Optional<TempVar> returnValue) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -19,10 +19,15 @@ public class DiagramInfo
 		{
 			throw new IllegalArgumentException("parameters cannot be null");
 		}
+		if (returnValue == null)
+		{
+			throw new IllegalArgumentException("returnValue cannot be null");
+		}
 		
 		this.name = name;
 		this.callObject = callObject;
 		this.parameters = parameters;
+		this.returnValue = returnValue;
 	}
 	
 	private final String name;
@@ -45,6 +50,13 @@ public class DiagramInfo
 	{
 		return this.parameters;
 	}
+	
+	private final Optional<TempVar> returnValue;
+	
+	public Optional<TempVar> getReturnValue()
+	{
+		return this.returnValue;
+	}
 
 	@Override
 	public int hashCode()
@@ -54,6 +66,7 @@ public class DiagramInfo
 		result = prime * result + ((callObject == null) ? 0 : callObject.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
+		result = prime * result + ((returnValue == null) ? 0 : returnValue.hashCode());
 		return result;
 	}
 
@@ -87,6 +100,13 @@ public class DiagramInfo
 				return false;
 		}
 		else if (!parameters.equals(other.parameters))
+			return false;
+		if (returnValue == null)
+		{
+			if (other.returnValue != null)
+				return false;
+		}
+		else if (!returnValue.equals(other.returnValue))
 			return false;
 		return true;
 	}
