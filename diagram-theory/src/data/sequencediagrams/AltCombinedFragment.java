@@ -345,7 +345,7 @@ public class AltCombinedFragment extends CombinedFragment
 		List<Message> ifMsgs = this.flattenIf();
 
 		if (this.internalGetIfMessages().isEmpty() || 
-				(! this.internalGetIfChildren().isEmpty() && this.internalGetIfMessages().get(0).getSdPoint() > ifMsgs.get(0).getSdPoint()))
+				(! this.internalGetIfChildren().isEmpty() && this.internalGetIfMessages().get(0).getSDPoint().getSequenceNumber() > ifMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 			CombinedFragment first = this.internalGetIfChildren().get(0);
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
@@ -396,7 +396,7 @@ public class AltCombinedFragment extends CombinedFragment
 		List<Message> thenMsgs = this.flattenThen();
 
 		if (this.internalGetThenMessages().isEmpty() || 
-				(! this.internalGetThenChildren().isEmpty() && this.internalGetThenMessages().get(0).getSdPoint() > thenMsgs.get(0).getSdPoint()))
+				(! this.internalGetThenChildren().isEmpty() && this.internalGetThenMessages().get(0).getSDPoint().getSequenceNumber() > thenMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 			CombinedFragment first = this.internalGetThenChildren().get(0);
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
@@ -461,7 +461,7 @@ public class AltCombinedFragment extends CombinedFragment
 		List<Message> ifMsgs = this.flattenIf();
 
 		if (this.internalGetIfMessages().isEmpty() || 
-				(! this.internalGetIfChildren().isEmpty() && this.internalGetIfMessages().get(0).getSdPoint() > ifMsgs.get(0).getSdPoint()))
+				(! this.internalGetIfChildren().isEmpty() && this.internalGetIfMessages().get(0).getSDPoint().getSequenceNumber() > ifMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 
 			this.internalGetIfChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
@@ -474,7 +474,7 @@ public class AltCombinedFragment extends CombinedFragment
 		List<Message> thenMsgs = this.flattenThen();
 
 		if (this.internalGetThenMessages().isEmpty() || 
-				(! this.internalGetThenChildren().isEmpty() && this.internalGetThenMessages().get(0).getSdPoint() > thenMsgs.get(0).getSdPoint()))
+				(! this.internalGetThenChildren().isEmpty() && this.internalGetThenMessages().get(0).getSDPoint().getSequenceNumber() > thenMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 			this.internalGetThenChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 		}
@@ -488,7 +488,7 @@ public class AltCombinedFragment extends CombinedFragment
 	{
 		List<Message> ifMessages = this.flattenIf();
 		
-		if (this.internalGetIfMessages().get(this.internalGetIfMessages().size() - 1).getSdPoint() == ifMessages.get(ifMessages.size() - 1).getSdPoint())
+		if (this.internalGetIfMessages().get(this.internalGetIfMessages().size() - 1).getSDPoint().getSequenceNumber() == ifMessages.get(ifMessages.size() - 1).getSDPoint().getSequenceNumber())
 		{
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getIfMessage(this.internalGetIfMessages().size() - 1));
 			
@@ -497,7 +497,7 @@ public class AltCombinedFragment extends CombinedFragment
 		
 		List<Message> thenMessages = this.flattenThen();
 		
-		if (this.internalGetThenMessages().get(this.internalGetThenMessages().size() - 1).getSdPoint() == thenMessages.get(thenMessages.size() - 1).getSdPoint())
+		if (this.internalGetThenMessages().get(this.internalGetThenMessages().size() - 1).getSDPoint().getSequenceNumber() == thenMessages.get(thenMessages.size() - 1).getSDPoint().getSequenceNumber())
 		{
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getThenMessage(this.internalGetThenMessages().size() - 1));
 			

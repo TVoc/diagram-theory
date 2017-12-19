@@ -181,7 +181,7 @@ public class LoopCombinedFragment extends CombinedFragment
 		List<Message> messages = this.flattenMessages();
 
 		if (this.internalGetMessages().isEmpty() ||
-				(! messages.isEmpty() && this.internalGetMessages().get(0).getSdPoint() > messages.get(0).getSdPoint()))
+				(! messages.isEmpty() && this.internalGetMessages().get(0).getSDPoint().getSequenceNumber() > messages.get(0).getSDPoint().getSequenceNumber()))
 		{
 			CombinedFragment first = this.internalGetChildren().get(0);
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
@@ -247,7 +247,7 @@ public class LoopCombinedFragment extends CombinedFragment
 		List<Message> msgs = this.flattenMessages();
 
 		if (this.internalGetMessages().isEmpty() || 
-				(! this.internalGetChildren().isEmpty() && this.internalGetMessages().get(0).getSdPoint() > msgs.get(0).getSdPoint()))
+				(! this.internalGetChildren().isEmpty() && this.internalGetMessages().get(0).getSDPoint().getSequenceNumber() > msgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 
 			this.internalGetChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
@@ -262,7 +262,7 @@ public class LoopCombinedFragment extends CombinedFragment
 	{
 		List<Message> messages = this.flattenMessages();
 
-		if (this.internalGetMessages().get(this.internalGetMessages().size() - 1).getSdPoint() == messages.get(messages.size() - 1).getSdPoint())
+		if (this.internalGetMessages().get(this.internalGetMessages().size() - 1).getSDPoint().getSequenceNumber() == messages.get(messages.size() - 1).getSDPoint().getSequenceNumber())
 		{
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getMessage(this.internalGetMessages().size() - 1));
 

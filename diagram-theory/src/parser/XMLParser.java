@@ -33,6 +33,7 @@ import data.sequencediagrams.TempVar;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -70,6 +71,10 @@ public class XMLParser
 		options.addOption("intfactor", true, "Number of ints in generated structure will be ceil(intfactor * numobjects); default is 1");
 		options.addOption("floatfactor", true, "Number of floats in generated structure will be ceil(floatfactor * numobjects; default is 1");
 		options.addOption("timesteps", true, "Number of time steps that the generated theory will range over; default is 21");
+		options.addOption("stacklevels", true, "Number of stack levels that will be available in the theory; default is 10");
+		options.addOption("classdiagram", true, "Path to the class diagram that will be translated into FO");
+		
+		Option seqDiagrams = new Option("seqdiagrams", true, "Paths to one or more sequence diagrams corresponding with the class diagram that will be translated into FO");
 		
 		int numObjects = 0;
 		double stringFactor = STRINGFACTOR_DEFAULT;

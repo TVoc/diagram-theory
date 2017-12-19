@@ -52,9 +52,14 @@ public class TempVarCausationBuilder
 		}
 		else if (message.getContent().split("\\(")[0].contains("get"))
 		{
-			TempVar assigned = store.resolveTempVar(store.getMessage(message.getSdPoint().getSequenceNumber()).getContent());
+			TempVar assigned = store.resolveTempVar(store.getMessage(message.getSDPoint().getSequenceNumber()).getContent());
 			
 			return this.handleGetStatement(message, false, store, assigned, message.getContent());
+		}
+		else if (store.isCallPoint(message))
+		{
+			this.makeCallObjectSentence(message, store);
+			return this.processCallArguments(message, store);
 		}
 		else // either a return message or a procedure call TODO handle procedure call
 		{
@@ -83,7 +88,8 @@ public class TempVarCausationBuilder
 		else if (store.isCallPoint(message))
 		{
 			this.makeCallObjectSentence(message, store);
-			// TODO split into assignment call and procedure call
+			this.processCallArguments(message, store);
+			return this.handleReturnAssignment(message, store);
 		}
 		else // of type "one + two"
 		{
@@ -94,6 +100,7 @@ public class TempVarCausationBuilder
 	private TempVarCausationBuilder handleGetStatement(Message message, boolean immediate, SeqDiagramStore store, TempVar assigned,
 			String rhs)
 	{
+		// TODO accommodate e.g. getNumHeaps
 		String[] attrSpec = rhs.replaceAll("get","").split("By");
 		String toGetClassName = attrSpec[0].split("\\(")[0];
 		TempVar getFromT = message.getTo(store);
@@ -104,7 +111,7 @@ public class TempVarCausationBuilder
 		if (maybeAttr.isPresent())
 		{
 			String toAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(maybeAttr.get().getType(), store)
-				+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(" + causesTime + ", x) <- SDPointAt(t, " + message.getSdPoint()
+				+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(" + causesTime + ", x) <- SDPointAt(t, " + message.getSDPoint()
 				+ ") & (? o [" + getFrom.getName() + "] : " + OutputConvenienceFunctions.singleTempVarPredicateName(getFromT)
 				+ "(t, o) & " + getFrom.getName() + maybeAttr.get().getName() + "(t, o, x)).";
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
@@ -139,7 +146,7 @@ public class TempVarCausationBuilder
 		
 		String toAppend = " ! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
 		+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(" + causesTime + ", " + assigned.getName() + ") <- SDPointAt(t, "
-		+ message.getSdPoint() + ") & " + makeGetterPredicate;
+		+ message.getSDPoint() + ") & " + makeGetterPredicate;
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
 		return this;
@@ -201,7 +208,7 @@ public class TempVarCausationBuilder
 		
 		String toAppend = "! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
 			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(t, " + assigned.getName() + ") <- SDPointAt(t, "
-			+ message.getSdPoint() + ") & " + quantifiers.toString() + assertion.toString();
+			+ message.getSDPoint() + ") & " + quantifiers.toString() + assertion.toString();
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
 		
@@ -261,6 +268,25 @@ public class TempVarCausationBuilder
 						+ message.getSDPoint() + ").", this.getTabLevel()));
 			}
 		}
+		
+		return this;
+	}
+	
+	private TempVarCausationBuilder handleReturnAssignment(Message message, SeqDiagramStore store)
+	{
+		String tempVarName = message.getContent().split("=")[0].replaceAll("\\s", "");
+		TempVar assignedVar = store.resolveTempVar(tempVarName);
+		String assignedType = OutputConvenienceFunctions.toIDPType(assignedVar.getType(), store);
+		String assignedPred = "C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assignedVar);
+		DiagramInfo diagramInfo = store.getDiagramCallInfo(message);
+		Message lastMessage = store.getLastMessageForDiagram(diagramInfo.getName());
+		TempVar returnValue = store.resolveTempVar(lastMessage.getContent());
+		String returnValuePred = OutputConvenienceFunctions.singleTempVarPredicateName(returnValue);
+		String SDPost = message.getSDPoint() + "post";
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] v ["
+				+ assignedType + "] : " + assignedPred + "(Next(t), st, v) <- (CurrentStackLevel(t) = st & SDPointAt(t, "
+				+ SDPost + ") & " + returnValuePred + "(t, (st+1), v).", this.getTabLevel()));
 		
 		return this;
 	}
