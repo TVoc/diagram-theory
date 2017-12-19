@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
 import parser.XMLParser;
@@ -21,6 +22,7 @@ import theory.vocabulary.VocabularyAssociationBuilder;
 public class TempVarCausationBuilder
 {
 	public static final Pattern GETTER_PARAMETER = Pattern.compile("\\((.*?)\\)");
+	public static final String ARGLIST_SEPARATOR = "(\\s)*\\,(\\s)*";
 	
 	public TempVarCausationBuilder(int tabLevel)
 	{
@@ -54,7 +56,7 @@ public class TempVarCausationBuilder
 			
 			return this.handleGetStatement(message, false, store, assigned, message.getContent());
 		}
-		else // either a return message or a procedure call
+		else // either a return message or a procedure call TODO handle procedure call
 		{
 			return this;
 		}
@@ -80,6 +82,7 @@ public class TempVarCausationBuilder
 		}
 		else if (store.isCallPoint(message))
 		{
+			this.makeCallObjectSentence(message, store);
 			// TODO split into assignment call and procedure call
 		}
 		else // of type "one + two"
@@ -201,6 +204,63 @@ public class TempVarCausationBuilder
 			+ message.getSdPoint() + ") & " + quantifiers.toString() + assertion.toString();
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
+		
+		return this;
+	}
+	
+	private TempVarCausationBuilder makeCallObjectSentence(Message message, SeqDiagramStore store)
+	{
+		TempVar messageCallVar = message.getTo(store);
+		DiagramInfo diagram = store.getDiagramCallInfo(message);
+		TempVar callObject = diagram.getCallObject();
+		String callObjectType = OutputConvenienceFunctions.toIDPType(callObject.getType(), store);
+		String callObjectTypePred = "C_" + OutputConvenienceFunctions.singleTempVarPredicateName(callObject);
+		String messageCallVarPred = OutputConvenienceFunctions.singleTempVarPredicateName(messageCallVar);
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] c ["
+				+ callObjectType + "] : " + callObjectTypePred + "(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, "
+				+ message.getSDPoint() + ") & " + messageCallVarPred + "(t, (s-1), c).", this.getTabLevel()));
+		
+		return this;
+	}
+	
+	private TempVarCausationBuilder processCallArguments(Message message, SeqDiagramStore store)
+	{
+		Matcher m = GETTER_PARAMETER.matcher(message.getContent());
+		m.find();
+		
+		if (m.group(1).isEmpty())
+		{
+			return this;
+		}
+		
+		String[] argStrings = m.group(1).split(ARGLIST_SEPARATOR);
+		DiagramInfo diagramInfo = store.getDiagramCallInfo(message);
+		List<TempVar> diagramParameters = diagramInfo.getParameters().get();
+		
+		for (int i = 0; i < argStrings.length; i++)
+		{
+			String argString = argStrings[i];
+			TempVar diagramParameter = diagramParameters.get(i);
+			String diagramParameterPred = "C_" + OutputConvenienceFunctions.singleTempVarPredicateName(diagramParameter);
+			
+			if (store.hasTempVar(argString))
+			{
+				TempVar argVar = store.resolveTempVar(argString);
+				String argVarPred = OutputConvenienceFunctions.singleTempVarPredicateName(argVar);
+				String diagramParameterType = OutputConvenienceFunctions.toIDPType(diagramParameter.getType(), store);
+				
+				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] p ["
+						+ diagramParameterType + "] : " + diagramParameterPred + "(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, "
+						+ message.getSDPoint() + ") & " + argVarPred + "(t, (s-1), p).", this.getTabLevel()));
+			}
+			else
+			{
+				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] : "
+						+ diagramParameterPred + "(Next(t), st, " + argString + ") <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, "
+						+ message.getSDPoint() + ").", this.getTabLevel()));
+			}
+		}
 		
 		return this;
 	}
