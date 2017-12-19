@@ -61,7 +61,7 @@ public class TempVarCausationBuilder
 			this.makeCallObjectSentence(message, store);
 			return this.processCallArguments(message, store);
 		}
-		else // either a return message or a procedure call TODO handle procedure call
+		else // return message
 		{
 			return this;
 		}

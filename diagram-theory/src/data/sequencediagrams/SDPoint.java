@@ -47,6 +47,10 @@ public class SDPoint implements Comparable<SDPoint>
 	
 	public String toString()
 	{
+		if (this.getDiagramName().equals("finished"))
+		{
+			return this.getDiagramName();
+		}
 		return this.isPost() ? this.getDiagramName() + "_" + this.getSequenceNumber() + "post" : this.getDiagramName() + "_" + this.getSequenceNumber();
 	}
 

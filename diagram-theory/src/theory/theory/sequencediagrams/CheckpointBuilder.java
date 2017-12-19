@@ -1,6 +1,7 @@
 package theory.theory.sequencediagrams;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,6 +28,8 @@ public class CheckpointBuilder
 		this.nonStandardPoints = new ArrayList<SDPoint>();
 		this.returnPoints = new ArrayList<SDPoint>();
 		this.checkpoints = new TreeMap<SDPoint, String>();
+		
+		this.nonStandardPoints.add(new SDPoint("finished", -1, false));
 	}
 	
 	private final int tabLevel;
@@ -143,6 +146,10 @@ public class CheckpointBuilder
 		
 		this.getReturnPoints().add(store.getLastMessageForDiagram(call.getDiagramName()).getSDPoint());
 		
+		Message callMsg = store.getCallMessage(call);
+		
+		this.getCheckpoints().put(callMsg.getSDPoint(), "! t [Time] : C_SDPointAt(Next(t), " + callMsg.getSDPoint() + ") <- SDPointAt(t, " + call.getSDPoint() + ").");
+		
 		return this;
 	}
 	
@@ -185,7 +192,32 @@ public class CheckpointBuilder
 			toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(ele, this.getTabLevel()));
 		}
 		
-		toReturn.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
+		toReturn.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
+		
+		if (! this.getReturnPoints().isEmpty())
+		{
+			StringBuilder returnCauses = new StringBuilder("! t [Time] s [SDPoint] : C_SDPoint(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (");
+			
+			Iterator<SDPoint> it = this.getReturnPoints().iterator();
+			
+			while (it.hasNext())
+			{
+				SDPoint returnPoint = it.next();
+				
+				returnCauses.append("SDPointAt(t, " + returnPoint + ")");
+				
+				if (it.hasNext())
+				{
+					returnCauses.append(" | ");
+				}
+				else
+				{
+					returnCauses.append(").");
+				}
+			}
+			
+			toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(returnCauses.toString(), this.getTabLevel()));
+		}
 		
 		return toReturn.toString();
 	}
