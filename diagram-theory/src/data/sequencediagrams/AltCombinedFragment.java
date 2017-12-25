@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import theory.SeqDiagramStore;
 
 public class AltCombinedFragment extends CombinedFragment
@@ -211,6 +213,21 @@ public class AltCombinedFragment extends CombinedFragment
 	{
 		return Collections.unmodifiableList(this.internalGetThenChildren());
 	}
+	
+	@Override
+	protected void fillTree(List<CombinedFragment> output)
+	{
+		output.add(this);
+		
+		for (CombinedFragment ele : this.internalGetIfChildren())
+		{
+			ele.fillTree(output);
+		}
+		for (CombinedFragment ele : this.internalGetThenChildren())
+		{
+			ele.fillTree(output);
+		}
+	}
 
 	private final List<Message> ifMessages;
 
@@ -329,6 +346,38 @@ public class AltCombinedFragment extends CombinedFragment
 
 		return toReturn;
 	}
+	
+	@Override
+	protected boolean isAFinalMessage(Message message)
+	{
+//		if (this.internalGetIfMessages().get(internalGetIfMessages().size() - 1).equals(message))
+//		{
+//			return true;
+//		}
+//		if (this.internalGetThenMessages().get(internalGetThenMessages().size() - 1).equals(message))
+//		{
+//			return true;
+//		}
+//		if (this.internalGetIfChildren().get(internalGetIfChildren().size() - 1).isAFinalMessage(message))
+//		{
+//			return true;
+//		}
+//		if (this.internalGetThenChildren().get(internalGetThenChildren().size() - 1).isAFinalMessage(message))
+//		{
+//			return true;
+//		}
+		
+		List<Message> flattenedIf = this.flattenIf();
+		
+		if (flattenedIf.get(flattenedIf.size() - 1).equals(message))
+		{
+			return true;
+		}
+		
+		List<Message> flattenedThen = this.flattenThen();
+		
+		return flattenedThen.get(flattenedThen.size() - 1).equals(message);
+	}
 
 	@Override
 	public TreeMap<Message, String> getEntryPoints()
@@ -355,7 +404,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetIfChildren(), true);
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetIfChildren(), true, true);
 			}
 			
 			else
@@ -382,7 +431,7 @@ public class AltCombinedFragment extends CombinedFragment
 			
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
 			
-			this.wrapLoops(output, seen, "", this.internalGetIfChildren(), false);
+			this.wrapLoops(output, seen, "", this.internalGetIfChildren(), false, true);
 			
 			for (CombinedFragment ele : this.internalGetIfChildren())
 			{
@@ -406,7 +455,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetThenChildren(), true);
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetThenChildren(), true, true);
 			}
 			
 			else
@@ -433,7 +482,7 @@ public class AltCombinedFragment extends CombinedFragment
 
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
 			
-			this.wrapLoops(output, seen, "", this.internalGetThenChildren(), false);
+			this.wrapLoops(output, seen, "", this.internalGetThenChildren(), false, true);
 			
 			for (CombinedFragment ele : this.internalGetThenChildren())
 			{
@@ -464,7 +513,22 @@ public class AltCombinedFragment extends CombinedFragment
 				(! this.internalGetIfChildren().isEmpty() && this.internalGetIfMessages().get(0).getSDPoint().getSequenceNumber() > ifMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
 
-			this.internalGetIfChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+			CombinedFragment first = this.internalGetIfChildren().get(0);
+			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
+			
+			if (first instanceof LoopCombinedFragment)
+			{
+				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
+				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetIfChildren(), true, false);
+			}
+			
+			else
+			{
+				this.internalGetIfChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+			}
+			
 		}
 		else
 		{
@@ -476,7 +540,21 @@ public class AltCombinedFragment extends CombinedFragment
 		if (this.internalGetThenMessages().isEmpty() || 
 				(! this.internalGetThenChildren().isEmpty() && this.internalGetThenMessages().get(0).getSDPoint().getSequenceNumber() > thenMsgs.get(0).getSDPoint().getSequenceNumber()))
 		{
-			this.internalGetThenChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+			CombinedFragment first = this.internalGetThenChildren().get(0);
+			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
+			
+			if (first instanceof LoopCombinedFragment)
+			{
+				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
+				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetThenChildren(), true, false);
+			}
+			
+			else
+			{
+				this.internalGetThenChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+			}
 		}
 		else
 		{
@@ -561,7 +639,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (Entry<Message, String> ele : entryPoints.entrySet())
 				{
-					if (ele.getValue().equals(""))
+					if (ele.getValue().equals("") || "".equals(intermediate))
 					{
 						ele.setValue(intermediate);
 					}
@@ -617,7 +695,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (Entry<Message, String> ele : entryPoints.entrySet())
 				{
-					if (ele.getValue().equals(""))
+					if (ele.getValue().equals("") || "".equals(intermediate))
 					{
 						ele.setValue(intermediate);
 					}
@@ -640,5 +718,98 @@ public class AltCombinedFragment extends CombinedFragment
 				this.exitToOutside(store, output, exit, intermediate.equals("") ? Optional.empty() : Optional.of(intermediate));
 			}
 		}
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((ifChildren == null) ? 0 : ifChildren.hashCode());
+		result = prime * result + ((ifGuard == null) ? 0 : ifGuard.hashCode());
+		result = prime * result + ((ifMessages == null) ? 0 : ifMessages.hashCode());
+		result = prime * result + ((sdExit == null) ? 0 : sdExit.hashCode());
+		result = prime * result + ((sdIf == null) ? 0 : sdIf.hashCode());
+		result = prime * result + ((sdThen == null) ? 0 : sdThen.hashCode());
+		result = prime * result + ((thenChildren == null) ? 0 : thenChildren.hashCode());
+		result = prime * result + ((thenGuard == null) ? 0 : thenGuard.hashCode());
+		result = prime * result + ((thenMessages == null) ? 0 : thenMessages.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AltCombinedFragment other = (AltCombinedFragment) obj;
+		if (ifChildren == null)
+		{
+			if (other.ifChildren != null)
+				return false;
+		}
+		else if (!ifChildren.equals(other.ifChildren))
+			return false;
+		if (ifGuard == null)
+		{
+			if (other.ifGuard != null)
+				return false;
+		}
+		else if (!ifGuard.equals(other.ifGuard))
+			return false;
+		if (ifMessages == null)
+		{
+			if (other.ifMessages != null)
+				return false;
+		}
+		else if (!ifMessages.equals(other.ifMessages))
+			return false;
+		if (sdExit == null)
+		{
+			if (other.sdExit != null)
+				return false;
+		}
+		else if (!sdExit.equals(other.sdExit))
+			return false;
+		if (sdIf == null)
+		{
+			if (other.sdIf != null)
+				return false;
+		}
+		else if (!sdIf.equals(other.sdIf))
+			return false;
+		if (sdThen == null)
+		{
+			if (other.sdThen != null)
+				return false;
+		}
+		else if (!sdThen.equals(other.sdThen))
+			return false;
+		if (thenChildren == null)
+		{
+			if (other.thenChildren != null)
+				return false;
+		}
+		else if (!thenChildren.equals(other.thenChildren))
+			return false;
+		if (thenGuard == null)
+		{
+			if (other.thenGuard != null)
+				return false;
+		}
+		else if (!thenGuard.equals(other.thenGuard))
+			return false;
+		if (thenMessages == null)
+		{
+			if (other.thenMessages != null)
+				return false;
+		}
+		else if (!thenMessages.equals(other.thenMessages))
+			return false;
+		return true;
 	}
 }

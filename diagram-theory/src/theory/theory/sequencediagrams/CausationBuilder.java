@@ -1,6 +1,7 @@
 package theory.theory.sequencediagrams;
 
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.CombinedFragment;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import theory.SeqDiagramStore;
@@ -43,11 +44,18 @@ public class CausationBuilder
 		return this.tempVarCausationBuilder;
 	}
 	
+	public void processCombinedFragment(CombinedFragment frag, SeqDiagramStore store)
+	{
+		this.getCheckpointBuilder().processCombinedFragment(frag, store);
+	}
+	
+	@Deprecated
 	public void handleAltCombinedFragment(AltCombinedFragment frag, SeqDiagramStore store)
 	{
 		this.getCheckpointBuilder().handleAltCombinedFragment(frag, store);
 	}
 	
+	@Deprecated
 	public void handleLoopCombinedFragment(LoopCombinedFragment frag, SeqDiagramStore store)
 	{
 		this.getCheckpointBuilder().handleLoopCombinedFragment(frag, store);

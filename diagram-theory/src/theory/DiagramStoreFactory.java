@@ -14,6 +14,7 @@ import data.classdiagrams.Generalization;
 import data.classdiagrams.UserDefinedClass;
 import data.classdiagrams.UserDefinedClassBuilder;
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
@@ -76,6 +77,7 @@ public class DiagramStoreFactory
 		Set<Generalization> generalizations = new HashSet<Generalization>();
 		Map<String,TempVar> tempVars = new HashMap<String,TempVar>();
 		List<Message> messages = new ArrayList<Message>();
+		Map<String, DiagramInfo> diagrams = new HashMap<String, DiagramInfo>();
 		List<AltCombinedFragment> alts = new ArrayList<AltCombinedFragment>();
 		List<LoopCombinedFragment> loops = new ArrayList<LoopCombinedFragment>();
 		
@@ -94,11 +96,12 @@ public class DiagramStoreFactory
 		generalizations.addAll(store.getGeneralizations());
 		tempVars.putAll(store.getTempVars());
 		messages.addAll(store.getMessages());
+		diagrams.putAll(store.getDiagrams());
 		alts.addAll(store.getAltCombinedFragments());
 		loops.addAll(store.getLoopCombinedFragments());
 		
 		store.reset();
 		
-		return new SeqDiagramStore(classes, classesByName, associations, generalizations, tempVars, messages, alts, loops);
+		return new SeqDiagramStore(classes, classesByName, associations, generalizations, tempVars, messages, alts, loops, diagrams);
 	}
 }

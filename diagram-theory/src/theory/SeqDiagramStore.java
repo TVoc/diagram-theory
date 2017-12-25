@@ -232,6 +232,17 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return this.internalGetDiagramMessages().get(diagramName).get(this.internalGetDiagramMessages().get(diagramName).size() - 1);
 	}
 	
+	public Message getRelativeMessage(Message message, int offset) throws IllegalArgumentException, IndexOutOfBoundsException
+	{
+		if (! this.internalGetDiagrams().containsKey(message.getDiagramName()))
+		{
+			throw new IllegalArgumentException("store does not have diagram corresponding to message");
+		}
+		
+		return this.internalGetDiagramMessages().get(message.getDiagramName())
+				.get(message.getSDPoint().getSequenceNumber() + offset - 1);
+	}
+	
 	public Optional<Message> getNextMessage(Message message)
 	{
 		List<Message> messages = this.getMessagesForDiagram(message.getDiagramName());

@@ -117,6 +117,16 @@ public class LoopCombinedFragment extends CombinedFragment
 		
 		return toReturn;
 	}
+	
+	protected void fillTree(List<CombinedFragment> output)
+	{
+		output.add(this);
+		
+		for (CombinedFragment ele : this.internalGetChildren())
+		{
+			ele.fillTree(output);
+		}
+	}
 
 	private final List<Message> messages;
 
@@ -156,6 +166,14 @@ public class LoopCombinedFragment extends CombinedFragment
 	}
 	
 	@Override
+	protected boolean isAFinalMessage(Message message)
+	{
+		List<Message> flattened = this.flattenMessages();
+		
+		return flattened.get(flattened.size() - 1).equals(message);
+	}
+	
+	@Override
 	public String getDiagramName()
 	{
 		if (! this.internalGetMessages().isEmpty())
@@ -191,7 +209,7 @@ public class LoopCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
 				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetChildren(), true);
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetChildren(), true, true);
 			}
 			
 			else
@@ -218,7 +236,7 @@ public class LoopCombinedFragment extends CombinedFragment
 
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
 			
-			this.wrapLoops(output, seen, "", this.internalGetChildren(), false);
+			this.wrapLoops(output, seen, "", this.internalGetChildren(), false, true);
 			
 			for (CombinedFragment ele : this.internalGetChildren())
 			{
@@ -249,8 +267,21 @@ public class LoopCombinedFragment extends CombinedFragment
 		if (this.internalGetMessages().isEmpty() || 
 				(! this.internalGetChildren().isEmpty() && this.internalGetMessages().get(0).getSDPoint().getSequenceNumber() > msgs.get(0).getSDPoint().getSequenceNumber()))
 		{
-
-			this.internalGetChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+			CombinedFragment first = this.internalGetChildren().get(0);
+			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
+			
+			if (first instanceof LoopCombinedFragment)
+			{
+				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
+				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetChildren(), true, true);
+			}
+			
+			else
+			{
+				this.internalGetChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());	
+			}
 		}
 		else
 		{
@@ -320,7 +351,7 @@ public class LoopCombinedFragment extends CombinedFragment
 
 			for (Entry<Message, String> ele : entryPoints.entrySet())
 			{
-				if (ele.getValue().equals(""))
+				if (ele.getValue().equals("") || "".equals(intermediate))
 				{
 					ele.setValue(intermediate);
 				}
@@ -342,5 +373,66 @@ public class LoopCombinedFragment extends CombinedFragment
 		{
 			this.exitToOutside(store, output, exit, intermediate.equals("") ? Optional.empty() : Optional.of(intermediate));
 		}
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((children == null) ? 0 : children.hashCode());
+		result = prime * result + ((guard == null) ? 0 : guard.hashCode());
+		result = prime * result + ((messages == null) ? 0 : messages.hashCode());
+		result = prime * result + ((sdEnd == null) ? 0 : sdEnd.hashCode());
+		result = prime * result + ((sdStart == null) ? 0 : sdStart.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LoopCombinedFragment other = (LoopCombinedFragment) obj;
+		if (children == null)
+		{
+			if (other.children != null)
+				return false;
+		}
+		else if (!children.equals(other.children))
+			return false;
+		if (guard == null)
+		{
+			if (other.guard != null)
+				return false;
+		}
+		else if (!guard.equals(other.guard))
+			return false;
+		if (messages == null)
+		{
+			if (other.messages != null)
+				return false;
+		}
+		else if (!messages.equals(other.messages))
+			return false;
+		if (sdEnd == null)
+		{
+			if (other.sdEnd != null)
+				return false;
+		}
+		else if (!sdEnd.equals(other.sdEnd))
+			return false;
+		if (sdStart == null)
+		{
+			if (other.sdStart != null)
+				return false;
+		}
+		else if (!sdStart.equals(other.sdStart))
+			return false;
+		return true;
 	}
 }
