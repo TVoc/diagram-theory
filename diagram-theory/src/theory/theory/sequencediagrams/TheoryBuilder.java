@@ -64,13 +64,13 @@ public class TheoryBuilder
 	
 	public TheoryBuilder handleAltCombinedFragment(AltCombinedFragment frag, SeqDiagramStore store)
 	{
-		this.getCausationBuilder().handleAltCombinedFragment(frag, store);
+		this.getCausationBuilder().processCombinedFragment(frag, store);
 		return this;
 	}
 	
 	public TheoryBuilder handleLoopCombinedFragment(LoopCombinedFragment frag, SeqDiagramStore store)
 	{
-		this.getCausationBuilder().handleLoopCombinedFragment(frag, store);
+		this.getCausationBuilder().processCombinedFragment(frag, store);
 		return this;
 	}
 	
