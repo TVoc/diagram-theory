@@ -19,6 +19,7 @@ public class TheoryBuilder
 		this.stateAxiomBuilder = new StateAxiomBuilder(tabLevel + 2);
 		this.seqAttributeAssertionBuilder = new SeqAttributeAssertionBuilder(tabLevel + 2);
 		this.seqAssociationAssertionBuilder = new SeqAssociationAssertionBuilder(tabLevel + 2);
+		this.listAxiomBuilder = new ListAxiomBuilder(tabLevel + 2);
 	}
 	
 	private final int tabLevel;
@@ -30,6 +31,8 @@ public class TheoryBuilder
 	private final SeqAttributeAssertionBuilder seqAttributeAssertionBuilder;
 	
 	private final SeqAssociationAssertionBuilder seqAssociationAssertionBuilder;
+	
+	private final ListAxiomBuilder listAxiomBuilder;
 	
 	public int getTabLevel()
 	{
@@ -54,6 +57,11 @@ public class TheoryBuilder
 	public SeqAssociationAssertionBuilder getSeqAssociationAssertionBuilder()
 	{
 		return this.seqAssociationAssertionBuilder;
+	}
+	
+	public ListAxiomBuilder getListAxiomBuilder()
+	{
+		return this.listAxiomBuilder;
 	}
 
 	public TheoryBuilder handleMessage(Message message, SeqDiagramStore store)
@@ -98,6 +106,7 @@ public class TheoryBuilder
 	public TheoryBuilder addAssociation(Association assoc, SeqDiagramStore store)
 	{
 		this.getSeqAssociationAssertionBuilder().addAssociation(assoc, store);
+		this.getListAxiomBuilder().addAssociation(assoc, store);
 		return this;
 	}
 	
@@ -110,8 +119,13 @@ public class TheoryBuilder
 			+ OutputConvenienceFunctions.insertTabsNewLine("{", this.getTabLevel() + 1)
 			+ this.getStateAxiomBuilder().build()
 			+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel() + 1)
+			+ OutputConvenienceFunctions.insertTabsNewLine("{", this.getTabLevel() + 1)
+			+ this.getListAxiomBuilder().buildDefinitions()
+			+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel() + 1)
+			+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel())
 			+ this.getSeqAttributeAssertionBuilder().build()
 			+ this.getSeqAssociationAssertionBuilder().build()
+			+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel())
 			+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel());
 	}
 }
