@@ -113,10 +113,12 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("type boolean constructed from { T, F }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void constructed from { null }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type Stacklevel = { 1..100} isa nat", this.getTabLevel() + 1) // TODO Stacklevel max is hardcoded
-				+ OutputConvenienceFunctions.insertTabsNewLine("type Index isa nat", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("type Index isa LimitedInt", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("CurrentStacklevel(Time,Stacklevel)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("ReturnPoint(Time,Stacklevel,SDPointString)", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("RandomInt(Time) : LimitedInt", this.getTabLevel() + 1)
 				+ this.getSeqClassBuilder().build()
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ this.getTempVarBuilder().build()

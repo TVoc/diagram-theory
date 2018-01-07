@@ -125,6 +125,11 @@ public class AssociationEnd
 	{
 		return this.internalGetMultiplicity().orElse(Multiplicity.EXACTLY_ONE);
 	}
+	
+	public boolean isCollection()
+	{
+		return this.getMultiplicity().isCollection();
+	}
 
 	public String toString()
 	{

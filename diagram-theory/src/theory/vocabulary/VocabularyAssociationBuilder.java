@@ -61,6 +61,11 @@ public class VocabularyAssociationBuilder
 		return predicateName.toString();
 	}
 	
+	public static String getListGetterPredicate(String fromClass, String getClass)
+	{
+		return fromClass + "Get" + getClass;
+	}
+	
 	public String build()
 	{
 		return this.getStringBuilder().toString();

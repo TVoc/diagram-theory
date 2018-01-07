@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,13 +84,17 @@ public class TempVarCausationBuilder
 		
 		if (rhs.contains("get"))
 		{
-			return handleGetStatement(message, true, store, assigned, rhs);
+			return handleGetStatement(message, false, store, assigned, rhs); // TODO assess effect of no longer making assignments immediate
 		}
 		else if (store.isCallPoint(message))
 		{
 			this.makeCallObjectSentence(message, store);
 			this.processCallArguments(message, store);
 			return this.handleReturnAssignment(message, store);
+		}
+		else if (rhs.contains("randomInt"))
+		{
+			return handleRandomInt(message, store, assigned, rhs);
 		}
 		else // of type "one + two"
 		{
@@ -101,10 +106,18 @@ public class TempVarCausationBuilder
 			String rhs)
 	{
 		// TODO accommodate e.g. getNumHeaps
+		if (rhs.contains("getNum"))
+		{
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
+					this.makeGetSizeAxiom(message, store, assigned, rhs), this.getTabLevel()));
+			return this;
+		}
+		
 		String[] attrSpec = rhs.replaceAll("get","").split("By");
 		String toGetClassName = attrSpec[0].split("\\(")[0];
 		TempVar getFromT = message.getTo(store);
 		Class getFrom = store.getClassByName(message.getTo(store).getType().getTypeName(store));
+		
 		Optional<DataUnit> maybeAttr = getFrom.getAttributeByName(StringUtils.uncapitalize(toGetClassName));
 		String causesTime = immediate ? "t" : "Next(t)";
 		
@@ -127,6 +140,15 @@ public class TempVarCausationBuilder
 			if (ele.containsAll(store, asList))
 			{
 				assoc = ele;
+				
+				if (assoc.getNbOfEnds() == 2 && assoc.isCollection(toGetClassName, store).orElse(false))
+				{
+					int index = Integer.parseInt(this.findGetterValue(rhs));
+					
+					this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
+							this.makeListGetAxiom(message, store, assigned, toGetClassName, index), this.getTabLevel()));
+					return this;
+				}
 			}
 		}
 		
@@ -150,6 +172,99 @@ public class TempVarCausationBuilder
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
 		return this;
+	}
+	
+	private String makeGetSizeAxiom(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
+	{
+		String toGetTypeName = rhs.replaceAll("getNum|\\(\\)", "");
+		toGetTypeName = toGetTypeName.substring(0, toGetTypeName.length() - 1);
+		
+		TempVar getFrom = message.getTo(store);
+		
+		Association assoc = null;
+		for (Association ele : store.getAssociations())
+		{
+			List<String> asList = Arrays.asList(getFrom.getName(), toGetTypeName);
+			
+			if (ele.containsAll(store, asList))
+			{
+				assoc = ele;
+			}
+		}
+		
+		return 	"! t [Time] a [LimitedInt] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
+				+ "(Next(t), a) <- SDPointAt(t, " + message.getSDPoint() + ") & #{ i [LimitedInt] : ? e ["
+				+ toGetTypeName + "] : " + VocabularyAssociationBuilder.getListGetterPredicate(getFrom.getType().getTypeName(store), toGetTypeName)
+				+ "(" + getFrom.getName() + ", i) = e} = a.";
+	}
+	
+	private String makeListGetAxiom(Message message, SeqDiagramStore store, TempVar assigned, String toGetClassName, int index)
+	{
+		String assignedType = OutputConvenienceFunctions.toIDPType(assigned.getType(), store);
+		String getFromType = OutputConvenienceFunctions.toIDPType(message.getTo(store).getType(), store);
+		String predicateName = OutputConvenienceFunctions.singleTempVarPredicateName(assigned);
+		String fromPredicateName = OutputConvenienceFunctions.singleTempVarPredicateName(message.getTo(store));
+		
+		return "! t [Time] e [" + assignedType + "] : C_" + predicateName + "(Next(t), e) <- SDPointAt(t, " + message.getSDPoint()
+			+ ") & ( ? o [" + getFromType + "] : " + fromPredicateName + "(t, o) & " 
+			+ VocabularyAssociationBuilder.getListGetterPredicate(getFromType, assignedType) + "(o, " + index + ") = e).";
+	}
+	
+	private TempVarCausationBuilder handleRandomInt(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
+	{
+		String[] bounds = this.getRandomBounds(rhs);
+		String lb = OutputConvenienceFunctions.representsInteger(bounds[0]) ? bounds[0] : "lb";
+		String ub = OutputConvenienceFunctions.representsInteger(bounds[1]) ? bounds[1] : "ub";
+		
+		String predicateName = OutputConvenienceFunctions.singleTempVarPredicateName(assigned);
+		
+		StringBuilder toReturn = new StringBuilder("! t [Time] r [LimitedInt] : C_" + predicateName + "(Next(t), r) <- SDPointAt(t, " + message.getSDPoint()
+				+ ") & ");
+		StringBuilder quantifiers = new StringBuilder();
+		String expression = "r = abs(RandomInt(t)) % (" + ub + " + 1 - " + lb + ") + " + lb;
+		
+		boolean hasVar = "lb".equals(lb) || "ub".equals(ub);
+		
+		if (hasVar)
+		{
+			quantifiers.append("( ? ");
+			
+			if ("lb".equals(lb))
+			{
+				quantifiers.append("lb [LimitedInt] ");
+			}
+			if ("ub".equals(ub))
+			{
+				quantifiers.append("ub [LimitedInt] ");
+			}
+			
+			quantifiers.append(": ");
+			
+			if ("lb".equals(lb))
+			{
+				quantifiers.append(OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(bounds[0]))
+						+ "(t, lb)");
+			}
+			if ("ub".equals(ub))
+			{
+				String toAppend = OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(bounds[1]))
+						+ "(t, ub)";
+				quantifiers.append(("lb".equals(lb) ? " & " : "") + toAppend);
+			}
+		}
+		
+		toReturn.append(quantifiers.toString()).append(expression).append(hasVar ? ")." : ".");
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toReturn.toString(), this.getTabLevel()));
+		
+		return this;
+	}
+	
+	private String[] getRandomBounds(String rhs)
+	{
+		Matcher m = GETTER_PARAMETER.matcher(rhs);
+		m.find();
+		return m.group(1).split(ARGLIST_SEPARATOR);
 	}
 	
 	private String makeGetterPredicate(TempVar assigned, TempVar getFrom, String toGetClassName, String predicateName,
@@ -207,7 +322,7 @@ public class TempVarCausationBuilder
 		assertion.append(message.getContent() + ").");
 		
 		String toAppend = "! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
-			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(t, " + assigned.getName() + ") <- SDPointAt(t, "
+			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), " + assigned.getName() + ") <- SDPointAt(t, "
 			+ message.getSDPoint() + ") & " + quantifiers.toString() + assertion.toString();
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));

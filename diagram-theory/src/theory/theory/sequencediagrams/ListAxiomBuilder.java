@@ -53,11 +53,11 @@ public class ListAxiomBuilder
 		
 		if (first.getMultiplicity().isCollection())
 		{
-			
+			this.addListAxioms(association, second, first, store);
 		}
 		if (second.getMultiplicity().isCollection())
 		{
-			
+			this.addListAxioms(association, first, second, store);
 		}
 		
 		return this;

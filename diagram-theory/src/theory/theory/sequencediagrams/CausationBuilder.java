@@ -14,6 +14,7 @@ public class CausationBuilder
 		this.classVariableCausationBuilder = new ClassVariableCausationBuilder(tabLevel, store);
 		this.checkpointBuilder = new CheckpointBuilder(tabLevel, store);
 		this.tempVarCausationBuilder = new TempVarCausationBuilder(tabLevel);
+		this.stackLevelCausationBuilder = new StackLevelCausationBuilder(tabLevel, store);
 	}
 	
 	private final int tabLevel;
@@ -23,6 +24,8 @@ public class CausationBuilder
 	private final CheckpointBuilder checkpointBuilder;
 	
 	private final TempVarCausationBuilder tempVarCausationBuilder;
+	
+	private final StackLevelCausationBuilder stackLevelCausationBuilder;
 
 	public int getTabLevel()
 	{
@@ -42,6 +45,11 @@ public class CausationBuilder
 	public TempVarCausationBuilder getTempVarCausationBuilder()
 	{
 		return this.tempVarCausationBuilder;
+	}
+	
+	public StackLevelCausationBuilder getStackLevelCausationBuilder()
+	{
+		return this.stackLevelCausationBuilder;
 	}
 	
 	public void processCombinedFragment(CombinedFragment frag, SeqDiagramStore store)
@@ -65,6 +73,10 @@ public class CausationBuilder
 	{
 		this.getClassVariableCausationBuilder().handleMessage(message, store);
 		this.getTempVarCausationBuilder().handleMessage(message, store);
+		if (store.isCallPoint(message))
+		{
+			this.getStackLevelCausationBuilder().handleCallPoint(message, store);
+		}
 	}
 	
 	public String build()

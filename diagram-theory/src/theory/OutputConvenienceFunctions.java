@@ -121,4 +121,17 @@ public abstract class OutputConvenienceFunctions
 		
 		return string;
 	}
+	
+	public static boolean representsInteger(String s)
+	{
+		try
+		{
+			Integer.parseInt(s);
+			return true;
+		}
+		catch (NumberFormatException e)
+		{
+			return false;
+		}
+	}
 }

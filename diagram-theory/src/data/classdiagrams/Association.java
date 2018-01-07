@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -99,6 +100,19 @@ public class Association implements Iterable<AssociationEnd>
 		}
 		
 		return -1;
+	}
+	
+	public Optional<Boolean> isCollection(String typeName, TypeContext context)
+	{
+		for (AssociationEnd ele : this.internalGetAssociationEnds())
+		{
+			if (ele.getTypeName(context).equals(typeName))
+			{
+				return Optional.of(ele.isCollection());
+			}
+		}
+		
+		return Optional.empty();
 	}
 	
 	public String toString()

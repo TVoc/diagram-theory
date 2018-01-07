@@ -160,11 +160,11 @@ public class ClassVariableCausationBuilder
 				TempVar temp = store.resolveTempVar(setterValue);
 				
 				String causeAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(setOf.getType(), store) + "] v ["
-						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : C_" + predName + "(t, x, v) <- SDPointAt(t, "
+						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : C_" + predName + "(Next(t), x, v) <- SDPointAt(t, "
 						+ message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf) + "(t, x) & "
 						+ OutputConvenienceFunctions.singleTempVarPredicateName(temp) + "(t, v).";
 				String uncauseAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(setOf.getType(), store) + "] v ["
-						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : Cn_" + predName + "(Next(t), x, v) <- SDPointAt(Next(t), "
+						+ OutputConvenienceFunctions.toIDPType(temp.getType(), store) + "] : Cn_" + predName + "(Next(t), x, v) <- SDPointAt(t, "
 						+ message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf) + "(t, x) & "
 						+ predName + "(t, x, v) & ~"
 						+ OutputConvenienceFunctions.singleTempVarPredicateName(temp) + "(Next(t), v).";
@@ -178,12 +178,12 @@ public class ClassVariableCausationBuilder
 			setterValue = OutputConvenienceFunctions.catchIDPBoolean(setterValue);
 			
 			String causeAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(setOf.getType(), store) + "] : C_" + predName
-					+ "(t, x, " + setterValue + ") <- SDPointAt(t, " + message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf)
+					+ "(Next(t), x, " + setterValue + ") <- SDPointAt(t, " + message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf)
 					+ "(t, x).";
 			String uncauseAppend = "! t [Time] x [" + OutputConvenienceFunctions.toIDPType(setOf.getType(), store) + "] v ["
 					+ OutputConvenienceFunctions.toIDPType(setClass.getAttributeByName(toSet).get().getType(), store)
 					+ "] : Cn_" + predName
-					+ "(Next(t), x, v) <- SDPointAt(Next(t), " + message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf)
+					+ "(Next(t), x, v) <- SDPointAt(t, " + message.getSDPoint() + ") & " + OutputConvenienceFunctions.singleTempVarPredicateName(setOf)
 					+ "(t, x) & " + predName + "(t, x, v) & ~(v = " + setterValue + ").";
 			
 			this.getCauseStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(causeAppend, ClassVariableCausationBuilder.this.getTabLevel()));
