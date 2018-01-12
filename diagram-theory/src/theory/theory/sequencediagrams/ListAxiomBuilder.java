@@ -73,7 +73,7 @@ public class ListAxiomBuilder
 		this.getDefitionBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
 				"! f [" + fromType + "] to [" + toType + "] : " + symbols[1] + "(f, 0) <- " + symbols[0] + "(f) = to.", this.getTabLevel()));
 		this.getDefitionBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"! f [" + fromType + "] i [Index] to [" + toType + "] : " + symbols[1] + "(f, i) <- "
+				"! f [" + fromType + "] i [LimitedInt] to [" + toType + "] : " + symbols[1] + "(f, i) <- "
 				+ "( ? to1 [" + toType + "] : " + symbols[1] + "(f, (i-1)) = to1 & "
 				+ symbols[2] + "(f, to1) = to.", this.getTabLevel()));
 		
@@ -82,7 +82,7 @@ public class ListAxiomBuilder
 		if (association.getAssociationEnds().iterator().next().getTypeName(store).equals(fromType))
 		{
 			this.getTheorySentenceBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-					"! f [" + fromType + "] to [" + toType + "] : " + predicateName + "(f, to) => (? i [Index] : "
+					"! f [" + fromType + "] to [" + toType + "] : " + predicateName + "(f, to) <=> (? i [Index] : "
 					+ symbols[1] + "(f, i) = to).", this.getTabLevel()));
 		}
 		else

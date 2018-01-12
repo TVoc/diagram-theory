@@ -88,9 +88,9 @@ public class SeqAssociationBuilder
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
 				"partial " + fromName + "First" + toName + "(" + fromName + ")", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"partial " + fromName + "Get" + toName + "(" + fromName + ", Index)", this.getTabLevel()));
+				"partial " + fromName + "Get" + toName + "(" + fromName + ", LimitedInt)", this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"partial " + fromName + "Next" + toName + "(" + fromName + ", Index)", this.getTabLevel()));
+				"partial " + fromName + "Next" + toName + "(" + fromName + ", LimitedInt)", this.getTabLevel()));
 	}
 	
 	public String build()
@@ -117,7 +117,7 @@ public class SeqAssociationBuilder
 		
 		toReturn[0] = fromName + "First" + toName;
 		toReturn[1] = fromName + "Get" + toName;
-		toReturn[21] = fromName + "Next" + toName;
+		toReturn[2] = fromName + "Next" + toName;
 		
 		return toReturn;
 	}

@@ -12,13 +12,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.tuple.Pair;
 
 import theory.SeqDiagramStore;
 
 public class AltCombinedFragment extends CombinedFragment
 {
-	public AltCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> ifChildren
+	AltCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> ifChildren
 			, Optional<List<CombinedFragment>> thenChildren, Optional<List<Message>> ifMessages, Optional<List<Message>> thenMessages
 			, String ifGuard, String thenGuard, SDPoint sdIf, SDPoint sdThen, SDPoint sdExit) throws IllegalArgumentException
 	{
@@ -61,8 +63,8 @@ public class AltCombinedFragment extends CombinedFragment
 			throw new IllegalArgumentException("thenMessages cannot be null");
 		}
 
-		this.ifGuard = ifGuard;
-		this.thenGuard = thenGuard;
+		this.ifGuard = ifGuard.replaceAll("\\s*", "");
+		this.thenGuard = thenGuard.replaceAll("\\s*", "");
 		
 		String diagramName;
 		
@@ -128,9 +130,9 @@ public class AltCombinedFragment extends CombinedFragment
 		return this.sdExit;
 	}
 
-	private final List<CombinedFragment> ifChildren;
+	private List<CombinedFragment> ifChildren;
 
-	private final List<CombinedFragment> thenChildren;
+	private List<CombinedFragment> thenChildren;
 
 	private List<CombinedFragment> internalGetIfChildren()
 	{
@@ -140,6 +142,16 @@ public class AltCombinedFragment extends CombinedFragment
 	public List<CombinedFragment> getIfChildren()
 	{
 		return Collections.unmodifiableList(this.internalGetIfChildren());
+	}
+	
+	public void setIfChildren(List<CombinedFragment> ifChildren) throws IllegalArgumentException
+	{
+		if (ifChildren == null)
+		{
+			throw new IllegalArgumentException("ifChildren cannot be null");
+		}
+		
+		this.ifChildren = ifChildren;
 	}
 
 	public CombinedFragment getIfChild(int index) throws IndexOutOfBoundsException
@@ -212,6 +224,16 @@ public class AltCombinedFragment extends CombinedFragment
 	public List<CombinedFragment> getThenChildren()
 	{
 		return Collections.unmodifiableList(this.internalGetThenChildren());
+	}
+	
+	public void setThenChildren(List<CombinedFragment> thenChildren) throws IllegalArgumentException
+	{
+		if (thenChildren == null)
+		{
+			throw new IllegalArgumentException("thenChildren cannot be null");
+		}
+		
+		this.thenChildren = thenChildren;
 	}
 	
 	@Override
@@ -811,5 +833,10 @@ public class AltCombinedFragment extends CombinedFragment
 		else if (!thenMessages.equals(other.thenMessages))
 			return false;
 		return true;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

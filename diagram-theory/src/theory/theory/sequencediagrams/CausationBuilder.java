@@ -86,6 +86,7 @@ public class CausationBuilder
 		toReturn.append(this.getClassVariableCausationBuilder().build());
 		toReturn.append(this.getCheckpointBuilder().build());
 		toReturn.append(this.getTempVarCausationBuilder().build());
+		toReturn.append(this.getStackLevelCausationBuilder().build());
 		
 		return toReturn.toString();
 	}

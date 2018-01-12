@@ -1,12 +1,14 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import data.sequencediagrams.AltCombinedFragment;
 import data.sequencediagrams.DiagramInfo;
@@ -14,23 +16,25 @@ import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
 import data.sequencediagrams.TempVar;
 import data.sequencediagrams.TempVarContext;
+import theory.CallPointExpander;
 
 //TODO processing DiagramInfo objects
 
-public class SeqSymbolStore extends SymbolStore implements TempVarContext
+public class SeqSymbolStore extends SymbolStore implements TempVarContext, CallPointExpander
 {
 	public SeqSymbolStore()
 	{
 		super();
 		
-		idsToNames = new HashMap<String,String>();
-		tempVars = new HashMap<String,TempVar>();
-		messages = new ArrayList<Message>();
-		diagrams = new HashMap<String, DiagramInfo>();
-		idsToMessages = new HashMap<String,Message>();
-		callPoints = new TreeMap<Message, Message>();
-		altCombinedFragments = new ArrayList<AltCombinedFragment>();
-		loopCombinedFragments = new ArrayList<LoopCombinedFragment>();
+		this.idsToNames = new HashMap<String,String>();
+		this.tempVars = new HashMap<String,TempVar>();
+		this.messages = new ArrayList<Message>();
+		this.diagrams = new HashMap<String, DiagramInfo>();
+		this.idsToMessages = new HashMap<String,Message>();
+		this.callPointsExpanded = false;
+		this.callPoints = new TreeMap<Message, Message>();
+		this.altCombinedFragments = new ArrayList<AltCombinedFragment>();
+		this.loopCombinedFragments = new ArrayList<LoopCombinedFragment>();
 	}
 	
 	private final Map<String,String> idsToNames;
@@ -159,14 +163,32 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		return this.internalGetMessages().get(index);
 	}
 	
-	public void addMessage(Message message) throws IllegalArgumentException
+	public void addMessage(Message message) throws IllegalArgumentException, IllegalStateException
 	{
 		if (message == null)
 		{
 			throw new IllegalArgumentException("message cannot be null");
 		}
+		if (this.callPointsExpanded())
+		{
+			throw new IllegalStateException("this store has already expanded call points");
+		}
 		
 		this.internalGetMessages().add(message);
+	}
+	
+	public void addMessages(Collection<Message> messages) throws IllegalArgumentException, IllegalStateException
+	{
+		if (messages == null)
+		{
+			throw new IllegalArgumentException("messages cannot be null");
+		}
+		if (this.callPointsExpanded())
+		{
+			throw new IllegalStateException("this store has already expanded call points");
+		}
+		
+		this.internalGetMessages().addAll(messages);
 	}
 	
 	private final Map<String, Message> idsToMessages;
@@ -206,8 +228,24 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 		{
 			throw new IllegalArgumentException("message cannot be null");
 		}
+		if (this.callPointsExpanded())
+		{
+			throw new IllegalStateException("this store has already expanded call points");
+		}
 		
 		this.internalGetIdsToMessages().put(id, message);
+	}
+	
+	private boolean callPointsExpanded;
+	
+	private boolean callPointsExpanded()
+	{
+		return this.callPointsExpanded;
+	}
+	
+	private void setCallPointsExpanded(boolean callPointsExpanded)
+	{
+		this.callPointsExpanded = callPointsExpanded;
 	}
 	
 	public List<Message> getMessagesForDiagram(String diagramName) throws IllegalArgumentException
@@ -256,6 +294,72 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext
 	public Map<Message, Message> getCallPoints()
 	{
 		return Collections.unmodifiableMap(this.internalGetCallPoints());
+	}
+	
+	private void buildCallPoints()
+	{
+		Map<String, Message> firstInstructions = new HashMap<String, Message>();
+		
+		for (Message message : this.getMessages())
+		{
+			if (message.getSDPoint().getSequenceNumber() == 1)
+			{
+				firstInstructions.put(message.getDiagramName(), message);
+			}
+		}
+		
+		for (Message message : this.getMessages())
+		{
+			if (message.getSDPoint().getSequenceNumber() != 1)
+			{
+				for (Entry<String, Message> entry : firstInstructions.entrySet())
+				{
+					if (message.getContent().contains(entry.getKey()))
+					{
+						callPoints.put(message, entry.getValue());
+					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void expandWithCallPoints(List<Message> messages) throws IllegalArgumentException
+	{
+		if (messages == null)
+		{
+			throw new IllegalArgumentException("messages cannot be null");
+		}
+		
+		if (this.getCallPoints().isEmpty())
+		{
+			this.buildCallPoints();
+		}
+		
+		for (int i = 0; i < messages.size(); i++)
+		{
+			Message ele = messages.get(i);
+			
+			for (Message cpMessage : this.internalGetCallPoints().keySet())
+			{
+				if (ele.equals(cpMessage))
+				{
+					if (ele.getFragment().isPresent())
+					{
+						messages.add((i+1), new Message("", ele.getSDPoint().toString(), ele.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+								ele.getDiagramName(), true, ele.getFragment().get()));
+					}
+					else
+					{
+						messages.add((i+1), new Message("", ele.getSDPoint().toString(), ele.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+								ele.getDiagramName(), true));
+					}
+					i++;
+				}
+			}
+		}
+		
+		this.setCallPointsExpanded(true);
 	}
 	
 	private final List<AltCombinedFragment> altCombinedFragments;

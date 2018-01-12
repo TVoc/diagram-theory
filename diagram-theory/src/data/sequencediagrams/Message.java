@@ -3,6 +3,9 @@ package data.sequencediagrams;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class Message implements Comparable<Message>
 {
 	public static final Pattern getterSetternPattern = Pattern.compile("(get|set).*");
@@ -35,7 +38,7 @@ public class Message implements Comparable<Message>
 			throw new IllegalArgumentException("diagramName cannot be null");
 		}
 		
-		this.content = content;
+		this.content = content.replaceAll("\\s*", "");
 		this.id = id;
 		this.sdPoint = new SDPoint(diagramName, sdPoint, post);
 		this.fromName = fromName;
@@ -149,7 +152,13 @@ public class Message implements Comparable<Message>
 	{
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((content == null) ? 0 : content.hashCode());
+		result = prime * result + ((diagramName == null) ? 0 : diagramName.hashCode());
+		result = prime * result + ((fromName == null) ? 0 : fromName.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (isReturn ? 1231 : 1237);
+		result = prime * result + ((sdPoint == null) ? 0 : sdPoint.hashCode());
+		result = prime * result + ((toName == null) ? 0 : toName.hashCode());
 		return result;
 	}
 
@@ -163,12 +172,49 @@ public class Message implements Comparable<Message>
 		if (getClass() != obj.getClass())
 			return false;
 		Message other = (Message) obj;
+		if (content == null)
+		{
+			if (other.content != null)
+				return false;
+		}
+		else if (!content.equals(other.content))
+			return false;
+		if (diagramName == null)
+		{
+			if (other.diagramName != null)
+				return false;
+		}
+		else if (!diagramName.equals(other.diagramName))
+			return false;
+		if (fromName == null)
+		{
+			if (other.fromName != null)
+				return false;
+		}
+		else if (!fromName.equals(other.fromName))
+			return false;
 		if (id == null)
 		{
 			if (other.id != null)
 				return false;
 		}
 		else if (!id.equals(other.id))
+			return false;
+		if (isReturn != other.isReturn)
+			return false;
+		if (sdPoint == null)
+		{
+			if (other.sdPoint != null)
+				return false;
+		}
+		else if (!sdPoint.equals(other.sdPoint))
+			return false;
+		if (toName == null)
+		{
+			if (other.toName != null)
+				return false;
+		}
+		else if (!toName.equals(other.toName))
 			return false;
 		return true;
 	}
@@ -177,5 +223,10 @@ public class Message implements Comparable<Message>
 	public int compareTo(Message arg0)
 	{
 		return this.getSDPoint().compareTo(arg0.getSDPoint());
+	}
+	
+	public String toString()
+	{
+		return "Content: " + this.getContent() + "; SDPoint: " + this.getSDPoint().toString();
 	}
 }

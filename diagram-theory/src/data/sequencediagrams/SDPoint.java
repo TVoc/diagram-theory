@@ -1,5 +1,8 @@
 package data.sequencediagrams;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class SDPoint implements Comparable<SDPoint>
 {
 	public SDPoint(String diagramName, int sequenceNumber, boolean post) throws IllegalArgumentException

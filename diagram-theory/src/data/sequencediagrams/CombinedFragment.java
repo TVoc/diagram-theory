@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -29,11 +31,21 @@ public abstract class CombinedFragment
 		this.parent = parent;
 	}
 
-	private final Optional<CombinedFragment> parent;
+	private Optional<CombinedFragment> parent;
 
 	public Optional<CombinedFragment> getParent()
 	{
 		return this.parent;
+	}
+	
+	public void setParent(Optional<CombinedFragment> parent) throws IllegalArgumentException
+	{
+		if (parent == null)
+		{
+			throw new IllegalArgumentException("parent cannot be null");
+		}
+		
+		this.parent = parent;
 	}
 
 	public CombinedFragment getTopLevelFragment()
@@ -248,35 +260,6 @@ public abstract class CombinedFragment
 
 	protected abstract void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate);
 
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CombinedFragment other = (CombinedFragment) obj;
-		if (parent == null)
-		{
-			if (other.parent != null)
-				return false;
-		}
-		else if (!parent.equals(other.parent))
-			return false;
-		return true;
-	}
-
 	public List<ExitForMessage> calcExitForMessages(SeqDiagramStore store)
 	{
 		List<ExitForMessage> toReturn = new ArrayList<ExitForMessage>();
@@ -389,7 +372,7 @@ public abstract class CombinedFragment
 		}
 
 
-		message = diagramMessages.get(message.getSDPoint().getSequenceNumber());;
+		message = diagramMessages.get(diagramMessages.indexOf(message) + 1);
 		boolean done = false;
 
 		while (! done)
@@ -417,7 +400,7 @@ public abstract class CombinedFragment
 
 					if (fragFinal.getSDPoint().getSequenceNumber() < diagramMessages.size())
 					{
-						message = diagramMessages.get(frag.getFinalMessage().getSDPoint().getSequenceNumber());
+						message = diagramMessages.get(diagramMessages.indexOf(frag.getFinalMessage()) + 1);
 					}
 					else
 					{
@@ -458,5 +441,10 @@ public abstract class CombinedFragment
 		}
 
 		return toReturn;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

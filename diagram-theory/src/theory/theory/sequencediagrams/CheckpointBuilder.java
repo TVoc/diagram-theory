@@ -443,14 +443,15 @@ public class CheckpointBuilder
 		StringBuilder guardBuilder = new StringBuilder(": ");
 
 		String[] guardParts = guard.split(XMLParser.TEMPVAR_SEPARATOR);
-
+		
 		for (String part : guardParts)
 		{
-			if (part.equals(""))
+			if (part.equals("") || part.equals("T") || part.equals("F") || OutputConvenienceFunctions.representsInteger(part)
+					|| OutputConvenienceFunctions.representsFloat(part))
 			{
 				continue;
 			}
-
+			
 			TempVar tempVar = store.resolveTempVar(part.replaceAll("\\s", ""));
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 

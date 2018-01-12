@@ -134,4 +134,17 @@ public abstract class OutputConvenienceFunctions
 			return false;
 		}
 	}
+	
+	public static boolean representsFloat(String s)
+	{
+		try
+		{
+			Double.parseDouble(s);
+			return true;
+		}
+		catch (NumberFormatException e)
+		{
+			return false;
+		}
+	}
 }

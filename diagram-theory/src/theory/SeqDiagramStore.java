@@ -17,10 +17,11 @@ import data.sequencediagrams.AltCombinedFragment;
 import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
+import data.sequencediagrams.SDPoint;
 import data.sequencediagrams.TempVar;
 import data.sequencediagrams.TempVarContext;
 
-public class SeqDiagramStore extends DiagramStore implements TempVarContext
+public class SeqDiagramStore extends DiagramStore implements TempVarContext, CallPointExpander
 {
 
 	SeqDiagramStore(Map<String, Class> classes, Map<String, Class> classesByName, Set<Association> associations, Set<Generalization> generalizations, Map<String,TempVar> tempVars
@@ -87,8 +88,17 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		for (Message key : this.callPoints.keySet())
 		{
 			int i = this.messages.indexOf(key);
-			this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
-					key.getDiagramName(), true, key.getFragment().get()));
+			if (key.getFragment().isPresent())
+			{
+				this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+						key.getDiagramName(), true, key.getFragment().get()));
+			}
+			else
+			{
+				this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+						key.getDiagramName(), true));
+			}
+			
 		}
 		
 		this.diagramMessages = new HashMap<String, List<Message>>();
@@ -100,6 +110,20 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 				diagramMessages.put(message.getDiagramName(), new ArrayList<Message>());
 			}
 			diagramMessages.get(message.getDiagramName()).add(message);
+		}
+		
+		for (Entry<String, List<Message>> diagramMessageList : this.diagramMessages.entrySet())
+		{
+			if (! diagramMessageList.getValue().get(diagramMessageList.getValue().size() - 1).isReturn())
+			{
+				Message finalMessage = diagramMessageList.getValue().get(diagramMessageList.getValue().size() - 1);
+				Message toAdd = new Message("return", diagramMessageList.getKey() + "voidreturn",
+						finalMessage.getSDPoint().getSequenceNumber() + 1, true,
+						Optional.of(this.diagrams.get(diagramMessageList.getKey()).getCallObject().getName()),
+						Optional.empty(), diagramMessageList.getKey(), false);
+				diagramMessageList.getValue().add(toAdd);
+				this.messages.add(this.messages.indexOf(finalMessage) + 1, toAdd);
+			}
 		}
 	}
 	
@@ -296,6 +320,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext
 		return this.internalGetCallPoints().get(message);
 	}
 	
+	@Override
 	public void expandWithCallPoints(List<Message> messages)
 	{
 		for (int i = 0; i < messages.size(); i++)

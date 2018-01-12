@@ -49,6 +49,11 @@ public class StackLevelCausationBuilder
 	
 	public String build()
 	{
+		if (this.getCallPoints().isEmpty())
+		{
+			return "";
+		}
+		
 		StringBuilder inc = new StringBuilder("! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st - 1)) & (");
 		
 		Iterator<SDPoint> callPoints = this.getCallPoints().iterator();

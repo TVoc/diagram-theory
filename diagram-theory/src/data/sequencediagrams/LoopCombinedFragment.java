@@ -12,11 +12,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import theory.SeqDiagramStore;
 
 public class LoopCombinedFragment extends CombinedFragment
 {
-	public LoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
+	LoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
 			, String guard, SDPoint sdStart, SDPoint sdEnd) throws IllegalArgumentException
 	{
 		super(parent);
@@ -34,7 +37,7 @@ public class LoopCombinedFragment extends CombinedFragment
 			throw new IllegalArgumentException("sdEnd cannot be less than or equal to sdStart");
 		}
 
-		this.guard = guard;
+		this.guard = guard.replaceAll("\\s*", "");
 		
 		this.children = children.isPresent() ? children.get() : Collections.emptyList();
 		this.messages = messages.isPresent() ? messages.get() : Collections.emptyList();
@@ -75,7 +78,7 @@ public class LoopCombinedFragment extends CombinedFragment
 		return this.sdEnd;
 	}
 
-	private final List<CombinedFragment> children;
+	private List<CombinedFragment> children;
 
 	private List<CombinedFragment> internalGetChildren()
 	{
@@ -116,6 +119,11 @@ public class LoopCombinedFragment extends CombinedFragment
 		}
 		
 		return toReturn;
+	}
+	
+	public void setChildren(List<CombinedFragment> children) throws IllegalArgumentException
+	{
+		this.children = children;
 	}
 	
 	protected void fillTree(List<CombinedFragment> output)
@@ -434,5 +442,10 @@ public class LoopCombinedFragment extends CombinedFragment
 		else if (!sdStart.equals(other.sdStart))
 			return false;
 		return true;
+	}
+	
+	public String toString()
+	{
+		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
 	}
 }

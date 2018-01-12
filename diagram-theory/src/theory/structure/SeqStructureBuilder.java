@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -45,8 +46,30 @@ public class SeqStructureBuilder
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("I_SDPointAt = { 1 }", tabLevel + 1));
 		stringBuilder.append(OutputConvenienceFunctions.insertTabsBlankLine(tabLevel));
-		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("LimitedInt = { " + (int) (- factors.getNumObjects() * factors.getIntFactor() * 0.5 - 1)
-				+ ".." + (int) (factors.getNumObjects() * factors.getIntFactor() * 0.5 + 1) + " }", tabLevel + 1));
+		
+		int limitedIntLower = (int) (- factors.getNumObjects() * factors.getIntFactor() * 0.5 - 1);
+		int limitedIntUpper = (int) (factors.getNumObjects() * factors.getIntFactor() * 0.5 + 1);
+		
+		stringBuilder.append(OutputConvenienceFunctions.insertTabsNewLine("LimitedInt = { " + limitedIntLower
+				+ ".." + limitedIntUpper + " }", tabLevel + 1));
+		
+		StringBuilder randomBuilder = new StringBuilder("RandomInt = { ");
+
+		Random rng = new Random();
+		
+		for (int i = 0; i < factors.getTimeSteps(); i++)
+		{
+			int nextRand = Math.abs(rng.nextInt() % (limitedIntUpper + 1 - limitedIntLower)) + limitedIntLower;
+			
+			if (i == (factors.getTimeSteps() - 1))
+			{
+				randomBuilder.append((i+1) + "," + nextRand);
+			}
+			else
+			{
+				randomBuilder.append((i+1) + "," + nextRand + "; ");
+			}
+		}
 		
 		StringBuilder floatBuilder = new StringBuilder("LimitedFloat = { 0.0; ");
 		
@@ -180,6 +203,8 @@ public class SeqStructureBuilder
 	
 	public String build()
 	{
-		return this.getStringBuilder().toString() + OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel());
+		return this.getStringBuilder().toString()
+				+ OutputConvenienceFunctions.insertTabsNewLine("flipBool = { T->F;F->T}", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("}", this.getTabLevel());
 	}
 }

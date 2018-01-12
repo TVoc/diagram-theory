@@ -86,6 +86,10 @@ public class TempVarCausationBuilder
 		{
 			return handleGetStatement(message, false, store, assigned, rhs); // TODO assess effect of no longer making assignments immediate
 		}
+		else if (rhs.contains("flipBool"))
+		{
+			return handleFlipBool(message, store, assigned, rhs);
+		}
 		else if (store.isCallPoint(message))
 		{
 			this.makeCallObjectSentence(message, store);
@@ -143,7 +147,7 @@ public class TempVarCausationBuilder
 				
 				if (assoc.getNbOfEnds() == 2 && assoc.isCollection(toGetClassName, store).orElse(false))
 				{
-					int index = Integer.parseInt(this.findGetterValue(rhs));
+					String index = this.findGetterValue(rhs);
 					
 					this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
 							this.makeListGetAxiom(message, store, assigned, toGetClassName, index), this.getTabLevel()));
@@ -198,16 +202,29 @@ public class TempVarCausationBuilder
 				+ "(" + getFrom.getName() + ", i) = e} = a.";
 	}
 	
-	private String makeListGetAxiom(Message message, SeqDiagramStore store, TempVar assigned, String toGetClassName, int index)
+	private String makeListGetAxiom(Message message, SeqDiagramStore store, TempVar assigned, String toGetClassName, String index)
 	{
 		String assignedType = OutputConvenienceFunctions.toIDPType(assigned.getType(), store);
 		String getFromType = OutputConvenienceFunctions.toIDPType(message.getTo(store).getType(), store);
 		String predicateName = OutputConvenienceFunctions.singleTempVarPredicateName(assigned);
 		String fromPredicateName = OutputConvenienceFunctions.singleTempVarPredicateName(message.getTo(store));
 		
-		return "! t [Time] e [" + assignedType + "] : C_" + predicateName + "(Next(t), e) <- SDPointAt(t, " + message.getSDPoint()
+		if (OutputConvenienceFunctions.representsInteger(index))
+		{
+			return "! t [Time] e [" + assignedType + "] : C_" + predicateName + "(Next(t), e) <- SDPointAt(t, " + message.getSDPoint()
 			+ ") & ( ? o [" + getFromType + "] : " + fromPredicateName + "(t, o) & " 
 			+ VocabularyAssociationBuilder.getListGetterPredicate(getFromType, assignedType) + "(o, " + index + ") = e).";
+		}
+		else
+		{
+			TempVar indexVar = store.resolveTempVar(index);
+			String indexPredicate = OutputConvenienceFunctions.singleTempVarPredicateName(indexVar);
+			
+			return "! t [Time] e [" + assignedType + "] : C_" + predicateName + "(Next(t), e) <- SDPointAt(t, " + message.getSDPoint()
+			+ ") & ( ? o [" + getFromType + "] i [LimitedInt] : " + fromPredicateName + "(t, o) & "
+			+ indexPredicate + "(t, i) & "
+			+ VocabularyAssociationBuilder.getListGetterPredicate(getFromType, assignedType) + "(o, i) = e).";
+		}
 	}
 	
 	private TempVarCausationBuilder handleRandomInt(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
@@ -260,6 +277,19 @@ public class TempVarCausationBuilder
 		return this;
 	}
 	
+	private TempVarCausationBuilder handleFlipBool(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
+	{
+		String predicateName = OutputConvenienceFunctions.singleTempVarPredicateName(assigned);
+		String getPredicateName = OutputConvenienceFunctions.singleTempVarPredicateName(
+				store.resolveTempVar(this.findGetterValue(rhs)));
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
+				"! t [Time] b [boolean] : C_" + predicateName + "(Next(t), b) <- SDPointAt(t, " + message.getSDPoint()
+				+ ") & (? b1 [boolean] : " + getPredicateName + "(t, b1) & b = flipBool(b1)).", this.getTabLevel()));
+		
+		return this;
+	}
+	
 	private String[] getRandomBounds(String rhs)
 	{
 		Matcher m = GETTER_PARAMETER.matcher(rhs);
@@ -302,8 +332,8 @@ public class TempVarCausationBuilder
 	{
 		String[] parts = rhs.split(XMLParser.TEMPVAR_SEPARATOR);
 		
-		StringBuilder quantifiers = new StringBuilder("(? ");
-		StringBuilder assertion = new StringBuilder(": ");
+		StringBuilder quantifiers = new StringBuilder("");
+		StringBuilder assertion = new StringBuilder("");
 		
 		for (int i = 0; i < parts.length; i++)
 		{
@@ -312,16 +342,42 @@ public class TempVarCausationBuilder
 				continue;
 			}
 			
-			TempVar var = store.resolveTempVar(parts[i]);
-			
-			quantifiers.append(var.getName() + " [" + OutputConvenienceFunctions.toIDPType(var.getType(), store) + "] ");
-			assertion.append(OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, " + var.getName() + ")"
-					+ " & ");
+			if (store.hasTempVar(parts[i]))
+			{
+				TempVar var = store.resolveTempVar(parts[i]);
+				
+				if ("".equals(quantifiers.toString()))
+				{
+					quantifiers.append("(? " + var.getName() + " [" + OutputConvenienceFunctions.toIDPType(var.getType(), store) + "] ");
+				}
+				else
+				{
+					quantifiers.append(var.getName() + " [" + OutputConvenienceFunctions.toIDPType(var.getType(), store) + "] ");
+				}
+				if ("".equals(assertion.toString()))
+				{
+					assertion.append(": " + OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, " + var.getName() + ")"
+							+ " & ");
+				}
+				else
+				{
+					assertion.append(OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, " + var.getName() + ")"
+							+ " & ");
+				}
+			}
 		}
 		
-		assertion.append(message.getContent() + ").");
+		if (! "".equals(assertion.toString()))
+		{
+			assertion.append(message.getContent() + ").");
+		}
 		
-		String toAppend = "! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
+		String toAppend = ("".equals(quantifiers.toString()) && "".equals(assertion.toString())) ?
+			"! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
+			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), " + assigned.getName() + ") <- SDPointAt(t, "
+			+ message.getSDPoint() + ")."
+			:
+			"! t [Time] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
 			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), " + assigned.getName() + ") <- SDPointAt(t, "
 			+ message.getSDPoint() + ") & " + quantifiers.toString() + assertion.toString();
 		
