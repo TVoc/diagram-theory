@@ -76,6 +76,7 @@ public class CausationBuilder
 		if (store.isCallPoint(message))
 		{
 			this.getStackLevelCausationBuilder().handleCallPoint(message, store);
+			this.getCheckpointBuilder().handleCallPoint(message, store);
 		}
 	}
 	
