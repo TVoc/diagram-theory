@@ -71,11 +71,11 @@ public class ListAxiomBuilder
 		String toType = to.getTypeName(store);
 		
 		this.getDefitionBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"! f [" + fromType + "] to [" + toType + "] : " + symbols[1] + "(f, 0) <- " + symbols[0] + "(f) = to.", this.getTabLevel()));
+				"! f [" + fromType + "] to [" + toType + "] : " + symbols[1] + "(f, 0) = to <- " + symbols[0] + "(f) = to.", this.getTabLevel()));
 		this.getDefitionBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"! f [" + fromType + "] i [LimitedInt] to [" + toType + "] : " + symbols[1] + "(f, i) <- "
+				"! f [" + fromType + "] i [LimitedInt] to [" + toType + "] : " + symbols[1] + "(f, i) = to <- "
 				+ "( ? to1 [" + toType + "] : " + symbols[1] + "(f, (i-1)) = to1 & "
-				+ symbols[2] + "(f, to1)) = to.", this.getTabLevel()));
+				+ symbols[2] + "(f, to1) = to).", this.getTabLevel()));
 		
 		String predicateName = VocabularyAssociationBuilder.makePredicateName(association, store);
 		

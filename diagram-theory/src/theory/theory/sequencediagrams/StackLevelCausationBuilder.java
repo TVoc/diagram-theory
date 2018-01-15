@@ -47,6 +47,16 @@ public class StackLevelCausationBuilder
 		return this;
 	}
 	
+	public StackLevelCausationBuilder handleReturnPoint(Message returnMessage, SeqDiagramStore store)
+	{
+		if (returnMessage.isReturn())
+		{
+			this.getReturnPoints().add(returnMessage.getSDPoint());
+		}
+		
+		return this;
+	}
+	
 	public String build()
 	{
 		if (this.getCallPoints().isEmpty())

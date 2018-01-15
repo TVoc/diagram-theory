@@ -1,5 +1,6 @@
 package parser;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -380,6 +381,7 @@ public class HardcodedNim
 				Optional.of(new ArrayList<Message>(Arrays.asList(takeTurn_8, takeTurn_9))),
 				"ttHeapEmpty = F", "ttHeapEmpty = T", dummy, dummy1, dummy2, store);
 		takeTurn_7.setFragment(Optional.of(takeTurnCheck));
+		takeTurn_8.setFragment(Optional.of(takeTurnCheck));
 		takeTurn_9.setFragment(Optional.of(takeTurnCheck));
 		takeTurnLoop.setChildren(Collections.singletonList(takeTurnCheck));
 		
@@ -418,6 +420,18 @@ public class HardcodedNim
 		SeqDiagramStore builtStore = new DiagramStoreFactory().makeSeqDiagramStore(store);
 		
 		SeqFactors fac = new SeqFactors(3, 1, 3, 3, 20);
+		
+//		try
+//		{
+//			FileWriter write = new FileWriter("storeoutput.txt");
+//			write.append(builtStore.toString());
+//			write.close();
+//		}
+//		catch (IOException e1)
+//		{
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		
 		try
 		{

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import data.classdiagrams.Association;
 import data.classdiagrams.Class;
@@ -271,19 +272,28 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext, Cal
 	{
 		List<Message> messages = this.getMessagesForDiagram(message.getDiagramName());
 		
-		try
+		Optional<Message> toReturn = Optional.empty();
+		
+		for (Message ele : messages)
 		{
-			return Optional.of(messages.get(message.getSDPoint().getSequenceNumber()));
+			if ((message.getSDPoint().getSequenceNumber() == ele.getSDPoint().getSequenceNumber() && 
+					(! message.isReturn() && ele.isReturn()))
+					||
+					(ele.getSDPoint().getSequenceNumber() == message.getSDPoint().getSequenceNumber() + 1))
+			{
+				toReturn = Optional.of(ele);
+				break;
+			}
 		}
-		catch (IndexOutOfBoundsException e)
-		{
-			return Optional.empty();
-		}
+		
+		return toReturn;
 	}
 	
 	public Set<String> getAllSdPoints()
 	{
-		Set<String> toReturn = new HashSet<String>();
+		Set<String> toReturn = new TreeSet<String>();
+		
+		toReturn.add(SDPoint.FINISHED.toString());
 		
 		for (Message message : this.internalGetMessages())
 		{

@@ -197,9 +197,11 @@ public class TempVarCausationBuilder
 		}
 		
 		return 	"! t [Time] st [StackLevel] a [LimitedInt] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
-				+ "(Next(t), st, a) <- (CurrentStacklevel(t) = st) & SDPointAt(t, " + message.getSDPoint() + ") & #{ i [LimitedInt] : ? e ["
+				+ "(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
+				+ ") & ( ? " + getFrom.getName() + " [" + OutputConvenienceFunctions.toIDPType(getFrom.getType(), store) + "] : " + OutputConvenienceFunctions.singleTempVarPredicateName(getFrom)
+				+ "(t, st, " + getFrom.getName() + ") & #{ i [LimitedInt] : ? e ["
 				+ toGetTypeName + "] : " + VocabularyAssociationBuilder.getListGetterPredicate(getFrom.getType().getTypeName(store), toGetTypeName)
-				+ "(" + getFrom.getName() + ", i) = e} = a.";
+				+ "(" + getFrom.getName() + ", i) = e} = a).";
 	}
 	
 	private String makeListGetAxiom(Message message, SeqDiagramStore store, TempVar assigned, String toGetClassName, String index)
@@ -212,7 +214,7 @@ public class TempVarCausationBuilder
 		if (OutputConvenienceFunctions.representsInteger(index))
 		{
 			return "! t [Time] st [StackLevel] e [" + assignedType + "] : C_" + predicateName + "(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
-			+ ") & ( ? o [" + getFromType + "] : " + fromPredicateName + "(t, o) & " 
+			+ ") & ( ? o [" + getFromType + "] : " + fromPredicateName + "(t, st, o) & " 
 			+ VocabularyAssociationBuilder.getListGetterPredicate(getFromType, assignedType) + "(o, " + index + ") = e).";
 		}
 		else
@@ -221,8 +223,8 @@ public class TempVarCausationBuilder
 			String indexPredicate = OutputConvenienceFunctions.singleTempVarPredicateName(indexVar);
 			
 			return "! t [Time] st [StackLevel] e [" + assignedType + "] : C_" + predicateName + "(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
-			+ ") & ( ? o [" + getFromType + "] i [LimitedInt] : " + fromPredicateName + "(t, o) & "
-			+ indexPredicate + "(t, i) & "
+			+ ") & ( ? o [" + getFromType + "] i [LimitedInt] : " + fromPredicateName + "(t, st, o) & "
+			+ indexPredicate + "(t, st, i) & "
 			+ VocabularyAssociationBuilder.getListGetterPredicate(getFromType, assignedType) + "(o, i) = e).";
 		}
 	}
@@ -238,7 +240,7 @@ public class TempVarCausationBuilder
 		StringBuilder toReturn = new StringBuilder("! t [Time] st [StackLevel] r [LimitedInt] : C_" + predicateName + "(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
 				+ ") & ");
 		StringBuilder quantifiers = new StringBuilder();
-		String expression = "r = abs(RandomInt(t)) % (" + ub + " + 1 - " + lb + ") + " + lb;
+		String expression = "r = (abs(RandomInt(t)) % (" + ub + " + 1 - " + lb + ")) + " + lb;
 		
 		boolean hasVar = "lb".equals(lb) || "ub".equals(ub);
 		
@@ -260,17 +262,17 @@ public class TempVarCausationBuilder
 			if ("lb".equals(lb))
 			{
 				quantifiers.append(OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(bounds[0]))
-						+ "(t, lb)");
+						+ "(t, st, lb)");
 			}
 			if ("ub".equals(ub))
 			{
 				String toAppend = OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(bounds[1]))
-						+ "(t, ub)";
+						+ "(t, st, ub)";
 				quantifiers.append(("lb".equals(lb) ? " & " : "") + toAppend);
 			}
 		}
 		
-		toReturn.append(quantifiers.toString()).append(expression).append(hasVar ? ")." : ".");
+		toReturn.append(quantifiers.toString()).append(hasVar ? " & " + expression : expression).append(hasVar ? ")." : ".");
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toReturn.toString(), this.getTabLevel()));
 		
@@ -285,7 +287,7 @@ public class TempVarCausationBuilder
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
 				"! t [Time] st [StackLevel] b [boolean] : C_" + predicateName + "(Next(t), st, b) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
-				+ ") & (? b1 [boolean] : " + getPredicateName + "(t, b1) & b = flipBool(b1)).", this.getTabLevel()));
+				+ ") & (? b1 [boolean] : " + getPredicateName + "(t, st, b1) & b = flipBool(b1)).", this.getTabLevel()));
 		
 		return this;
 	}
@@ -330,6 +332,18 @@ public class TempVarCausationBuilder
 	
 	private TempVarCausationBuilder handleArithStatement(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
 	{
+		if (! this.hasTempVars(rhs, store))
+		{
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
+					"! t [Time] st [StackLevel] " + assigned.getName() + " ["
+							+ OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
+							+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
+							+	"(Next(t), st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
+							+ message.getSDPoint() + ") & " + message.getContent() + ".", this.getTabLevel()));
+			
+			return this;
+		}
+		
 		String[] parts = rhs.split(XMLParser.TEMPVAR_SEPARATOR);
 		
 		StringBuilder quantifiers = new StringBuilder("");
@@ -356,12 +370,12 @@ public class TempVarCausationBuilder
 				}
 				if ("".equals(assertion.toString()))
 				{
-					assertion.append(": " + OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, " + var.getName() + ")"
+					assertion.append(": " + OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, st, " + var.getName() + ")"
 							+ " & ");
 				}
 				else
 				{
-					assertion.append(OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, " + var.getName() + ")"
+					assertion.append(OutputConvenienceFunctions.singleTempVarPredicateName(var) + "(t, st, " + var.getName() + ")"
 							+ " & ");
 				}
 			}
@@ -386,6 +400,26 @@ public class TempVarCausationBuilder
 		return this;
 	}
 	
+	private boolean hasTempVars(String rhs, SeqDiagramStore store)
+	{
+		String[] parts = rhs.split(XMLParser.TEMPVAR_SEPARATOR);
+		
+		for (int i = 0; i < parts.length; i++)
+		{
+			if ("".equals(parts[i]))
+			{
+				continue;
+			}
+			
+			if (store.hasTempVar(parts[i]))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private TempVarCausationBuilder makeCallObjectSentence(Message message, SeqDiagramStore store)
 	{
 		TempVar messageCallVar = message.getTo(store);
@@ -396,8 +430,8 @@ public class TempVarCausationBuilder
 		String messageCallVarPred = OutputConvenienceFunctions.singleTempVarPredicateName(messageCallVar);
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] c ["
-				+ callObjectType + "] : " + callObjectTypePred + "(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, "
-				+ message.getSDPoint() + ") & " + messageCallVarPred + "(t, (s-1), c).", this.getTabLevel()));
+				+ callObjectType + "] : " + callObjectTypePred + "(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, "
+				+ message.getSDPoint() + ") & " + messageCallVarPred + "(t, (st-1), c).", this.getTabLevel()));
 		
 		return this;
 	}
@@ -430,7 +464,7 @@ public class TempVarCausationBuilder
 				
 				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] p ["
 						+ diagramParameterType + "] : " + diagramParameterPred + "(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, "
-						+ message.getSDPoint() + ") & " + argVarPred + "(t, (s-1), p).", this.getTabLevel()));
+						+ message.getSDPoint() + ") & " + argVarPred + "(t, (st-1), p).", this.getTabLevel()));
 			}
 			else
 			{
@@ -456,7 +490,7 @@ public class TempVarCausationBuilder
 		String SDPost = message.getSDPoint() + "post";
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] v ["
-				+ assignedType + "] : " + assignedPred + "(Next(t), st, v) <- (CurrentStackLevel(t) = st & SDPointAt(t, "
+				+ assignedType + "] : " + assignedPred + "(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
 				+ SDPost + ") & " + returnValuePred + "(t, (st+1), v).", this.getTabLevel()));
 		
 		return this;

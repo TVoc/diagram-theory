@@ -2,12 +2,14 @@ package theory.theory.sequencediagrams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -137,20 +139,26 @@ public class CheckpointBuilder
 
 				for (Entry<Message, String> entryPoint : entryPoints.entrySet())
 				{
-					if (this.getEntryGuards().containsKey(entryPoint.getKey()))
+					List<Message> trans = this.calculateEntryPointTransition(entryPoint.getKey(), store);
+					
+					for (Message ele : trans)
 					{
-						this.getEntryGuards().get(entryPoint.getKey())
-						.add(new ImmutablePair<SDPoint, String>(prev.getSDPoint(), entryPoint.getValue()));
-					}
-					else
-					{
-						this.getEntryGuards().put(entryPoint.getKey()
-								, new ArrayList<Pair<SDPoint, String>>(Arrays.asList(new ImmutablePair<SDPoint
-										, String>(prev.getSDPoint(), entryPoint.getValue()))));
+						if (this.getEntryGuards().containsKey(entryPoint.getKey()))
+						{
+							this.getEntryGuards().get(entryPoint.getKey())
+							.add(new ImmutablePair<SDPoint, String>(ele.getSDPoint(), entryPoint.getValue()));
+						}
+						else
+						{
+							this.getEntryGuards().put(entryPoint.getKey()
+									, new ArrayList<Pair<SDPoint, String>>(Arrays.asList(new ImmutablePair<SDPoint
+											, String>(ele.getSDPoint(), entryPoint.getValue()))));
+						}
+						
+						this.getNonStandardPoints().add(ele.getSDPoint());
 					}
 				}
 				
-				this.getNonStandardPoints().add(prev.getSDPoint());
 				this.getEntryPointsDetermined().add(frag);
 			}
 
@@ -159,6 +167,41 @@ public class CheckpointBuilder
 		}
 		
 		return this;
+	}
+	
+	private List<Message> calculateEntryPointTransition(Message message, SeqDiagramStore store)
+	{
+		CombinedFragment frag = message.getFragment().get();
+		Message prev = store.getRelativeMessage(frag.getMessage(0), -1);
+		
+		if (! prev.getFragment().isPresent())
+		{
+			return Collections.singletonList(prev);
+		}
+		
+		List<Message> toReturn = new ArrayList<Message>();
+		
+		List<ExitForMessage> exitsForPrevFrag = prev.getFragment().get().calcExitForMessages(store);
+		
+		for (ExitForMessage ele : exitsForPrevFrag)
+		{
+			if (this.containsExitTo(ele, message))
+			{
+				toReturn.add(ele.getMessage());
+			}
+		}
+		
+		if (toReturn.isEmpty())
+		{
+			toReturn.add(prev);
+		}
+		
+		return toReturn;
+	}
+	
+	private boolean containsExitTo(ExitForMessage exits, Message to)
+	{
+		return exits.getExitTos().keySet().contains(to);
 	}
 	
 	private void calculateLoopReentry(CombinedFragment frag, SeqDiagramStore store)
@@ -295,14 +338,27 @@ public class CheckpointBuilder
 	public CheckpointBuilder handleCallPoint(Message call, SeqDiagramStore store)
 	{
 		this.getNonStandardPoints().add(call.getSDPoint());
-		this.getNonStandardPoints().add(store.getLastMessageForDiagram(call.getDiagramName()).getSDPoint());
-
-		this.getReturnPoints().add(store.getLastMessageForDiagram(call.getDiagramName()).getSDPoint());
-
+		
 		Message callMsg = store.getCallMessage(call);
 
-		this.getCheckpoints().put(callMsg.getSDPoint(), "! t [Time] : C_SDPointAt(Next(t), " + callMsg.getSDPoint() + ") <- SDPointAt(t, " + call.getSDPoint() + ").");
+		if (! this.getCheckpoints().containsKey(callMsg.getSDPoint()))
+		{
+			this.getCheckpoints().put(callMsg.getSDPoint(), "! t [Time] : C_SDPointAt(Next(t), " + callMsg.getSDPoint() + ") <- SDPointAt(t, " + call.getSDPoint() + ")");
+		}
+		else
+		{
+			this.getCheckpoints().put(callMsg.getSDPoint(), this.getCheckpoints().get(callMsg.getSDPoint())
+					+ " | SDPointAt(t, " + call.getSDPoint() + ")");
+		}
 
+		return this;
+	}
+	
+	public CheckpointBuilder handleReturnMessage(Message returnMessage, SeqDiagramStore store)
+	{
+		this.getNonStandardPoints().add(returnMessage.getSDPoint());
+		this.getReturnPoints().add(returnMessage.getSDPoint());
+		
 		return this;
 	}
 
@@ -342,17 +398,22 @@ public class CheckpointBuilder
 		
 		toReturn.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 		
+		for (String ele : this.getCheckpoints().values())
+		{
+			toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(ele + ".", this.getTabLevel()));
+		}
+		
 		for (Entry<Message, List<Pair<SDPoint, String>>> entryGuardList : this.getEntryGuards().entrySet())
 		{
 			MessageSDPointUnifier unifier = new MessageSDPointUnifier(entryGuardList);
 			
-			for (Entry<String, List<SDPoint>> sdPointList : unifier.getSameGuards().entrySet())
+			for (Entry<String, Set<SDPoint>> sdPointList : unifier.getSameGuards().entrySet())
 			{
 				StringBuilder sdPointCheck = new StringBuilder();
 				
 				if (sdPointList.getValue().size() == 1)
 				{
-					sdPointCheck.append("SDPointAt(t, " + sdPointList.getValue().get(0) + ")");
+					sdPointCheck.append("SDPointAt(t, " + sdPointList.getValue().stream().findFirst().get() + ")");
 				}
 				else
 				{
@@ -386,27 +447,29 @@ public class CheckpointBuilder
 				{
 					String idpGuard = this.guardToIDP(sdPointList.getKey());
 					
-					toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(
-							"! t [Time] : C_SDPointAt(Next(t), " + entryGuardList.getKey().getSDPoint()
-							+ ") <- " + sdPointCheck.toString() + " & " + idpGuard + ".", this.getTabLevel()));
+					if (this.hasTempVars(sdPointList.getKey()))
+					{
+						toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(
+								"! t [Time] st [StackLevel] : C_SDPointAt(Next(t), " + entryGuardList.getKey().getSDPoint()
+								+ ") <- (CurrentStackLevel(t) = st) & " + sdPointCheck.toString() + " & " + idpGuard + ".", this.getTabLevel()));
+					}
+					else
+					{
+						toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(
+								"! t [Time] : C_SDPointAt(Next(t), " + entryGuardList.getKey().getSDPoint()
+								+ ") <- " + sdPointCheck.toString() + " & " + idpGuard + ".", this.getTabLevel()));
+					}
 				}
 //				StringBuilder line = new StringBuilder("! t [Time] sd [SDPoint] C_SDPointAt(Next(t), sd")
 			}
 			
 		}
 
-//		for (String ele : this.getCheckpoints().values())
-//		{
-//			toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(ele, this.getTabLevel()));
-//		}
-		
-		
-
 		toReturn.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 
 		if (! this.getReturnPoints().isEmpty())
 		{
-			StringBuilder returnCauses = new StringBuilder("! t [Time] s [SDPoint] : C_SDPoint(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (");
+			StringBuilder returnCauses = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (");
 
 			Iterator<SDPoint> it = this.getReturnPoints().iterator();
 
@@ -447,7 +510,7 @@ public class CheckpointBuilder
 		for (String part : guardParts)
 		{
 			if (part.equals("") || part.equals("T") || part.equals("F") || OutputConvenienceFunctions.representsInteger(part)
-					|| OutputConvenienceFunctions.representsFloat(part))
+					|| OutputConvenienceFunctions.representsFloat(part) || ! store.hasTempVar(part.replaceAll("\\s", "")))
 			{
 				continue;
 			}
@@ -456,10 +519,34 @@ public class CheckpointBuilder
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 
 			guardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
-			guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(t, " + tempVar.getName() + ") & ");
+			guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(t, st, " + tempVar.getName() + ") & ");
 		}
 		
 		return guardQuantifiers.toString() + guardBuilder.toString() + guard + ")";
+	}
+	
+	private boolean hasTempVars(String guard)
+	{
+		if ("".equals(guard))
+		{
+			return false;
+		}
+		
+		for (String part : guard.split(XMLParser.TEMPVAR_SEPARATOR))
+		{
+			if (part.equals("") || part.equals("T") || part.equals("F") || OutputConvenienceFunctions.representsInteger(part)
+					|| OutputConvenienceFunctions.representsFloat(part) || ! store.hasTempVar(part.replaceAll("\\s", "")))
+			{
+				continue;
+			}
+			
+			if (store.hasTempVar(part))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private class MessageSDPointUnifier
@@ -467,7 +554,7 @@ public class CheckpointBuilder
 		public MessageSDPointUnifier(Entry<Message, List<Pair<SDPoint, String>>> entryGuards)
 		{
 			this.to = entryGuards.getKey();
-			this.sameGuards = new HashMap<String, List<SDPoint>>();
+			this.sameGuards = new HashMap<String, Set<SDPoint>>();
 			
 			for (Pair<SDPoint, String> entryGuard : entryGuards.getValue())
 			{
@@ -477,7 +564,7 @@ public class CheckpointBuilder
 				}
 				else
 				{
-					this.sameGuards.put(entryGuard.getRight(), new ArrayList<SDPoint>(Arrays.asList(entryGuard.getLeft())));
+					this.sameGuards.put(entryGuard.getRight(), new HashSet<SDPoint>(Arrays.asList(entryGuard.getLeft())));
 				}
 			}
 		}
@@ -489,9 +576,9 @@ public class CheckpointBuilder
 			return this.to;
 		}
 		
-		private final Map<String, List<SDPoint>> sameGuards;
+		private final Map<String, Set<SDPoint>> sameGuards;
 		
-		public Map<String, List<SDPoint>> getSameGuards()
+		public Map<String, Set<SDPoint>> getSameGuards()
 		{
 			return this.sameGuards;
 		}

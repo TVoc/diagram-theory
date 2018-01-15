@@ -306,6 +306,7 @@ public class LoopCombinedFragment extends CombinedFragment
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getMessage(this.internalGetMessages().size() - 1));
 
 			this.processExit(store, output, exitFor);
+			output.add(exitFor.build());
 		}
 
 		for (CombinedFragment ele : this.internalGetChildren())
@@ -330,7 +331,7 @@ public class LoopCombinedFragment extends CombinedFragment
 	{
 		List<Message> msgs = this.flattenMessages();
 
-		Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), msgs);
+		Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), msgs, this.calculateSkips(exit.getMessage(), store));
 
 		if (messageAfter.isPresent())
 		{

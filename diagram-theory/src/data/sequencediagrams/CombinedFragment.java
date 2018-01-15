@@ -64,6 +64,11 @@ public abstract class CombinedFragment
 		this.fillTree(toReturn);
 		return toReturn;
 	}
+	
+	public boolean hasAsDescendent(CombinedFragment frag)
+	{
+		return this.getTree().contains(frag);
+	}
 
 	public Map<Message, List<Pair<SDPoint, String>>> calculateLoopReentryGuards()
 	{
@@ -278,6 +283,28 @@ public abstract class CombinedFragment
 
 	protected abstract void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate);
 
+	protected int calculateSkips(Message message, SeqDiagramStore store)
+	{
+		Optional<CombinedFragment> frag = message.getFragment();
+		
+		if (! frag.isPresent())
+		{
+			return 0;
+		}
+		
+		if (frag.get() instanceof AltCombinedFragment)
+		{
+			AltCombinedFragment alt = AltCombinedFragment.class.cast(frag.get());
+			List<Message> ifs = alt.flattenIf();
+			if (message.equals(ifs.get(ifs.size() - 1)))
+			{
+				return alt.flattenThen().size();
+			}
+		}
+		
+		return 0;
+	}
+	
 	protected void exitToOutside(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, Optional<String> exitGuard)
 	{
 		List<Message> messages = this.flattenMessages();
@@ -316,7 +343,7 @@ public abstract class CombinedFragment
 				return;
 			}
 
-			Message next = diagramMessages.get(finalMsg.getSDPoint().getSequenceNumber());
+			Message next = store.getNextMessage(finalMsg).get();
 
 			if (next.getFragment().isPresent())
 			{
@@ -422,10 +449,12 @@ public abstract class CombinedFragment
 		return toReturn;
 	}
 
-	protected Optional<Message> getMessageAfter(Message message, List<Message> messages)
+	protected Optional<Message> getMessageAfter(Message message, List<Message> messages, int skip)
 	{
 		Optional<Message> toReturn = Optional.empty();
 
+		int skipCount = 0;
+		
 		for (Message ele : messages)
 		{
 			int compare = message.compareTo(ele);
@@ -434,9 +463,15 @@ public abstract class CombinedFragment
 			{
 				continue;
 			}
+			else if (skipCount < skip)
+			{
+				skipCount++;
+				continue;
+			}
 			else // compare < 0
 			{
 				toReturn = Optional.of(ele);
+				break;
 			}
 		}
 

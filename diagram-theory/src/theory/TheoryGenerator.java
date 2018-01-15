@@ -46,6 +46,7 @@ public class TheoryGenerator
 		SeqStructureBuilder structBuilder = new SeqStructureBuilder(0, factors, store.getTempVars().keySet());
 		
 		structBuilder.processClasses(store);
+		structBuilder.processSDPoints(store);
 		
 		for (Message message : store.getMessages())
 		{

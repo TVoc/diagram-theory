@@ -330,9 +330,7 @@ public class AltCombinedFragment extends CombinedFragment
 	public List<Message> flattenMessages()
 	{
 		List<Message> toReturn = new ArrayList<Message>();
-
-		toReturn.addAll(this.internalGetIfMessages());
-		toReturn.addAll(this.internalGetThenMessages());
+		
 		toReturn.addAll(this.flattenIf());
 		toReturn.addAll(this.flattenThen());
 
@@ -593,6 +591,7 @@ public class AltCombinedFragment extends CombinedFragment
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getIfMessage(this.internalGetIfMessages().size() - 1));
 			
 			this.processExit(store, output, exitFor);
+			output.add(exitFor.build());
 		}
 		
 		List<Message> thenMessages = this.flattenThen();
@@ -602,6 +601,7 @@ public class AltCombinedFragment extends CombinedFragment
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getThenMessage(this.internalGetThenMessages().size() - 1));
 			
 			this.processExit(store, output, exitFor);
+			output.add(exitFor.build());
 		}
 		
 		for (CombinedFragment ele : this.internalGetIfChildren())
@@ -632,7 +632,7 @@ public class AltCombinedFragment extends CombinedFragment
 		
 		if (ifMsgs.contains(exit.getMessage()))
 		{
-			Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), ifMsgs);
+			Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), ifMsgs, this.calculateSkips(exit.getMessage(), store));
 			
 			if (messageAfter.isPresent())
 			{
@@ -688,7 +688,7 @@ public class AltCombinedFragment extends CombinedFragment
 		{
 			List<Message> thenMsgs = this.flattenThen();
 			
-			Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), thenMsgs);
+			Optional<Message> messageAfter = this.getMessageAfter(exit.getMessage(), thenMsgs, this.calculateSkips(exit.getMessage(), store));
 			
 			if (messageAfter.isPresent())
 			{

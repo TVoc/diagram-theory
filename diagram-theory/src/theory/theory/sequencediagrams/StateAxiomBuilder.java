@@ -41,9 +41,9 @@ public class StateAxiomBuilder
 		String[] predicates = OutputConvenienceFunctions.tempVarPredicateNames(tempVar);
 		String typeName = OutputConvenienceFunctions.toIDPType(tempVar.getType(), context);
 		
-		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! x [" + typeName + "] : " + predicates[0] + "(Start, x) <- " + predicates[1] + "(x).", this.getTabLevel() + 1));
-		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + typeName + "] : " + predicates[0] + "(t, x) <- " + predicates[2] + "(t, x).", this.getTabLevel() + 1));
-		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] x [" + typeName + "] : " + predicates[0] + "(Next(t), x) <- " + predicates[0] + "(t, x) & ~( ? x1 [" + typeName + "] : " + predicates[2] + "(Next(t), x1) & ~(x = x1)).", this.getTabLevel() + 1));
+		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! x [" + typeName + "] st [StackLevel] : " + predicates[0] + "(Start, st, x) <- " + predicates[1] + "(st, x).", this.getTabLevel() + 1));
+		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] x [" + typeName + "] : " + predicates[0] + "(t, st, x) <- " + predicates[2] + "(t, st, x).", this.getTabLevel() + 1));
+		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine("! t [Time] st [StackLevel] x [" + typeName + "] : " + predicates[0] + "(Next(t), st, x) <- " + predicates[0] + "(t, st, x) & ~( ? x1 [" + typeName + "] : " + predicates[2] + "(Next(t), st, x1) & ~(x = x1)).", this.getTabLevel() + 1));
 		this.getTempVarStringBuilder().append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1));
 		
 		return this;

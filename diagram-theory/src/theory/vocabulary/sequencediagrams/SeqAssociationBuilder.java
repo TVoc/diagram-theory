@@ -86,11 +86,11 @@ public class SeqAssociationBuilder
 		String toName = to.getTypeName(store);
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"partial " + fromName + "First" + toName + "(" + fromName + ")", this.getTabLevel()));
+				"partial " + fromName + "First" + toName + "(" + fromName + ") : " + toName, this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"partial " + fromName + "Get" + toName + "(" + fromName + ", LimitedInt)", this.getTabLevel()));
+				"partial " + fromName + "Get" + toName + "(" + fromName + ", LimitedInt) : " + toName, this.getTabLevel()));
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-				"partial " + fromName + "Next" + toName + "(" + fromName + ", LimitedInt)", this.getTabLevel()));
+				"partial " + fromName + "Next" + toName + "(" + fromName + ", " + toName + ") : " + toName, this.getTabLevel()));
 	}
 	
 	public String build()

@@ -15,6 +15,7 @@ public class CausationBuilder
 		this.checkpointBuilder = new CheckpointBuilder(tabLevel, store);
 		this.tempVarCausationBuilder = new TempVarCausationBuilder(tabLevel);
 		this.stackLevelCausationBuilder = new StackLevelCausationBuilder(tabLevel, store);
+		this.returnPointCausationBuilder = new ReturnPointCausationBuilder(tabLevel, store);
 	}
 	
 	private final int tabLevel;
@@ -26,6 +27,8 @@ public class CausationBuilder
 	private final TempVarCausationBuilder tempVarCausationBuilder;
 	
 	private final StackLevelCausationBuilder stackLevelCausationBuilder;
+	
+	private final ReturnPointCausationBuilder returnPointCausationBuilder;
 
 	public int getTabLevel()
 	{
@@ -50,6 +53,11 @@ public class CausationBuilder
 	public StackLevelCausationBuilder getStackLevelCausationBuilder()
 	{
 		return this.stackLevelCausationBuilder;
+	}
+	
+	public ReturnPointCausationBuilder getReturnPointCausationBuilder()
+	{
+		return this.returnPointCausationBuilder;
 	}
 	
 	public void processCombinedFragment(CombinedFragment frag, SeqDiagramStore store)
@@ -77,6 +85,13 @@ public class CausationBuilder
 		{
 			this.getStackLevelCausationBuilder().handleCallPoint(message, store);
 			this.getCheckpointBuilder().handleCallPoint(message, store);
+			this.getReturnPointCausationBuilder().handleCallPoint(message, store);
+		}
+		if (message.isReturn())
+		{
+			this.getStackLevelCausationBuilder().handleReturnPoint(message, store);
+			this.getCheckpointBuilder().handleReturnMessage(message, store);
+			this.getReturnPointCausationBuilder().handleReturnMessage(message, store);
 		}
 	}
 	
@@ -86,6 +101,7 @@ public class CausationBuilder
 		
 		toReturn.append(this.getClassVariableCausationBuilder().build());
 		toReturn.append(this.getCheckpointBuilder().build());
+		toReturn.append(this.getReturnPointCausationBuilder().build());
 		toReturn.append(this.getTempVarCausationBuilder().build());
 		toReturn.append(this.getStackLevelCausationBuilder().build());
 		

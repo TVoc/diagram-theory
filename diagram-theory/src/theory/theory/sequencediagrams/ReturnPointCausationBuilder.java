@@ -47,6 +47,13 @@ public class ReturnPointCausationBuilder
 		return this;
 	}
 	
+	public ReturnPointCausationBuilder handleReturnMessage(Message returnMessage, SeqDiagramStore store)
+	{
+		this.getReturnPoints().add(returnMessage.getSDPoint());
+		
+		return this;
+	}
+	
 	public String build()
 	{
 		StringBuilder toReturn = new StringBuilder();
@@ -78,6 +85,7 @@ public class ReturnPointCausationBuilder
 		}
 		
 		toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(uncause.toString(), this.getTabLevel()));
+		toReturn.append(OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel()));
 		
 		return toReturn.toString();
 	}

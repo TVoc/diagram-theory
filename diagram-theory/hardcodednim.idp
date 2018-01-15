@@ -5,7 +5,8 @@ LTCvocabulary V {
     Start: Time
     partial Next(Time) : Time
     
-    type SDPoint constructed from { take_3, take_2, take_1, take_7, take_6, allHeapsEmpty_8, take_5, allHeapsEmpty_9, allHeapsEmpty_10, take_4, takeTurn_6post, takeTurn_10, takeTurn_11, takeTurn_12, takeTurn_13, isEmpty_3, isEmpty_2, isEmpty_1, takeTurn_12post, allHeapsEmpty_6post, isEmpty_6, isEmpty_5, isEmpty_4, play_3post, play_9, play_7, play_8, play_5, play_6, play_3, play_4, play_1, play_2, play_7post, takeTurn_2, takeTurn_1, allHeapsEmpty_6, takeTurn_8, allHeapsEmpty_7, takeTurn_7, allHeapsEmpty_4, allHeapsEmpty_5, takeTurn_9, allHeapsEmpty_2, takeTurn_4, allHeapsEmpty_3, takeTurn_3, takeTurn_6, allHeapsEmpty_1, takeTurn_5 }
+    type SDPoint constructed from { allHeapsEmpty_1, allHeapsEmpty_10, allHeapsEmpty_2, allHeapsEmpty_3, allHeapsEmpty_4, allHeapsEmpty_5, allHeapsEmpty_6, allHeapsEmpty_6post, allHeapsEmpty_7, allHeapsEmpty_8, allHeapsEmpty_9, finished, isEmpty_1, isEmpty_2, isEmpty_3, isEmpty_4, isEmpty_5, isEmpty_6, play_1, play_2, play_3, play_3post, play_4, play_5, play_6, play_7, play_7post, play_8, play_9, takeTurn_1, takeTurn_10, takeTurn_11, takeTurn_12, takeTurn_12post, takeTurn_13, takeTurn_2, takeTurn_3, takeTurn_4, takeTurn_5, takeTurn_6, takeTurn_6post, takeTurn_7, takeTurn_8, takeTurn_9, take_1, take_2, take_3, take_4, take_5, take_6, take_7 }
+    partial NextSD(SDPoint) : SDPoint
     
     SDPointAt(Time,SDPoint)
     I_SDPointAt(SDPoint)
@@ -17,11 +18,17 @@ LTCvocabulary V {
     type boolean constructed from { T, F }
     flipBool(boolean) : boolean
     type void constructed from { null }
-    type Stacklevel = { 1..100} isa nat
+    type StackLevel = { 1..10 } isa nat
     type Index isa LimitedInt
     
-    CurrentStacklevel(Time,Stacklevel)
-    ReturnPoint(Time,Stacklevel,SDPoint)
+    CurrentStackLevel(Time) : StackLevel
+    I_CurrentStackLevel : StackLevel
+    C_CurrentStackLevel(Time,StackLevel)
+    
+    ReturnPoint(Time,StackLevel,SDPoint)
+    I_ReturnPoint(StackLevel,SDPoint)
+    C_ReturnPoint(Time,StackLevel,SDPoint)
+    Cn_ReturnPoint(Time,StackLevel,SDPoint)
     
     RandomInt(Time) : LimitedInt
     type Game
@@ -143,78 +150,95 @@ LTCvocabulary V {
     Cn_HeapamountObjects(Time, Heap, LimitedInt)
     
     GameandHeap(Game, Heap)
-    partial GameFirstHeap(Game)
-    partial GameGetHeap(Game, LimitedInt)
-    partial GameNextHeap(Game, LimitedInt)
+    partial GameFirstHeap(Game) : Heap
+    partial GameGetHeap(Game, LimitedInt) : Heap
+    partial GameNextHeap(Game, Heap) : Heap
 }
 theory T:V {
     {
-                    ! t [Time] x [Game] v [boolean] : C_Gamep1Win(Next(t), x, v) <- SDPointAt(t, play_6) & PGameT(t, x) & PP1TurnT(t, v).
+                    ! t [Time] st [StackLevel] x [Game] v [boolean] : C_Gamep1Win(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_6) & PGameT(t, st, x) & PP1TurnT(t, st, v).
 
-                    ! t [Time] x [Game] v [boolean] : Cn_Gamep1Win(Next(t), x, v) <- SDPointAt(t, play_6) & PGameT(t, x) & Gamep1Win(t, x, v) & ~PP1TurnT(Next(t), v).
-
-        
-                    ! t [Time] x [Game] : C_GamegameFinished(Next(t), x, T) <- SDPointAt(t, play_5) & PGameT(t, x).
-
-                    ! t [Time] x [Game] v [boolean] : Cn_GamegameFinished(Next(t), x, v) <- SDPointAt(t, play_5) & PGameT(t, x) & GamegameFinished(t, x, v) & ~(v = T).
+                    ! t [Time] st [StackLevel] x [Game] v [boolean] : Cn_Gamep1Win(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_6) & PGameT(t, st, x) & Gamep1Win(t, x, v) & ~PP1TurnT(Next(t), st, v).
 
         
-                    ! t [Time] x [Heap] v [LimitedInt] : C_HeapamountObjects(Next(t), x, v) <- SDPointAt(t, take_6) & THeapT(t, x) & TNewT(t, v).
+                    ! t [Time] st [StackLevel] x [Game] : C_GamegameFinished(Next(t), x, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_5) & PGameT(t, st, x).
 
-                    ! t [Time] x [Heap] v [LimitedInt] : Cn_HeapamountObjects(Next(t), x, v) <- SDPointAt(t, take_6) & THeapT(t, x) & HeapamountObjects(t, x, v) & ~TNewT(Next(t), v).
+                    ! t [Time] st [StackLevel] x [Game] v [boolean] : Cn_GamegameFinished(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_5) & PGameT(t, st, x) & GamegameFinished(t, x, v) & ~(v = T).
 
-        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)& ~((s = finished) | (s = allHeapsEmpty_6) | (s = allHeapsEmpty_10) | (s = takeTurn_6) | (s = takeTurn_13) | (s = takeTurn_12) | (s = takeTurn_13) | (s = play_3) | (s = play_9) | (s = play_7) | (s = play_9) | (s = allHeapsEmpty_4) | (s = take_3) | (s = isEmpty_3) | (s = takeTurn_5) | (s = play_2) | (s = allHeapsEmpty_4) | (s = takeTurn_5) | (s = play_2)).
         
-        ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_5) <- (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_9) | SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_9)) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(t, aheCounter) & AheNumHeapsT(t, aheNumHeaps) & AheToReturnT(t, aheToReturn) & (aheCounter=<aheNumHeaps)&aheToReturn=T).
-        ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_7) <- (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_4)) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(t, aheHeapEmpty) & aheHeapEmpty=T).
-        ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_8) <- (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_4)) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(t, aheHeapEmpty) & aheHeapEmpty=F).
-        ! t [Time] : C_SDPointAt(Next(t), isEmpty_4) <- SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(t, ieNumObj) & ieNumObj=0).
-        ! t [Time] : C_SDPointAt(Next(t), isEmpty_5) <- SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(t, ieNumObj) & ieNumObj>0).
-        ! t [Time] : C_SDPointAt(Next(t), play_3) <- (SDPointAt(t, play_2) | SDPointAt(t, play_8) | SDPointAt(t, play_8) | SDPointAt(t, play_2) | SDPointAt(t, play_8)) & ( ? pFinished [boolean] : PFinishedT(t, pFinished) & pFinished=F).
-        ! t [Time] : C_SDPointAt(Next(t), play_4) <- (SDPointAt(t, play_2) | SDPointAt(t, play_2)) & ( ? pAllEmpty [boolean] : PAllEmptyT(t, pAllEmpty) & pAllEmpty=T).
-        ! t [Time] : C_SDPointAt(Next(t), play_7) <- (SDPointAt(t, play_2) | SDPointAt(t, play_2)) & ( ? pAllEmpty [boolean] : PAllEmptyT(t, pAllEmpty) & pAllEmpty=F).
-        ! t [Time] : C_SDPointAt(Next(t), take_4) <- SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(t, tNew) & tNew<0).
-        ! t [Time] : C_SDPointAt(Next(t), take_5) <- SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(t, tNew) & tNew>=0).
-        ! t [Time] : C_SDPointAt(Next(t), takeTurn_6) <- (SDPointAt(t, takeTurn_5) | SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_5) | SDPointAt(t, takeTurn_9)) & ( ? ttBreak [boolean] : TtBreakT(t, ttBreak) & ttBreak=F).
-        ! t [Time] : C_SDPointAt(Next(t), takeTurn_7) <- (SDPointAt(t, takeTurn_5) | SDPointAt(t, takeTurn_5)) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(t, ttHeapEmpty) & ttHeapEmpty=F).
-        ! t [Time] : C_SDPointAt(Next(t), takeTurn_8) <- (SDPointAt(t, takeTurn_5) | SDPointAt(t, takeTurn_5)) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(t, ttHeapEmpty) & ttHeapEmpty=T).
+                    ! t [Time] st [StackLevel] x [Heap] v [LimitedInt] : C_HeapamountObjects(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_6) & THeapT(t, st, x) & TNewT(t, st, v).
+
+                    ! t [Time] st [StackLevel] x [Heap] v [LimitedInt] : Cn_HeapamountObjects(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_6) & THeapT(t, st, x) & HeapamountObjects(t, x, v) & ~TNewT(Next(t), st, v).
+
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)& ~((s = finished) | (s = allHeapsEmpty_6) | (s = allHeapsEmpty_10) | (s = take_7) | (s = isEmpty_6) | (s = takeTurn_6) | (s = takeTurn_12) | (s = takeTurn_13) | (s = play_3) | (s = play_7) | (s = play_9) | (s = allHeapsEmpty_4) | (s = allHeapsEmpty_6) | (s = allHeapsEmpty_6) | (s = allHeapsEmpty_9) | (s = allHeapsEmpty_7) | (s = allHeapsEmpty_8) | (s = allHeapsEmpty_7) | (s = allHeapsEmpty_8) | (s = take_3) | (s = take_3) | (s = take_4) | (s = take_5) | (s = isEmpty_3) | (s = isEmpty_3) | (s = isEmpty_4) | (s = isEmpty_5) | (s = takeTurn_5) | (s = takeTurn_6) | (s = takeTurn_6) | (s = takeTurn_7) | (s = takeTurn_9) | (s = takeTurn_7) | (s = takeTurn_9) | (s = play_2) | (s = play_3) | (s = play_3) | (s = play_6) | (s = play_8) | (s = play_6) | (s = play_8) | (s = allHeapsEmpty_4) | (s = allHeapsEmpty_6) | (s = allHeapsEmpty_6) | (s = takeTurn_5) | (s = takeTurn_6) | (s = takeTurn_6) | (s = play_2) | (s = play_3) | (s = play_3)).
         
-        ! t [Time] s [SDPoint] : C_SDPoint(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, takeTurn_13) | SDPointAt(t, takeTurn_13) | SDPointAt(t, play_9) | SDPointAt(t, play_9)).
-        ! t [Time] st [StackLevel] a [LimitedInt] : C_AheNumHeapsT(Next(t), st, a) <- (CurrentStacklevel(t) = st) & SDPointAt(t, allHeapsEmpty_2) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(aheGame, i) = e} = a.
-        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_3).
-        ! t [Time] st [StackLevel] aheToReturn [boolean] : C_AheToReturnT(Next(t), st, aheToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_4).
-        ! t [Time] st [StackLevel] e [Heap] : C_AheHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_5) & ( ? o [Game] i [LimitedInt] : AheGameT(t, o) & AheCounterT(t, i) & GameGetHeap(o, i) = e).
-        ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, allHeapsEmpty_6) & AheHeapT(t, (s-1), c).
-        ! t [Time] st [StackLevel] v [boolean] : C_AheHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st & SDPointAt(t, allHeapsEmpty_6post) & IeToReturnT(t, (st+1), v).
-        ! t [Time] st [StackLevel] aheToReturn [boolean] : C_AheToReturnT(Next(t), st, aheToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_8).
-        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_9) & (? aheCounter [LimitedInt] : AheCounterT(t, aheCounter) & aheCounter=aheCounter+1).
+        ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_1) <- SDPointAt(t, play_3).
+        ! t [Time] : C_SDPointAt(Next(t), isEmpty_1) <- SDPointAt(t, allHeapsEmpty_6) | SDPointAt(t, takeTurn_6).
+        ! t [Time] : C_SDPointAt(Next(t), take_1) <- SDPointAt(t, takeTurn_12).
+        ! t [Time] : C_SDPointAt(Next(t), takeTurn_1) <- SDPointAt(t, play_7).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_5) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_9)) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(t, st, aheCounter) & AheNumHeapsT(t, st, aheNumHeaps) & AheToReturnT(t, st, aheToReturn) & (aheCounter=<aheNumHeaps)&aheToReturn=T).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_6) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(t, st, aheHeapEmpty) & aheHeapEmpty=T).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_6) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(t, st, aheHeapEmpty) & aheHeapEmpty=F).
+        ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_9) <- (SDPointAt(t, allHeapsEmpty_8) | SDPointAt(t, allHeapsEmpty_7)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_10) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_9) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(t, st, aheCounter) & AheNumHeapsT(t, st, aheNumHeaps) & AheToReturnT(t, st, aheToReturn) & ~((aheCounter=<aheNumHeaps)&aheToReturn=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), isEmpty_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(t, st, ieNumObj) & ieNumObj=0).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), isEmpty_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(t, st, ieNumObj) & ieNumObj>0).
+        ! t [Time] : C_SDPointAt(Next(t), isEmpty_6) <- (SDPointAt(t, isEmpty_4) | SDPointAt(t, isEmpty_5)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_3) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, play_8) | SDPointAt(t, play_2)) & ( ? pFinished [boolean] : PFinishedT(t, st, pFinished) & pFinished=F).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3) & ( ? pAllEmpty [boolean] : PAllEmptyT(t, st, pAllEmpty) & pAllEmpty=T).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3) & ( ? pAllEmpty [boolean] : PAllEmptyT(t, st, pAllEmpty) & pAllEmpty=F).
+        ! t [Time] : C_SDPointAt(Next(t), play_9) <- (SDPointAt(t, play_8) | SDPointAt(t, play_6)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), take_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(t, st, tNew) & tNew<0).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), take_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(t, st, tNew) & tNew>=0).
+        ! t [Time] : C_SDPointAt(Next(t), take_6) <- (SDPointAt(t, take_4) | SDPointAt(t, take_5)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_5)) & ( ? ttBreak [boolean] : TtBreakT(t, st, ttBreak) & ttBreak=F).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(t, st, ttHeapEmpty) & ttHeapEmpty=F).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(t, st, ttHeapEmpty) & ttHeapEmpty=T).
+        ! t [Time] : C_SDPointAt(Next(t), takeTurn_10) <- (SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_7)).
+        
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, take_7) | SDPointAt(t, isEmpty_6) | SDPointAt(t, takeTurn_13) | SDPointAt(t, play_9)).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, allHeapsEmpty_6post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, allHeapsEmpty_6).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, play_3post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_3).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, play_7post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_7).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, takeTurn_6post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_6).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, takeTurn_12post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12).
+        ! t [Time] st [StackLevel] sd [SDPoint] : Cn_ReturnPoint(Next(t), st, sd) <- (CurrentStackLevel(t) = st) & ReturnPoint(t, st, sd) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, isEmpty_6) | SDPointAt(t, play_9) | SDPointAt(t, take_7) | SDPointAt(t, takeTurn_13)).
+        
+        ! t [Time] st [StackLevel] a [LimitedInt] : C_AheNumHeapsT(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_2) & ( ? aheGame [Game] : AheGameT(t, st, aheGame) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(aheGame, i) = e} = a).
+        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_3) & aheCounter=0.
+        ! t [Time] st [StackLevel] aheToReturn [boolean] : C_AheToReturnT(Next(t), st, aheToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_4) & aheToReturn=T.
+        ! t [Time] st [StackLevel] e [Heap] : C_AheHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_5) & ( ? o [Game] i [LimitedInt] : AheGameT(t, st, o) & AheCounterT(t, st, i) & GameGetHeap(o, i) = e).
+        ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, allHeapsEmpty_6) & AheHeapT(t, (st-1), c).
+        ! t [Time] st [StackLevel] v [boolean] : C_AheHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_6post) & IeToReturnT(t, (st+1), v).
+        ! t [Time] st [StackLevel] aheToReturn [boolean] : C_AheToReturnT(Next(t), st, aheToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_8) & aheToReturn=F.
+        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_9) & (? aheCounter [LimitedInt] : AheCounterT(t, st, aheCounter) & aheCounter=aheCounter+1).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_TCurrT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_2) & (? o [Heap] : THeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
-        ! t [Time] st [StackLevel] tNew [LimitedInt] : C_TNewT(Next(t), st, tNew) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & (? tCurr [LimitedInt] tNum [LimitedInt] : TCurrT(t, tCurr) & TNumT(t, tNum) & tNew=tCurr-tNum).
-        ! t [Time] st [StackLevel] tNew [LimitedInt] : C_TNewT(Next(t), st, tNew) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_4).
-        ! t [Time] st [StackLevel] ieToReturn [boolean] : C_IeToReturnT(Next(t), st, ieToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_2).
+        ! t [Time] st [StackLevel] tNew [LimitedInt] : C_TNewT(Next(t), st, tNew) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & (? tCurr [LimitedInt] tNum [LimitedInt] : TCurrT(t, st, tCurr) & TNumT(t, st, tNum) & tNew=tCurr-tNum).
+        ! t [Time] st [StackLevel] tNew [LimitedInt] : C_TNewT(Next(t), st, tNew) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_4) & tNew=0.
+        ! t [Time] st [StackLevel] ieToReturn [boolean] : C_IeToReturnT(Next(t), st, ieToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_2) & ieToReturn=F.
         ! t [Time] st [StackLevel] x [LimitedInt] : C_IeNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & (? o [Heap] : IeHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
-        ! t [Time] st [StackLevel] ieToReturn [boolean] : C_IeToReturnT(Next(t), st, ieToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_4).
-        ! t [Time] st [StackLevel] a [LimitedInt] : C_TtNumHeapsT(Next(t), st, a) <- (CurrentStacklevel(t) = st) & SDPointAt(t, takeTurn_2) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(ttGame, i) = e} = a.
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ( ? ub [LimitedInt] : TtNumHeapsT(t, ub)r = abs(RandomInt(t)) % (ub + 1 - 0) + 0).
-        ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_4).
-        ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_5) & ( ? o [Game] i [LimitedInt] : TtGameT(t, o) & TtWhichHeapT(t, i) & GameGetHeap(o, i) = e).
-        ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, takeTurn_6) & TtHeapT(t, (s-1), c).
-        ! t [Time] st [StackLevel] v [boolean] : C_TtHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st & SDPointAt(t, takeTurn_6post) & IeToReturnT(t, (st+1), v).
-        ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_7).
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ( ? ub [LimitedInt] : TtNumHeapsT(t, ub)r = abs(RandomInt(t)) % (ub + 1 - 0) + 0).
-        ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_9) & ( ? o [Game] i [LimitedInt] : TtGameT(t, o) & TtWhichHeapT(t, i) & GameGetHeap(o, i) = e).
+        ! t [Time] st [StackLevel] ieToReturn [boolean] : C_IeToReturnT(Next(t), st, ieToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_4) & ieToReturn=T.
+        ! t [Time] st [StackLevel] a [LimitedInt] : C_TtNumHeapsT(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_2) & ( ? ttGame [Game] : TtGameT(t, st, ttGame) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(ttGame, i) = e} = a).
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ( ? ub [LimitedInt] : TtNumHeapsT(t, st, ub) & r = (abs(RandomInt(t)) % (ub + 1 - 0)) + 0).
+        ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_4) & ttBreak=F.
+        ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_5) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
+        ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_6) & TtHeapT(t, (st-1), c).
+        ! t [Time] st [StackLevel] v [boolean] : C_TtHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6post) & IeToReturnT(t, (st+1), v).
+        ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_7) & ttBreak=T.
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ( ? ub [LimitedInt] : TtNumHeapsT(t, st, ub) & r = (abs(RandomInt(t)) % (ub + 1 - 0)) + 0).
+        ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_9) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_TtNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_10) & (? o [Heap] : TtHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtTakeNumT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ( ? ub [LimitedInt] : TtNumObjT(t, ub)r = abs(RandomInt(t)) % (ub + 1 - 1) + 1).
-        ! t [Time] st [StackLevel] c [Heap] : C_THeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, takeTurn_12) & TtHeapT(t, (s-1), c).
-        ! t [Time] st [StackLevel] p [LimitedInt] : C_TNumT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtTakeNumT(t, (s-1), p).
-        ! t [Time] st [StackLevel] pFinished [boolean] : C_PFinishedT(Next(t), st, pFinished) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_2).
-        ! t [Time] st [StackLevel] c [Game] : C_AheGameT(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, play_3) & PGameT(t, (s-1), c).
-        ! t [Time] st [StackLevel] v [boolean] : C_PAllEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st & SDPointAt(t, play_3post) & AheToReturnT(t, (st+1), v).
-        ! t [Time] st [StackLevel] pFinished [boolean] : C_PFinishedT(Next(t), st, pFinished) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_4).
-        ! t [Time] st [StackLevel] c [Game] : C_TtGameT(Next(t), st, c) <- (CurrentStackLevel(t) = (s-1)) & SDPointAt(t, play_7) & PGameT(t, (s-1), c).
-        ! t [Time] st [StackLevel] b [boolean] : C_PP1TurnT(Next(t), st, b) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_8) & (? b1 [boolean] : PP1TurnT(t, b1) & b = flipBool(b1)).
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtTakeNumT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ( ? ub [LimitedInt] : TtNumObjT(t, st, ub) & r = (abs(RandomInt(t)) % (ub + 1 - 1)) + 1).
+        ! t [Time] st [StackLevel] c [Heap] : C_THeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtHeapT(t, (st-1), c).
+        ! t [Time] st [StackLevel] p [LimitedInt] : C_TNumT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtTakeNumT(t, (st-1), p).
+        ! t [Time] st [StackLevel] pFinished [boolean] : C_PFinishedT(Next(t), st, pFinished) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_2) & pFinished=F.
+        ! t [Time] st [StackLevel] c [Game] : C_AheGameT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_3) & PGameT(t, (st-1), c).
+        ! t [Time] st [StackLevel] v [boolean] : C_PAllEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3post) & AheToReturnT(t, (st+1), v).
+        ! t [Time] st [StackLevel] pFinished [boolean] : C_PFinishedT(Next(t), st, pFinished) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_4) & pFinished=T.
+        ! t [Time] st [StackLevel] c [Game] : C_TtGameT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_7) & PGameT(t, (st-1), c).
+        ! t [Time] st [StackLevel] b [boolean] : C_PP1TurnT(Next(t), st, b) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_8) & (? b1 [boolean] : PP1TurnT(t, st, b1) & b = flipBool(b1)).
         ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st - 1)) & (SDPointAt(t, allHeapsEmpty_6) | SDPointAt(t, play_3) | SDPointAt(t, play_7) | SDPointAt(t, takeTurn_6) | SDPointAt(t, takeTurn_12)).
-        ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st + 1)) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, play_9) | SDPointAt(t, takeTurn_13)).
+        ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st + 1)) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, isEmpty_6) | SDPointAt(t, play_9) | SDPointAt(t, take_7) | SDPointAt(t, takeTurn_13)).
     }
     {
             ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPointAt(s).
@@ -229,105 +253,105 @@ theory T:V {
             ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(t, st, sd) <- C_ReturnPoint(t, st, sd).
             ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(Next(t), st, sd) <- ReturnPoint(t, st, sd) & ~Cn_ReturnPoint(Next(t), st, sd).
             
-            ! x [boolean] : TtBreakT(Start, x) <- I_TtBreakT(x).
-            ! t [Time] x [boolean] : TtBreakT(t, x) <- C_TtBreakT(t, x).
-            ! t [Time] x [boolean] : TtBreakT(Next(t), x) <- TtBreakT(t, x) & ~( ? x1 [boolean] : C_TtBreakT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : TtBreakT(Start, st, x) <- I_TtBreakT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : TtBreakT(t, st, x) <- C_TtBreakT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : TtBreakT(Next(t), st, x) <- TtBreakT(t, st, x) & ~( ? x1 [boolean] : C_TtBreakT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Heap] : THeapT(Start, x) <- I_THeapT(x).
-            ! t [Time] x [Heap] : THeapT(t, x) <- C_THeapT(t, x).
-            ! t [Time] x [Heap] : THeapT(Next(t), x) <- THeapT(t, x) & ~( ? x1 [Heap] : C_THeapT(Next(t), x1) & ~(x = x1)).
+            ! x [Heap] st [StackLevel] : THeapT(Start, st, x) <- I_THeapT(st, x).
+            ! t [Time] st [StackLevel] x [Heap] : THeapT(t, st, x) <- C_THeapT(t, st, x).
+            ! t [Time] st [StackLevel] x [Heap] : THeapT(Next(t), st, x) <- THeapT(t, st, x) & ~( ? x1 [Heap] : C_THeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TCurrT(Start, x) <- I_TCurrT(x).
-            ! t [Time] x [LimitedInt] : TCurrT(t, x) <- C_TCurrT(t, x).
-            ! t [Time] x [LimitedInt] : TCurrT(Next(t), x) <- TCurrT(t, x) & ~( ? x1 [LimitedInt] : C_TCurrT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TCurrT(Start, st, x) <- I_TCurrT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TCurrT(t, st, x) <- C_TCurrT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TCurrT(Next(t), st, x) <- TCurrT(t, st, x) & ~( ? x1 [LimitedInt] : C_TCurrT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TtNumHeapsT(Start, x) <- I_TtNumHeapsT(x).
-            ! t [Time] x [LimitedInt] : TtNumHeapsT(t, x) <- C_TtNumHeapsT(t, x).
-            ! t [Time] x [LimitedInt] : TtNumHeapsT(Next(t), x) <- TtNumHeapsT(t, x) & ~( ? x1 [LimitedInt] : C_TtNumHeapsT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TtNumHeapsT(Start, st, x) <- I_TtNumHeapsT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtNumHeapsT(t, st, x) <- C_TtNumHeapsT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtNumHeapsT(Next(t), st, x) <- TtNumHeapsT(t, st, x) & ~( ? x1 [LimitedInt] : C_TtNumHeapsT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TNumT(Start, x) <- I_TNumT(x).
-            ! t [Time] x [LimitedInt] : TNumT(t, x) <- C_TNumT(t, x).
-            ! t [Time] x [LimitedInt] : TNumT(Next(t), x) <- TNumT(t, x) & ~( ? x1 [LimitedInt] : C_TNumT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TNumT(Start, st, x) <- I_TNumT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TNumT(t, st, x) <- C_TNumT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TNumT(Next(t), st, x) <- TNumT(t, st, x) & ~( ? x1 [LimitedInt] : C_TNumT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Game] : PGameT(Start, x) <- I_PGameT(x).
-            ! t [Time] x [Game] : PGameT(t, x) <- C_PGameT(t, x).
-            ! t [Time] x [Game] : PGameT(Next(t), x) <- PGameT(t, x) & ~( ? x1 [Game] : C_PGameT(Next(t), x1) & ~(x = x1)).
+            ! x [Game] st [StackLevel] : PGameT(Start, st, x) <- I_PGameT(st, x).
+            ! t [Time] st [StackLevel] x [Game] : PGameT(t, st, x) <- C_PGameT(t, st, x).
+            ! t [Time] st [StackLevel] x [Game] : PGameT(Next(t), st, x) <- PGameT(t, st, x) & ~( ? x1 [Game] : C_PGameT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Heap] : AheHeapT(Start, x) <- I_AheHeapT(x).
-            ! t [Time] x [Heap] : AheHeapT(t, x) <- C_AheHeapT(t, x).
-            ! t [Time] x [Heap] : AheHeapT(Next(t), x) <- AheHeapT(t, x) & ~( ? x1 [Heap] : C_AheHeapT(Next(t), x1) & ~(x = x1)).
+            ! x [Heap] st [StackLevel] : AheHeapT(Start, st, x) <- I_AheHeapT(st, x).
+            ! t [Time] st [StackLevel] x [Heap] : AheHeapT(t, st, x) <- C_AheHeapT(t, st, x).
+            ! t [Time] st [StackLevel] x [Heap] : AheHeapT(Next(t), st, x) <- AheHeapT(t, st, x) & ~( ? x1 [Heap] : C_AheHeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : IeToReturnT(Start, x) <- I_IeToReturnT(x).
-            ! t [Time] x [boolean] : IeToReturnT(t, x) <- C_IeToReturnT(t, x).
-            ! t [Time] x [boolean] : IeToReturnT(Next(t), x) <- IeToReturnT(t, x) & ~( ? x1 [boolean] : C_IeToReturnT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : IeToReturnT(Start, st, x) <- I_IeToReturnT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : IeToReturnT(t, st, x) <- C_IeToReturnT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : IeToReturnT(Next(t), st, x) <- IeToReturnT(t, st, x) & ~( ? x1 [boolean] : C_IeToReturnT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Game] : AheGameT(Start, x) <- I_AheGameT(x).
-            ! t [Time] x [Game] : AheGameT(t, x) <- C_AheGameT(t, x).
-            ! t [Time] x [Game] : AheGameT(Next(t), x) <- AheGameT(t, x) & ~( ? x1 [Game] : C_AheGameT(Next(t), x1) & ~(x = x1)).
+            ! x [Game] st [StackLevel] : AheGameT(Start, st, x) <- I_AheGameT(st, x).
+            ! t [Time] st [StackLevel] x [Game] : AheGameT(t, st, x) <- C_AheGameT(t, st, x).
+            ! t [Time] st [StackLevel] x [Game] : AheGameT(Next(t), st, x) <- AheGameT(t, st, x) & ~( ? x1 [Game] : C_AheGameT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TtWhichHeapT(Start, x) <- I_TtWhichHeapT(x).
-            ! t [Time] x [LimitedInt] : TtWhichHeapT(t, x) <- C_TtWhichHeapT(t, x).
-            ! t [Time] x [LimitedInt] : TtWhichHeapT(Next(t), x) <- TtWhichHeapT(t, x) & ~( ? x1 [LimitedInt] : C_TtWhichHeapT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TtWhichHeapT(Start, st, x) <- I_TtWhichHeapT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtWhichHeapT(t, st, x) <- C_TtWhichHeapT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtWhichHeapT(Next(t), st, x) <- TtWhichHeapT(t, st, x) & ~( ? x1 [LimitedInt] : C_TtWhichHeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : AheHeapEmptyT(Start, x) <- I_AheHeapEmptyT(x).
-            ! t [Time] x [boolean] : AheHeapEmptyT(t, x) <- C_AheHeapEmptyT(t, x).
-            ! t [Time] x [boolean] : AheHeapEmptyT(Next(t), x) <- AheHeapEmptyT(t, x) & ~( ? x1 [boolean] : C_AheHeapEmptyT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : AheHeapEmptyT(Start, st, x) <- I_AheHeapEmptyT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : AheHeapEmptyT(t, st, x) <- C_AheHeapEmptyT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : AheHeapEmptyT(Next(t), st, x) <- AheHeapEmptyT(t, st, x) & ~( ? x1 [boolean] : C_AheHeapEmptyT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : PFinishedT(Start, x) <- I_PFinishedT(x).
-            ! t [Time] x [boolean] : PFinishedT(t, x) <- C_PFinishedT(t, x).
-            ! t [Time] x [boolean] : PFinishedT(Next(t), x) <- PFinishedT(t, x) & ~( ? x1 [boolean] : C_PFinishedT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : PFinishedT(Start, st, x) <- I_PFinishedT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PFinishedT(t, st, x) <- C_PFinishedT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PFinishedT(Next(t), st, x) <- PFinishedT(t, st, x) & ~( ? x1 [boolean] : C_PFinishedT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : IeNumObjT(Start, x) <- I_IeNumObjT(x).
-            ! t [Time] x [LimitedInt] : IeNumObjT(t, x) <- C_IeNumObjT(t, x).
-            ! t [Time] x [LimitedInt] : IeNumObjT(Next(t), x) <- IeNumObjT(t, x) & ~( ? x1 [LimitedInt] : C_IeNumObjT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : IeNumObjT(Start, st, x) <- I_IeNumObjT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : IeNumObjT(t, st, x) <- C_IeNumObjT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : IeNumObjT(Next(t), st, x) <- IeNumObjT(t, st, x) & ~( ? x1 [LimitedInt] : C_IeNumObjT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Game] : TtGameT(Start, x) <- I_TtGameT(x).
-            ! t [Time] x [Game] : TtGameT(t, x) <- C_TtGameT(t, x).
-            ! t [Time] x [Game] : TtGameT(Next(t), x) <- TtGameT(t, x) & ~( ? x1 [Game] : C_TtGameT(Next(t), x1) & ~(x = x1)).
+            ! x [Game] st [StackLevel] : TtGameT(Start, st, x) <- I_TtGameT(st, x).
+            ! t [Time] st [StackLevel] x [Game] : TtGameT(t, st, x) <- C_TtGameT(t, st, x).
+            ! t [Time] st [StackLevel] x [Game] : TtGameT(Next(t), st, x) <- TtGameT(t, st, x) & ~( ? x1 [Game] : C_TtGameT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : AheNumHeapsT(Start, x) <- I_AheNumHeapsT(x).
-            ! t [Time] x [LimitedInt] : AheNumHeapsT(t, x) <- C_AheNumHeapsT(t, x).
-            ! t [Time] x [LimitedInt] : AheNumHeapsT(Next(t), x) <- AheNumHeapsT(t, x) & ~( ? x1 [LimitedInt] : C_AheNumHeapsT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : AheNumHeapsT(Start, st, x) <- I_AheNumHeapsT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : AheNumHeapsT(t, st, x) <- C_AheNumHeapsT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : AheNumHeapsT(Next(t), st, x) <- AheNumHeapsT(t, st, x) & ~( ? x1 [LimitedInt] : C_AheNumHeapsT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TtNumObjT(Start, x) <- I_TtNumObjT(x).
-            ! t [Time] x [LimitedInt] : TtNumObjT(t, x) <- C_TtNumObjT(t, x).
-            ! t [Time] x [LimitedInt] : TtNumObjT(Next(t), x) <- TtNumObjT(t, x) & ~( ? x1 [LimitedInt] : C_TtNumObjT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TtNumObjT(Start, st, x) <- I_TtNumObjT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtNumObjT(t, st, x) <- C_TtNumObjT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtNumObjT(Next(t), st, x) <- TtNumObjT(t, st, x) & ~( ? x1 [LimitedInt] : C_TtNumObjT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : AheToReturnT(Start, x) <- I_AheToReturnT(x).
-            ! t [Time] x [boolean] : AheToReturnT(t, x) <- C_AheToReturnT(t, x).
-            ! t [Time] x [boolean] : AheToReturnT(Next(t), x) <- AheToReturnT(t, x) & ~( ? x1 [boolean] : C_AheToReturnT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : AheToReturnT(Start, st, x) <- I_AheToReturnT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : AheToReturnT(t, st, x) <- C_AheToReturnT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : AheToReturnT(Next(t), st, x) <- AheToReturnT(t, st, x) & ~( ? x1 [boolean] : C_AheToReturnT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TtTakeNumT(Start, x) <- I_TtTakeNumT(x).
-            ! t [Time] x [LimitedInt] : TtTakeNumT(t, x) <- C_TtTakeNumT(t, x).
-            ! t [Time] x [LimitedInt] : TtTakeNumT(Next(t), x) <- TtTakeNumT(t, x) & ~( ? x1 [LimitedInt] : C_TtTakeNumT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TtTakeNumT(Start, st, x) <- I_TtTakeNumT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtTakeNumT(t, st, x) <- C_TtTakeNumT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TtTakeNumT(Next(t), st, x) <- TtTakeNumT(t, st, x) & ~( ? x1 [LimitedInt] : C_TtTakeNumT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : PAllEmptyT(Start, x) <- I_PAllEmptyT(x).
-            ! t [Time] x [boolean] : PAllEmptyT(t, x) <- C_PAllEmptyT(t, x).
-            ! t [Time] x [boolean] : PAllEmptyT(Next(t), x) <- PAllEmptyT(t, x) & ~( ? x1 [boolean] : C_PAllEmptyT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : PAllEmptyT(Start, st, x) <- I_PAllEmptyT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PAllEmptyT(t, st, x) <- C_PAllEmptyT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PAllEmptyT(Next(t), st, x) <- PAllEmptyT(t, st, x) & ~( ? x1 [boolean] : C_PAllEmptyT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Heap] : IeHeapT(Start, x) <- I_IeHeapT(x).
-            ! t [Time] x [Heap] : IeHeapT(t, x) <- C_IeHeapT(t, x).
-            ! t [Time] x [Heap] : IeHeapT(Next(t), x) <- IeHeapT(t, x) & ~( ? x1 [Heap] : C_IeHeapT(Next(t), x1) & ~(x = x1)).
+            ! x [Heap] st [StackLevel] : IeHeapT(Start, st, x) <- I_IeHeapT(st, x).
+            ! t [Time] st [StackLevel] x [Heap] : IeHeapT(t, st, x) <- C_IeHeapT(t, st, x).
+            ! t [Time] st [StackLevel] x [Heap] : IeHeapT(Next(t), st, x) <- IeHeapT(t, st, x) & ~( ? x1 [Heap] : C_IeHeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : PP1TurnT(Start, x) <- I_PP1TurnT(x).
-            ! t [Time] x [boolean] : PP1TurnT(t, x) <- C_PP1TurnT(t, x).
-            ! t [Time] x [boolean] : PP1TurnT(Next(t), x) <- PP1TurnT(t, x) & ~( ? x1 [boolean] : C_PP1TurnT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : PP1TurnT(Start, st, x) <- I_PP1TurnT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PP1TurnT(t, st, x) <- C_PP1TurnT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : PP1TurnT(Next(t), st, x) <- PP1TurnT(t, st, x) & ~( ? x1 [boolean] : C_PP1TurnT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : AheCounterT(Start, x) <- I_AheCounterT(x).
-            ! t [Time] x [LimitedInt] : AheCounterT(t, x) <- C_AheCounterT(t, x).
-            ! t [Time] x [LimitedInt] : AheCounterT(Next(t), x) <- AheCounterT(t, x) & ~( ? x1 [LimitedInt] : C_AheCounterT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : AheCounterT(Start, st, x) <- I_AheCounterT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : AheCounterT(t, st, x) <- C_AheCounterT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : AheCounterT(Next(t), st, x) <- AheCounterT(t, st, x) & ~( ? x1 [LimitedInt] : C_AheCounterT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [LimitedInt] : TNewT(Start, x) <- I_TNewT(x).
-            ! t [Time] x [LimitedInt] : TNewT(t, x) <- C_TNewT(t, x).
-            ! t [Time] x [LimitedInt] : TNewT(Next(t), x) <- TNewT(t, x) & ~( ? x1 [LimitedInt] : C_TNewT(Next(t), x1) & ~(x = x1)).
+            ! x [LimitedInt] st [StackLevel] : TNewT(Start, st, x) <- I_TNewT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TNewT(t, st, x) <- C_TNewT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : TNewT(Next(t), st, x) <- TNewT(t, st, x) & ~( ? x1 [LimitedInt] : C_TNewT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] : TtHeapEmptyT(Start, x) <- I_TtHeapEmptyT(x).
-            ! t [Time] x [boolean] : TtHeapEmptyT(t, x) <- C_TtHeapEmptyT(t, x).
-            ! t [Time] x [boolean] : TtHeapEmptyT(Next(t), x) <- TtHeapEmptyT(t, x) & ~( ? x1 [boolean] : C_TtHeapEmptyT(Next(t), x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : TtHeapEmptyT(Start, st, x) <- I_TtHeapEmptyT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : TtHeapEmptyT(t, st, x) <- C_TtHeapEmptyT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : TtHeapEmptyT(Next(t), st, x) <- TtHeapEmptyT(t, st, x) & ~( ? x1 [boolean] : C_TtHeapEmptyT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Heap] : TtHeapT(Start, x) <- I_TtHeapT(x).
-            ! t [Time] x [Heap] : TtHeapT(t, x) <- C_TtHeapT(t, x).
-            ! t [Time] x [Heap] : TtHeapT(Next(t), x) <- TtHeapT(t, x) & ~( ? x1 [Heap] : C_TtHeapT(Next(t), x1) & ~(x = x1)).
+            ! x [Heap] st [StackLevel] : TtHeapT(Start, st, x) <- I_TtHeapT(st, x).
+            ! t [Time] st [StackLevel] x [Heap] : TtHeapT(t, st, x) <- C_TtHeapT(t, st, x).
+            ! t [Time] st [StackLevel] x [Heap] : TtHeapT(Next(t), st, x) <- TtHeapT(t, st, x) & ~( ? x1 [Heap] : C_TtHeapT(Next(t), st, x1) & ~(x = x1)).
             
             ! x [Game] y [boolean] : Gamep1Win(Start, x, y) <- I_Gamep1Win(x, y).
             ! t [Time] x [Game] y [boolean] : Gamep1Win(t, x, y) <- C_Gamep1Win(t, x, y).
@@ -344,8 +368,8 @@ theory T:V {
             
     }
     {
-        ! f [Game] to [Heap] : GameGetHeap(f, 0) <- GameFirstHeap(f) = to.
-        ! f [Game] i [LimitedInt] to [Heap] : GameGetHeap(f, i) <- ( ? to1 [Heap] : GameGetHeap(f, (i-1)) = to1 & GameNextHeap(f, to1)) = to.
+        ! f [Game] to [Heap] : GameGetHeap(f, 0) = to <- GameFirstHeap(f) = to.
+        ! f [Game] i [LimitedInt] to [Heap] : GameGetHeap(f, i) = to <- ( ? to1 [Heap] : GameGetHeap(f, (i-1)) = to1 & GameNextHeap(f, to1) = to).
     }
 
         ! x [Game] : ?1 v [boolean] : I_Gamep1Win(x, v).
@@ -367,14 +391,47 @@ structure S:V {
     Start = 0
     Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20 }
 
-    I_SDPointAt = { 1 }
-
-    LimitedInt = { -5..5 }
-    LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "8VDffWoG8Ekd5otFTWAU"; "EwVbWKdnxCyaTWBBskaO"; "6NaqoHq9GX1BFfURx7cY"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
+    I_SDPointAt = { play_1 }
+    I_CurrentStackLevel = 1
+    I_ReturnPoint = {1, finished}
     
-    Game = { Game1; Game2; Game3}
-    Heap = { Heap1; Heap2; Heap3}
+    I_TtBreakT = {}
+    I_THeapT = {}
+    I_TCurrT = {}
+    I_TtNumHeapsT = {}
+    I_TNumT = {}
+    I_PGameT = { 1,Game1 }
+    I_AheHeapT = {}
+    I_IeToReturnT = {}
+    I_AheGameT = {}
+    I_TtWhichHeapT = {}
+    I_AheHeapEmptyT = {}
+    I_PFinishedT = {}
+    I_IeNumObjT = {}
+    I_TtGameT = {}
+    I_AheNumHeapsT = {}
+    I_TtNumObjT = {}
+    I_AheToReturnT = {}
+    I_TtTakeNumT = {}
+    I_PAllEmptyT = {}
+    I_IeHeapT = {}
+    I_PP1TurnT = { 1,T }
+    I_AheCounterT = {}
+    I_TNewT = {}
+    I_TtHeapEmptyT = {}
+    I_TtHeapT = {}
+    I_Gamep1Win = { Game1,F }
+    I_GamegameFinished = { Game1,F }
+    I_HeapamountObjects = { Heap1,1 } 
+
+    LimitedInt = { -3..3 }
+    RandomInt = { 0,-4; 1,-1; 2,-3; 3,-3; 4,4; 5,1; 6,-2; 7,4; 8,0; 9,-4; 10,-2; 11,-1; 12,-3; 13,-5; 14,0; 15,-1; 16,2; 17,-1; 18,3; 19,4; 20,4 }
+    LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
+    LimitedString = { "yYWlNgQtg11nlgcEQy3d"; "W8bQr7xV3hAKAn0HbsJ6"; "23zqVvb2BAHbMLLew33Q"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
+    
+    Game = { Game1 }
+    Heap = { Heap1 }
+    NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
     flipBool = { T->F;F->T}
 }
 procedure main() {
