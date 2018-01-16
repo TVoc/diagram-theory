@@ -519,7 +519,7 @@ public class CheckpointBuilder
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 
 			guardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
-			guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(t, st, " + tempVar.getName() + ") & ");
+			guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(Next(t), st, " + tempVar.getName() + ") & ");
 		}
 		
 		return guardQuantifiers.toString() + guardBuilder.toString() + guard + ")";

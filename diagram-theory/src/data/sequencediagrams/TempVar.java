@@ -46,6 +46,11 @@ public class TempVar
 	{
 		return this.name;
 	}
+	
+	public String getNameAsAssignee()
+	{
+		return this.name + "_new";
+	}
 
 	@Override
 	public int hashCode()

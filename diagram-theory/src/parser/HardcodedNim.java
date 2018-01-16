@@ -339,7 +339,7 @@ public class HardcodedNim
 		LoopCombinedFragment emptyLoop = CombinedFragmentFactory.createLoopCombinedFragment(Optional.empty(),
 				Optional.empty(),
 				Optional.of(new ArrayList<Message>(Arrays.asList(allHeapsEmpty_5, allHeapsEmpty_6, allHeapsEmpty_9))),
-				"(aheCounter =< aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
+				"(aheCounter < aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
 		allHeapsEmpty_5.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_6.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_9.setFragment(Optional.of(emptyLoop));

@@ -69,7 +69,7 @@ public class SDPoint implements Comparable<SDPoint>
 		
 		if (this.getSequenceNumber() == o.getSequenceNumber())
 		{
-			return Boolean.compare(this.isPost(), o.isPost());
+			return - Boolean.compare(this.isPost(), o.isPost());
 		}
 		
 		return Integer.compare(this.getSequenceNumber(), o.getSequenceNumber());

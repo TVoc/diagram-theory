@@ -91,13 +91,15 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext, Cal
 			int i = this.messages.indexOf(key);
 			if (key.getFragment().isPresent())
 			{
-				this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
-						key.getDiagramName(), true, key.getFragment().get()));
+				Message post = new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+						key.getDiagramName(), true, key.getFragment().get());
+				this.messages.add(i + 1, post);
 			}
 			else
 			{
-				this.messages.add(i + 1, new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
-						key.getDiagramName(), true));
+				Message post = new Message("", key.getSDPoint().toString(), key.getSDPoint().getSequenceNumber(), false, Optional.empty(), Optional.empty(),
+						key.getDiagramName(), true);
+				this.messages.add(i + 1, post);
 			}
 			
 		}
@@ -264,8 +266,10 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext, Cal
 			throw new IllegalArgumentException("store does not have diagram corresponding to message");
 		}
 		
+//		return this.internalGetDiagramMessages().get(message.getDiagramName())
+//				.get(message.getSDPoint().getSequenceNumber() + offset - 1);
 		return this.internalGetDiagramMessages().get(message.getDiagramName())
-				.get(message.getSDPoint().getSequenceNumber() + offset - 1);
+				.get(this.internalGetDiagramMessages().get(message.getDiagramName()).indexOf(message) + offset);
 	}
 	
 	public Optional<Message> getNextMessage(Message message)

@@ -115,7 +115,6 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("flipBool(boolean) : boolean", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type void constructed from { null }", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type StackLevel = { 1..10 } isa nat", this.getTabLevel() + 1) // TODO Stacklevel max is hardcoded
-				+ OutputConvenienceFunctions.insertTabsNewLine("type Index isa LimitedInt", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("CurrentStackLevel(Time) : StackLevel", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("I_CurrentStackLevel : StackLevel", this.getTabLevel() + 1)

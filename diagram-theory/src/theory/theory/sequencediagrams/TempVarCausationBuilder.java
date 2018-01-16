@@ -332,17 +332,17 @@ public class TempVarCausationBuilder
 	
 	private TempVarCausationBuilder handleArithStatement(Message message, SeqDiagramStore store, TempVar assigned, String rhs)
 	{
-		if (! this.hasTempVars(rhs, store))
-		{
-			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
-					"! t [Time] st [StackLevel] " + assigned.getName() + " ["
-							+ OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
-							+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
-							+	"(Next(t), st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
-							+ message.getSDPoint() + ") & " + message.getContent() + ".", this.getTabLevel()));
-			
-			return this;
-		}
+//		if (! this.hasTempVars(rhs, store))
+//		{
+//			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(
+//					"! t [Time] st [StackLevel] " + assigned.getName() + " ["
+//							+ OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
+//							+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
+//							+	"(Next(t), st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
+//							+ message.getSDPoint() + ") & " + message.getContent() + ".", this.getTabLevel()));
+//			
+//			return this;
+//		}
 		
 		String[] parts = rhs.split(XMLParser.TEMPVAR_SEPARATOR);
 		
@@ -383,16 +383,23 @@ public class TempVarCausationBuilder
 		
 		if (! "".equals(assertion.toString()))
 		{
-			assertion.append(message.getContent() + ").");
+			String content = message.getContent();
+			if (content.contains("="))
+			{
+				String[] messageParts = content.split("=");
+				messageParts[0] = messageParts[0] + "_new";
+				content = messageParts[0] + "=" + messageParts[1];
+			}
+			assertion.append(content + ").");
 		}
 		
 		String toAppend = ("".equals(quantifiers.toString()) && "".equals(assertion.toString())) ?
 			"! t [Time] st [StackLevel] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
 			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
-			+ message.getSDPoint() + ")."
+			+ message.getSDPoint() + ") & " + message.getContent() + "."
 			:
-			"! t [Time] st [StackLevel] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
-			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
+			"! t [Time] st [StackLevel] " + assigned.getNameAsAssignee() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
+			+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), st, " + assigned.getNameAsAssignee() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
 			+ message.getSDPoint() + ") & " + quantifiers.toString() + assertion.toString();
 		
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
