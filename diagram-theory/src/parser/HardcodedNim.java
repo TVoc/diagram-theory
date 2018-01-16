@@ -111,7 +111,7 @@ public class HardcodedNim
 				Optional.of("aheGame"), "allHeapsEmpty", false);
 		Message allHeapsEmpty_2 = new Message("aheNumHeaps = getNumHeaps()", "allHeapsEmpty_2", 2, false,
 				Optional.of("aheGame"), Optional.of("aheGame"), "allHeapsEmpty", false);
-		Message allHeapsEmpty_3 = new Message("aheCounter = 0", "allHeapsEmpty_3", 3, false, Optional.of("aheGame"),
+		Message allHeapsEmpty_3 = new Message("aheCounter = 1", "allHeapsEmpty_3", 3, false, Optional.of("aheGame"),
 				Optional.of("aheGame"), "allHeapsEmpty", false);
 		Message allHeapsEmpty_4 = new Message("aheToReturn = T", "allHeapsEmpty_4", 4, false, Optional.of("aheGame"),
 				Optional.of("aheGame"), "allHeapsEmpty", false);
@@ -243,7 +243,7 @@ public class HardcodedNim
 				, "takeTurn", false);
 		Message takeTurn_2 = new Message("ttNumHeaps = getNumHeaps()", "takeTurn_2", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
-		Message takeTurn_3 = new Message("ttWhichHeap = randomInt(0, ttNumHeaps)", "takeTurn_3", seq++, false, Optional.of("ttGame")
+		Message takeTurn_3 = new Message("ttWhichHeap = randomInt(1, ttNumHeaps)", "takeTurn_3", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
 		Message takeTurn_4 = new Message("ttBreak = F", "takeTurn_4", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
@@ -253,7 +253,7 @@ public class HardcodedNim
 				, Optional.of("ttHeap"), "takeTurn", false);
 		Message takeTurn_7 = new Message("ttBreak = T", "takeTurn_7", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
-		Message takeTurn_8 = new Message("ttWhichHeap = randomInt(0, ttNumHeaps)", "takeTurn_8", seq++, false, Optional.of("ttGame")
+		Message takeTurn_8 = new Message("ttWhichHeap = randomInt(1, ttNumHeaps)", "takeTurn_8", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
 		Message takeTurn_9 = new Message("ttHeap = getHeap(ttWhichHeap)", "takeTurn_9", seq++, false, Optional.of("ttGame")
 				, Optional.of("ttGame"), "takeTurn", false);
@@ -339,7 +339,7 @@ public class HardcodedNim
 		LoopCombinedFragment emptyLoop = CombinedFragmentFactory.createLoopCombinedFragment(Optional.empty(),
 				Optional.empty(),
 				Optional.of(new ArrayList<Message>(Arrays.asList(allHeapsEmpty_5, allHeapsEmpty_6, allHeapsEmpty_9))),
-				"(aheCounter < aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
+				"(aheCounter =< aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
 		allHeapsEmpty_5.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_6.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_9.setFragment(Optional.of(emptyLoop));
