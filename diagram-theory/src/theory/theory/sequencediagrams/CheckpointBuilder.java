@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,7 +40,7 @@ public class CheckpointBuilder
 
 		this.tabLevel = tabLevel;
 
-		this.nonStandardPoints = new ArrayList<SDPoint>();
+		this.nonStandardPoints = new TreeSet<SDPoint>();
 		this.returnPoints = new ArrayList<SDPoint>();
 		this.checkpoints = new TreeMap<SDPoint, String>();
 
@@ -64,9 +65,9 @@ public class CheckpointBuilder
 		return this.tabLevel;
 	}
 
-	private final List<SDPoint> nonStandardPoints;
+	private final Set<SDPoint> nonStandardPoints;
 
-	private final List<SDPoint> getNonStandardPoints() 
+	private final Set<SDPoint> getNonStandardPoints() 
 	{
 		return this.nonStandardPoints;
 	}
@@ -377,17 +378,31 @@ public class CheckpointBuilder
 		{
 			general.append("& ~(");
 
-			for (int i = 0; i < this.getNonStandardPoints().size(); i++)
+			for (Iterator<SDPoint> it = this.getNonStandardPoints().iterator(); it.hasNext(); )
 			{
-				if (i == this.getNonStandardPoints().size() - 1)
+				SDPoint ele = it.next();
+				
+				if (it.hasNext())
 				{
-					general.append("(s = " + this.getNonStandardPoints().get(i) + ")).");
+					general.append("(s = " + ele + ") | ");
 				}
 				else
 				{
-					general.append("(s = " + this.getNonStandardPoints().get(i) + ") | ");
+					general.append("(s = " + ele + ")).");
 				}
 			}
+			
+//			for (int i = 0; i < this.getNonStandardPoints().size(); i++)
+//			{
+//				if (i == this.getNonStandardPoints().size() - 1)
+//				{
+//					general.append("(s = " + this.getNonStandardPoints().get(i) + ")).");
+//				}
+//				else
+//				{
+//					general.append("(s = " + this.getNonStandardPoints().get(i) + ") | ");
+//				}
+//			}
 		}
 		else
 		{
