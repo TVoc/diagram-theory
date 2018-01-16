@@ -380,7 +380,7 @@ public class LoopCombinedFragment extends CombinedFragment
 		}
 		else
 		{
-			this.exitToOutside(store, output, exit, intermediate.equals("") ? Optional.empty() : Optional.of(intermediate));
+			this.exitToOutside(store, output, exit, intermediate.equals("") ? Optional.of("~(" + this.getGuard() + ")") : Optional.of(intermediate + " & ~(" + this.getGuard() + ")"));
 		}
 	}
 

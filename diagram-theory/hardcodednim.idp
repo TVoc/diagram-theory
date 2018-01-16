@@ -186,14 +186,14 @@ theory T:V {
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_3) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, play_8) | SDPointAt(t, play_2)) & ( ? pFinished [boolean] : PFinishedT(Next(t), st, pFinished) & pFinished=F).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3post) & ( ? pAllEmpty [boolean] : PAllEmptyT(Next(t), st, pAllEmpty) & pAllEmpty=T).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3post) & ( ? pAllEmpty [boolean] : PAllEmptyT(Next(t), st, pAllEmpty) & pAllEmpty=F).
-        ! t [Time] : C_SDPointAt(Next(t), play_9) <- (SDPointAt(t, play_8) | SDPointAt(t, play_6)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), play_9) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, play_8) | SDPointAt(t, play_6)) & ( ? pFinished [boolean] : PFinishedT(Next(t), st, pFinished) & ~(pFinished=F)).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), take_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(Next(t), st, tNew) & tNew<0).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), take_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, take_3) & ( ? tNew [LimitedInt] : TNewT(Next(t), st, tNew) & tNew>=0).
         ! t [Time] : C_SDPointAt(Next(t), take_6) <- (SDPointAt(t, take_4) | SDPointAt(t, take_5)).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_5)) & ( ? ttBreak [boolean] : TtBreakT(Next(t), st, ttBreak) & ttBreak=F).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6post) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(Next(t), st, ttHeapEmpty) & ttHeapEmpty=F).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6post) & ( ? ttHeapEmpty [boolean] : TtHeapEmptyT(Next(t), st, ttHeapEmpty) & ttHeapEmpty=T).
-        ! t [Time] : C_SDPointAt(Next(t), takeTurn_10) <- (SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_7)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), takeTurn_10) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, takeTurn_9) | SDPointAt(t, takeTurn_7)) & ( ? ttBreak [boolean] : TtBreakT(Next(t), st, ttBreak) & ~(ttBreak=F)).
         
         ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, take_7) | SDPointAt(t, isEmpty_6) | SDPointAt(t, takeTurn_13) | SDPointAt(t, play_9)).
         ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, allHeapsEmpty_6post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, allHeapsEmpty_6).
@@ -386,9 +386,9 @@ theory T:V {
 
 }
 structure S:V {
-    Time = { 0..50 }
+    Time = { 0..70 }
     Start = 0
-    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22; 22->23; 23->24; 24->25; 25->26; 26->27; 27->28; 28->29; 29->30; 30->31; 31->32; 32->33; 33->34; 34->35; 35->36; 36->37; 37->38; 38->39; 39->40; 40->41; 41->42; 42->43; 43->44; 44->45; 45->46; 46->47; 47->48; 48->49; 49->50 }
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22; 22->23; 23->24; 24->25; 25->26; 26->27; 27->28; 28->29; 29->30; 30->31; 31->32; 32->33; 33->34; 34->35; 35->36; 36->37; 37->38; 38->39; 39->40; 40->41; 41->42; 42->43; 43->44; 44->45; 45->46; 46->47; 47->48; 48->49; 49->50; 50->51; 51->52; 52->53; 53->54; 54->55; 55->56; 56->57; 57->58; 58->59; 59->60; 60->61; 61->62; 62->63; 63->64; 64->65; 65->66; 66->67; 67->68; 68->69; 69->70 }
     I_SDPointAt = { play_1 }
     I_CurrentStackLevel = 1
     I_ReturnPoint = {1, finished}
@@ -414,24 +414,24 @@ structure S:V {
     I_TtTakeNumT = {}
     I_PAllEmptyT = {}
     I_IeHeapT = {}
-    I_PP1TurnT = { 1,T }
+    I_PP1TurnT = { 1,F }
     I_AheCounterT = {}
     I_TNewT = {}
     I_TtHeapEmptyT = {}
     I_TtHeapT = {}
     I_Gamep1Win = { Game1,F }
     I_GamegameFinished = { Game1,F }
-    I_HeapamountObjects = { Heap1,1 } 
+    I_HeapamountObjects = { Heap1,2 } 
 
     LimitedInt = { -3..3 }
-    RandomInt = { 0,2; 1,-3; 2,-1; 3,0; 4,-1; 5,-2; 6,0; 7,-3; 8,-2; 9,-3; 10,1; 11,1; 12,-2; 13,-2; 14,3; 15,0; 16,-3; 17,0; 18,1; 19,2; 20,-1; 21,-2; 22,-2; 23,3; 24,1; 25,2; 26,3; 27,2; 28,-1; 29,1; 30,-1; 31,-2; 32,-1; 33,3; 34,0; 35,-1; 36,-1; 37,2; 38,-3; 39,-3; 40,0; 41,-2; 42,0; 43,2; 44,-1; 45,-3; 46,2; 47,-2; 48,2; 49,-1; 50,3 }
+    RandomInt = { 0,0; 1,-3; 2,1; 3,-2; 4,3; 5,-3; 6,-3; 7,-1; 8,-2; 9,-1; 10,-1; 11,2; 12,-2; 13,-3; 14,-2; 15,3; 16,-2; 17,2; 18,1; 19,-1; 20,-3; 21,-1; 22,-2; 23,3; 24,2; 25,2; 26,2; 27,-3; 28,-2; 29,2; 30,-3; 31,-3; 32,-2; 33,-1; 34,1; 35,-1; 36,3; 37,-3; 38,-2; 39,1; 40,-2; 41,3; 42,-2; 43,1; 44,3; 45,-1; 46,-1; 47,1; 48,1; 49,0; 50,-1; 51,2; 52,-1; 53,0; 54,-3; 55,2; 56,-1; 57,-2; 58,3; 59,-2; 60,-3; 61,1; 62,-3; 63,1; 64,-3; 65,0; 66,-3; 67,2; 68,2; 69,2; 70,-1 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
     LimitedString = { "yYWlNgQtg11nlgcEQy3d"; "W8bQr7xV3hAKAn0HbsJ6"; "23zqVvb2BAHbMLLew33Q"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
     
     Game = { Game1 }
     Heap = { Heap1 }
-    GameFirstHeap = { Game1,Heap1 }
-    GameNextHeap = {}
+    GameFirstHeap = { Game1->Heap1 }
+    GameNextHeap = {  }
     NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
     flipBool = { T->F;F->T}
 }
