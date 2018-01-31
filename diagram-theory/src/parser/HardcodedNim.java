@@ -111,7 +111,7 @@ public class HardcodedNim
 				Optional.of("aheGame"), "allHeapsEmpty", false);
 		Message allHeapsEmpty_2 = new Message("aheNumHeaps = getNumHeaps()", "allHeapsEmpty_2", 2, false,
 				Optional.of("aheGame"), Optional.of("aheGame"), "allHeapsEmpty", false);
-		Message allHeapsEmpty_3 = new Message("aheCounter = 1", "allHeapsEmpty_3", 3, false, Optional.of("aheGame"),
+		Message allHeapsEmpty_3 = new Message("aheCounter = 0", "allHeapsEmpty_3", 3, false, Optional.of("aheGame"),
 				Optional.of("aheGame"), "allHeapsEmpty", false);
 		Message allHeapsEmpty_4 = new Message("aheToReturn = T", "allHeapsEmpty_4", 4, false, Optional.of("aheGame"),
 				Optional.of("aheGame"), "allHeapsEmpty", false);
@@ -308,9 +308,9 @@ public class HardcodedNim
 				, "play", false);
 		Message play_4 = new Message("pFinished = T", "play_4", seq++, false, Optional.of("pGame"), Optional.of("pGame")
 				, "play", false);
-		Message play_5 = new Message("setGameFinished(T)", "play_5", seq++, false, Optional.of("pGame"), Optional.of("pGame")
+		Message play_5 = new Message("setP1Win(pP1Turn)", "play_5", seq++, false, Optional.of("pGame"), Optional.of("pGame")
 				, "play", false);
-		Message play_6 = new Message("setP1Win(pP1Turn)", "play_6", seq++, false, Optional.of("pGame"), Optional.of("pGame")
+		Message play_6 = new Message("setGameFinished(T)", "play_6", seq++, false, Optional.of("pGame"), Optional.of("pGame")
 				, "play", false);
 		Message play_7 = new Message("takeTurn()", "play_7", seq++, false, Optional.of("pGame"), Optional.of("pGame")
 				, "play", false);
@@ -339,7 +339,7 @@ public class HardcodedNim
 		LoopCombinedFragment emptyLoop = CombinedFragmentFactory.createLoopCombinedFragment(Optional.empty(),
 				Optional.empty(),
 				Optional.of(new ArrayList<Message>(Arrays.asList(allHeapsEmpty_5, allHeapsEmpty_6, allHeapsEmpty_9))),
-				"(aheCounter =< aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
+				"(aheCounter < aheNumHeaps) & aheToReturn = T", dummy, dummy1, store);
 		allHeapsEmpty_5.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_6.setFragment(Optional.of(emptyLoop));
 		allHeapsEmpty_9.setFragment(Optional.of(emptyLoop));

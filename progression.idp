@@ -33,6 +33,9 @@ LTCvocabulary V {
     type Game
     type Heap
     
+    partial ChosenHeap(Time) : LimitedInt
+    partial ChosenTake(Time) : LimitedInt
+    
     TtBreakT(Time, StackLevel, boolean)
     I_TtBreakT(StackLevel, boolean)
     C_TtBreakT(Time, StackLevel, boolean)
@@ -204,7 +207,7 @@ theory T:V {
         ! t [Time] st [StackLevel] sd [SDPoint] : Cn_ReturnPoint(Next(t), st, sd) <- (CurrentStackLevel(t) = st) & ReturnPoint(t, st, sd) & (SDPointAt(t, allHeapsEmpty_10) | SDPointAt(t, isEmpty_6) | SDPointAt(t, play_9) | SDPointAt(t, take_7) | SDPointAt(t, takeTurn_13)).
         
         ! t [Time] st [StackLevel] a [LimitedInt] : C_AheNumHeapsT(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_2) & ( ? aheGame [Game] : AheGameT(t, st, aheGame) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(aheGame, i) = e} = a).
-        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_3) & aheCounter=0.
+        ! t [Time] st [StackLevel] aheCounter [LimitedInt] : C_AheCounterT(Next(t), st, aheCounter) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_3) & aheCounter=1.
         ! t [Time] st [StackLevel] aheToReturn [boolean] : C_AheToReturnT(Next(t), st, aheToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_4) & aheToReturn=T.
         ! t [Time] st [StackLevel] e [Heap] : C_AheHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_5) & ( ? o [Game] i [LimitedInt] : AheGameT(t, st, o) & AheCounterT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, allHeapsEmpty_6) & AheHeapT(t, (st-1), c).
@@ -218,16 +221,16 @@ theory T:V {
         ! t [Time] st [StackLevel] x [LimitedInt] : C_IeNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & (? o [Heap] : IeHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
         ! t [Time] st [StackLevel] ieToReturn [boolean] : C_IeToReturnT(Next(t), st, ieToReturn) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_4) & ieToReturn=T.
         ! t [Time] st [StackLevel] a [LimitedInt] : C_TtNumHeapsT(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_2) & ( ? ttGame [Game] : TtGameT(t, st, ttGame) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(ttGame, i) = e} = a).
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ( ? ub [LimitedInt] : TtNumHeapsT(t, st, ub) & r = (abs(RandomInt(t)) % (ub - 1)) + 1).
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ( ? ub [LimitedInt] : TtNumHeaps(t, st, ub) & r = abs(ChosenHeap(t)) % ub).
         ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_4) & ttBreak=F.
         ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_5) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_6) & TtHeapT(t, (st-1), c).
         ! t [Time] st [StackLevel] v [boolean] : C_TtHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6post) & IeToReturnT(t, (st+1), v).
         ! t [Time] st [StackLevel] ttBreak [boolean] : C_TtBreakT(Next(t), st, ttBreak) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_7) & ttBreak=T.
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ( ? ub [LimitedInt] : TtNumHeapsT(t, st, ub) & r = (abs(RandomInt(t)) % (ub - 1)) + 1).
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ( ? ub [LimitedInt] : TtNumHeaps(t, st, ub) & r = abs(ChosenHeap(t)) % ub).
         ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_9) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_TtNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_10) & (? o [Heap] : TtHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtTakeNumT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ( ? ub [LimitedInt] : TtNumObjT(t, st, ub) & r = (abs(RandomInt(t)) % (ub - 1)) + 1).
+        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtTakeNumT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ( ? ub [LimitedInt] : TtNumObj(t, st, ub) & r = abs(ChosenTake(t)) % ub).
         ! t [Time] st [StackLevel] c [Heap] : C_THeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtHeapT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_TNumT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtTakeNumT(t, (st-1), p).
         ! t [Time] st [StackLevel] pFinished [boolean] : C_PFinishedT(Next(t), st, pFinished) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_2) & pFinished=F.
@@ -383,6 +386,9 @@ theory T:V {
         ! x2 [Game] : #{ x1 [Heap] : HeapandGame(x1, x2)} >= 1.
         ! x1 [Heap] : ?1 x2 [Game] : HeapandGame(x1, x2).
         
+        ! t [Time] : ( ? c [LimitedInt] : ChosenHeap(t) = c) => SDPointAt(t, takeTurn_3) | SDPointAt(t, takeTurn_8).
+        ! t [Time] : ( ? c [LimitedInt] : ChosenTake(t) = c) => SDPointAt(t, takeTurn_11).
+        
 
 }
 structure S:V {
@@ -434,5 +440,5 @@ structure S:V {
     flipBool = { T->F;F->T}
 }
 procedure main() {
-    print(modelexpand(T,S)[1])
+    simulate_interactive(T,S)
 }

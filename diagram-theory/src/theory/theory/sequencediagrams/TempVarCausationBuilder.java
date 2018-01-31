@@ -240,7 +240,7 @@ public class TempVarCausationBuilder
 		StringBuilder toReturn = new StringBuilder("! t [Time] st [StackLevel] r [LimitedInt] : C_" + predicateName + "(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, " + message.getSDPoint()
 				+ ") & ");
 		StringBuilder quantifiers = new StringBuilder();
-		String expression = "r = (abs(RandomInt(t)) % (" + ub + " + 1 - " + lb + ")) + " + lb;
+		String expression = "r = (abs(RandomInt(t)) % (" + ub + " - " + lb + ")) + " + lb;
 		
 		boolean hasVar = "lb".equals(lb) || "ub".equals(ub);
 		
