@@ -125,6 +125,11 @@ public class CheckpointBuilder
 			if (! this.getEntryPointsDetermined().contains(top))
 			{
 				this.processCombinedFragment(top, store);
+				
+				if (! top.hasAsDescendent(frag))
+				{
+					this.processEntryPoints(frag, store);
+				}
 			}
 			
 			this.determineExits(frag, store);
@@ -132,42 +137,46 @@ public class CheckpointBuilder
 		}
 		else
 		{
-			if (! this.getEntryPointsDetermined().contains(this))
-			{
-				Map<Message, String> entryPoints = frag.getEntryPoints();
-
-				this.getCanonicalEntryGuards().putAll(entryPoints);
-
-				for (Entry<Message, String> entryPoint : entryPoints.entrySet())
-				{
-					List<Message> trans = this.calculateEntryPointTransition(entryPoint.getKey(), store);
-					
-					for (Message ele : trans)
-					{
-						if (this.getEntryGuards().containsKey(entryPoint.getKey()))
-						{
-							this.getEntryGuards().get(entryPoint.getKey())
-							.add(new ImmutablePair<SDPoint, String>(ele.getSDPoint(), entryPoint.getValue()));
-						}
-						else
-						{
-							this.getEntryGuards().put(entryPoint.getKey()
-									, new ArrayList<Pair<SDPoint, String>>(Arrays.asList(new ImmutablePair<SDPoint
-											, String>(ele.getSDPoint(), entryPoint.getValue()))));
-						}
-						
-						this.getNonStandardPoints().add(ele.getSDPoint());
-					}
-				}
-				
-				this.getEntryPointsDetermined().add(frag);
-			}
+			this.processEntryPoints(frag, store);
 
 			this.determineExits(frag, store);
 			this.calculateLoopReentry(frag, store);
 		}
 		
 		return this;
+	}
+
+	private void processEntryPoints(CombinedFragment frag, SeqDiagramStore store) {
+		if (! this.getEntryPointsDetermined().contains(frag))
+		{
+			Map<Message, String> entryPoints = frag.getEntryPoints();
+
+			this.getCanonicalEntryGuards().putAll(entryPoints);
+
+			for (Entry<Message, String> entryPoint : entryPoints.entrySet())
+			{
+				List<Message> trans = this.calculateEntryPointTransition(entryPoint.getKey(), store);
+				
+				for (Message ele : trans)
+				{
+					if (this.getEntryGuards().containsKey(entryPoint.getKey()))
+					{
+						this.getEntryGuards().get(entryPoint.getKey())
+						.add(new ImmutablePair<SDPoint, String>(ele.getSDPoint(), entryPoint.getValue()));
+					}
+					else
+					{
+						this.getEntryGuards().put(entryPoint.getKey()
+								, new ArrayList<Pair<SDPoint, String>>(Arrays.asList(new ImmutablePair<SDPoint
+										, String>(ele.getSDPoint(), entryPoint.getValue()))));
+					}
+					
+					this.getNonStandardPoints().add(ele.getSDPoint());
+				}
+			}
+			
+			this.getEntryPointsDetermined().add(frag);
+		}
 	}
 	
 	private List<Message> calculateEntryPointTransition(Message message, SeqDiagramStore store)

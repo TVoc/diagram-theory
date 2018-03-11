@@ -133,15 +133,15 @@ LTCvocabulary V {
     I_TtHeapT(StackLevel, Heap)
     C_TtHeapT(Time, StackLevel, Heap)
     
-    GamegameFinished(Time, Game, boolean)
-    I_GamegameFinished(Game, boolean)
-    C_GamegameFinished(Time, Game, boolean)
-    Cn_GamegameFinished(Time, Game, boolean)
-    
     Gamep1Win(Time, Game, boolean)
     I_Gamep1Win(Game, boolean)
     C_Gamep1Win(Time, Game, boolean)
     Cn_Gamep1Win(Time, Game, boolean)
+    
+    GamegameFinished(Time, Game, boolean)
+    I_GamegameFinished(Game, boolean)
+    C_GamegameFinished(Time, Game, boolean)
+    Cn_GamegameFinished(Time, Game, boolean)
     
     HeapamountObjects(Time, Heap, LimitedInt)
     I_HeapamountObjects(Heap, LimitedInt)
@@ -175,11 +175,11 @@ theory T:V {
         ! t [Time] : C_SDPointAt(Next(t), isEmpty_1) <- SDPointAt(t, allHeapsEmpty_6) | SDPointAt(t, takeTurn_6).
         ! t [Time] : C_SDPointAt(Next(t), take_1) <- SDPointAt(t, takeTurn_12).
         ! t [Time] : C_SDPointAt(Next(t), takeTurn_1) <- SDPointAt(t, play_7).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_5) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_9)) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(Next(t), st, aheCounter) & AheNumHeapsT(Next(t), st, aheNumHeaps) & AheToReturnT(Next(t), st, aheToReturn) & (aheCounter=<aheNumHeaps)&aheToReturn=T).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_5) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, allHeapsEmpty_4) | SDPointAt(t, allHeapsEmpty_9)) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(Next(t), st, aheCounter) & AheNumHeapsT(Next(t), st, aheNumHeaps) & AheToReturnT(Next(t), st, aheToReturn) & (aheCounter<aheNumHeaps)&aheToReturn=T).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_6post) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(Next(t), st, aheHeapEmpty) & aheHeapEmpty=T).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_6post) & ( ? aheHeapEmpty [boolean] : AheHeapEmptyT(Next(t), st, aheHeapEmpty) & aheHeapEmpty=F).
         ! t [Time] : C_SDPointAt(Next(t), allHeapsEmpty_9) <- (SDPointAt(t, allHeapsEmpty_8) | SDPointAt(t, allHeapsEmpty_7)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_10) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_9) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(Next(t), st, aheCounter) & AheNumHeapsT(Next(t), st, aheNumHeaps) & AheToReturnT(Next(t), st, aheToReturn) & ~((aheCounter=<aheNumHeaps)&aheToReturn=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), allHeapsEmpty_10) <- (CurrentStackLevel(t) = st) & SDPointAt(t, allHeapsEmpty_9) & ( ? aheCounter [LimitedInt] aheNumHeaps [LimitedInt] aheToReturn [boolean] : AheCounterT(Next(t), st, aheCounter) & AheNumHeapsT(Next(t), st, aheNumHeaps) & AheToReturnT(Next(t), st, aheToReturn) & ~((aheCounter<aheNumHeaps)&aheToReturn=T)).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), isEmpty_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(Next(t), st, ieNumObj) & ieNumObj=0).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), isEmpty_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & ( ? ieNumObj [LimitedInt] : IeNumObjT(Next(t), st, ieNumObj) & ieNumObj>0).
         ! t [Time] : C_SDPointAt(Next(t), isEmpty_6) <- (SDPointAt(t, isEmpty_4) | SDPointAt(t, isEmpty_5)).
@@ -352,13 +352,13 @@ theory T:V {
             ! t [Time] st [StackLevel] x [Heap] : TtHeapT(t, st, x) <- C_TtHeapT(t, st, x).
             ! t [Time] st [StackLevel] x [Heap] : TtHeapT(Next(t), st, x) <- TtHeapT(t, st, x) & ~( ? x1 [Heap] : C_TtHeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Game] y [boolean] : GamegameFinished(Start, x, y) <- I_GamegameFinished(x, y).
-            ! t [Time] x [Game] y [boolean] : GamegameFinished(t, x, y) <- C_GamegameFinished(t, x, y).
-            ! t [Time] x [Game] y [boolean] : GamegameFinished(Next(t), x, y) <- GamegameFinished(t, x, y) & ~Cn_GamegameFinished(Next(t), x, y).
-            
             ! x [Game] y [boolean] : Gamep1Win(Start, x, y) <- I_Gamep1Win(x, y).
             ! t [Time] x [Game] y [boolean] : Gamep1Win(t, x, y) <- C_Gamep1Win(t, x, y).
             ! t [Time] x [Game] y [boolean] : Gamep1Win(Next(t), x, y) <- Gamep1Win(t, x, y) & ~Cn_Gamep1Win(Next(t), x, y).
+            
+            ! x [Game] y [boolean] : GamegameFinished(Start, x, y) <- I_GamegameFinished(x, y).
+            ! t [Time] x [Game] y [boolean] : GamegameFinished(t, x, y) <- C_GamegameFinished(t, x, y).
+            ! t [Time] x [Game] y [boolean] : GamegameFinished(Next(t), x, y) <- GamegameFinished(t, x, y) & ~Cn_GamegameFinished(Next(t), x, y).
             
             ! x [Heap] y [LimitedInt] : HeapamountObjects(Start, x, y) <- I_HeapamountObjects(x, y).
             ! t [Time] x [Heap] y [LimitedInt] : HeapamountObjects(t, x, y) <- C_HeapamountObjects(t, x, y).
@@ -371,11 +371,11 @@ theory T:V {
         ! f [Game] i [LimitedInt] to [Heap] : GameGetHeap(f, i) = to <- ( ? to1 [Heap] : GameGetHeap(f, (i-1)) = to1 & GameNextHeap(f, to1) = to).
     }
 
-        ! x [Game] : ?1 v [boolean] : I_GamegameFinished(x, v).
-        ! t [Time] x [Game] : ?1 v [boolean] : GamegameFinished(t, x, v).
-        
         ! x [Game] : ?1 v [boolean] : I_Gamep1Win(x, v).
         ! t [Time] x [Game] : ?1 v [boolean] : Gamep1Win(t, x, v).
+        
+        ! x [Game] : ?1 v [boolean] : I_GamegameFinished(x, v).
+        ! t [Time] x [Game] : ?1 v [boolean] : GamegameFinished(t, x, v).
         
         ! x [Heap] : ?1 v [LimitedInt] : I_HeapamountObjects(x, v).
         ! t [Time] x [Heap] : ?1 v [LimitedInt] : HeapamountObjects(t, x, v).
@@ -386,50 +386,19 @@ theory T:V {
 
 }
 structure S:V {
-    Time = { 0..70 }
+    Time = { 0..20 }
     Start = 0
-    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22; 22->23; 23->24; 24->25; 25->26; 26->27; 27->28; 28->29; 29->30; 30->31; 31->32; 32->33; 33->34; 34->35; 35->36; 36->37; 37->38; 38->39; 39->40; 40->41; 41->42; 42->43; 43->44; 44->45; 45->46; 46->47; 47->48; 48->49; 49->50; 50->51; 51->52; 52->53; 53->54; 54->55; 55->56; 56->57; 57->58; 58->59; 59->60; 60->61; 61->62; 62->63; 63->64; 64->65; 65->66; 66->67; 67->68; 68->69; 69->70 }
-    I_SDPointAt = { play_1 }
-    I_CurrentStackLevel = 1
-    I_ReturnPoint = {1, finished}
-    
-    I_TtBreakT = {}
-    I_THeapT = {}
-    I_TCurrT = {}
-    I_TtNumHeapsT = {}
-    I_TNumT = {}
-    I_PGameT = { 1,Game1 }
-    C_PGameT = {}
-    I_AheHeapT = {}
-    I_IeToReturnT = {}
-    I_AheGameT = {}
-    I_TtWhichHeapT = {}
-    I_AheHeapEmptyT = {}
-    I_PFinishedT = {}
-    I_IeNumObjT = {}
-    I_TtGameT = {}
-    I_AheNumHeapsT = {}
-    I_TtNumObjT = {}
-    I_AheToReturnT = {}
-    I_TtTakeNumT = {}
-    I_PAllEmptyT = {}
-    I_IeHeapT = {}
-    I_PP1TurnT = { 1,T }
-    I_AheCounterT = {}
-    I_TNewT = {}
-    I_TtHeapEmptyT = {}
-    I_TtHeapT = {}
-    I_Gamep1Win = { Game1,F }
-    I_GamegameFinished = { Game1,F }
-    I_HeapamountObjects = { Heap1,2 } 
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20 }
 
-    LimitedInt = { -3..3 }LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "yYWlNgQtg11nlgcEQy3d"; "W8bQr7xV3hAKAn0HbsJ6"; "23zqVvb2BAHbMLLew33Q"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
+    I_CurrentStackLevel = 1
+
+    LimitedInt = { -5..5 }
+    RandomInt = { 0,1; 1,0; 2,-1; 3,-4; 4,-4; 5,-1; 6,2; 7,-2; 8,0; 9,0; 10,-5; 11,-4; 12,-2; 13,-2; 14,3; 15,1; 16,-4; 17,-2; 18,-3; 19,-4; 20,2 }
+    LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
+    LimitedString = { "DyGvpgR5sn8CrIaUCtpW"; "xPYz80lO1gKezXrA3ctS"; "lMr8d9avOQqxwY1J5AZ1"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
     
-    Game = { Game1 }
-    Heap = { Heap1 }
-    GameFirstHeap = { Game1->Heap1 }
-    GameNextHeap = {  }
+    Game = { Game1; Game2; Game3}
+    Heap = { Heap1; Heap2; Heap3}
     NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
     flipBool = { T->F;F->T}
 }
