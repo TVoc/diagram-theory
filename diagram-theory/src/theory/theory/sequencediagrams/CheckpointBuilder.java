@@ -125,11 +125,6 @@ public class CheckpointBuilder
 			if (! this.getEntryPointsDetermined().contains(top))
 			{
 				this.processCombinedFragment(top, store);
-				
-				if (! top.hasAsDescendent(frag))
-				{
-					this.processEntryPoints(frag, store);
-				}
 			}
 			
 			this.determineExits(frag, store);
