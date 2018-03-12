@@ -174,6 +174,8 @@ public abstract class CombinedFragment
 	protected abstract void fillTree(List<CombinedFragment> output);
 
 	public abstract TreeMap<Message, String> getEntryPoints();
+	
+	public abstract TreeMap<Message, String> getEntryPoints(String intermediate);
 
 	public abstract List<Message> getMessages();
 
@@ -214,6 +216,7 @@ public abstract class CombinedFragment
 			if (ele instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment eleL = (LoopCombinedFragment) ele;
+				
 				if (all)
 				{
 					eleL.getEntryPointsRec(output, intermediate);
@@ -222,7 +225,16 @@ public abstract class CombinedFragment
 				{
 					eleL.getFirstEntryPointsRec(output, intermediate);
 				}
-				intermediate = intermediate + " & ~(" + eleL.getGuard() + ")";
+				
+				if (intermediate.isEmpty())
+				{
+					intermediate = "~(" + eleL.getGuard() + ")";
+				}
+				else
+				{
+					intermediate = intermediate + " & ~(" + eleL.getGuard() + ")";
+				}
+				
 				seen.add(eleL);
 			}
 			else
@@ -318,9 +330,11 @@ public abstract class CombinedFragment
 
 			if (! loops.isEmpty())
 			{
+				StringBuilder intermediate = new StringBuilder();
+				
 				for (LoopCombinedFragment ele : loops)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints();
+					Map<Message, String> elePoints = ele.getEntryPoints(intermediate.toString());
 
 					if (exitGuard.isPresent())
 					{
@@ -338,6 +352,14 @@ public abstract class CombinedFragment
 					}
 
 					exit.putExits(elePoints);
+					if (intermediate.toString().isEmpty())
+					{
+						intermediate.append(" & ~(" + ele.getGuard() + ")");
+					}
+					else
+					{
+						intermediate.append("~(" + ele.getGuard() + ")");
+					}
 				}
 
 				return;

@@ -402,9 +402,15 @@ public class AltCombinedFragment extends CombinedFragment
 	@Override
 	public TreeMap<Message, String> getEntryPoints()
 	{
+		return this.getEntryPoints("");
+	}
+	
+	@Override
+	public TreeMap<Message, String> getEntryPoints(String intermediate)
+	{
 		TreeMap<Message, String> output = new TreeMap<Message, String>();
 
-		this.getEntryPointsRec(output, "");
+		this.getEntryPointsRec(output, intermediate);
 
 		return output;
 	}
