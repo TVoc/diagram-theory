@@ -382,7 +382,7 @@ public class LoopCombinedFragment extends CombinedFragment
 
 		if (this.getParent().isPresent())
 		{
-			this.traverseUp(store, output, exit, intermediate);
+			this.traverseUp(store, output, exit, intermediate); // TODO vervang door loop guard + intermediate
 		}
 		else
 		{
