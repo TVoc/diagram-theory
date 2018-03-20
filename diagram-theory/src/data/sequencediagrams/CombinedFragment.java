@@ -173,7 +173,7 @@ public abstract class CombinedFragment
 
 	protected abstract void fillTree(List<CombinedFragment> output);
 
-	public abstract TreeMap<Message, String> getEntryPoints();
+	public abstract TreeMap<Message, String> getEntryPoints(); // TODO what if a loop is never entered?
 	
 	public abstract TreeMap<Message, String> getEntryPoints(String intermediate);
 
@@ -362,7 +362,7 @@ public abstract class CombinedFragment
 					}
 				}
 
-				return;
+				return; // TODO only return if last in set isn't a loop
 			}
 
 			Message next = store.getNextMessage(finalMsg).get();
@@ -458,7 +458,7 @@ public abstract class CombinedFragment
 				}
 				else
 				{
-					done = true;
+					done = true; // TODO a non-loop fragment that follows on a loop should actually also be included and processed
 				}
 			}
 			else

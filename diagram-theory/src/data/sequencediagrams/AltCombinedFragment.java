@@ -596,7 +596,7 @@ public class AltCombinedFragment extends CombinedFragment
 		{
 			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getIfMessage(this.internalGetIfMessages().size() - 1));
 			
-			this.processExit(store, output, exitFor);
+			this.processExit(store, output, exitFor); // TODO also invoke this for messages preceding loops and there is nothing after those loops
 			output.add(exitFor.build());
 		}
 		
@@ -678,7 +678,7 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 
 				exit.putExits(entryPoints);
-				return;
+				return; // TODO execution must actually continue if last member of nextFragments is a loop
 			}
 			
 			if (this.getParent().isPresent())
