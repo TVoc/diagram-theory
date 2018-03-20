@@ -661,24 +661,46 @@ public class AltCombinedFragment extends CombinedFragment
 	
 	protected void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output)
 	{
-		List<Message> ifMessages = this.flattenIf();
+		List<MessageContainer> containers = this.getIfAsContainers();
 		
-		if (this.internalGetIfMessages().get(this.internalGetIfMessages().size() - 1).getSDPoint().getSequenceNumber() == ifMessages.get(ifMessages.size() - 1).getSDPoint().getSequenceNumber())
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
-			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getIfMessage(this.internalGetIfMessages().size() - 1));
+			MessageContainer container = containers.get(i);
 			
-			this.processExit(store, output, exitFor); // TODO also invoke this for messages preceding loops and there is nothing after those loops
-			output.add(exitFor.build());
+			if (container instanceof Message)
+			{
+				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
+				
+				this.processExit(store, output, exitFor);
+				output.add(exitFor.build());
+				break;
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
 		
-		List<Message> thenMessages = this.flattenThen();
+		containers = this.getThenAsContainers();
 		
-		if (this.internalGetThenMessages().get(this.internalGetThenMessages().size() - 1).getSDPoint().getSequenceNumber() == thenMessages.get(thenMessages.size() - 1).getSDPoint().getSequenceNumber())
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
-			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getThenMessage(this.internalGetThenMessages().size() - 1));
+			MessageContainer container = containers.get(i);
 			
-			this.processExit(store, output, exitFor);
-			output.add(exitFor.build());
+			if (container instanceof Message)
+			{
+				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
+				
+				this.processExit(store, output, exitFor);
+				output.add(exitFor.build());
+				break;
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
 		
 		for (CombinedFragment ele : this.internalGetIfChildren())

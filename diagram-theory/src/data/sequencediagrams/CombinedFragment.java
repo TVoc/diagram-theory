@@ -468,7 +468,7 @@ public abstract class CombinedFragment implements MessageContainer
 				else
 				{
 					toReturn.add(frag);
-					done = true; // TODO a non-loop fragment that follows on a loop should actually also be included and processed
+					done = true;
 				}
 			}
 			else

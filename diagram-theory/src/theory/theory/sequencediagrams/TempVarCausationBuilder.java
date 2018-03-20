@@ -84,7 +84,7 @@ public class TempVarCausationBuilder
 		
 		if (rhs.contains("get"))
 		{
-			return handleGetStatement(message, false, store, assigned, rhs); // TODO assess effect of no longer making assignments immediate
+			return handleGetStatement(message, false, store, assigned, rhs);
 		}
 		else if (rhs.contains("flipBool"))
 		{

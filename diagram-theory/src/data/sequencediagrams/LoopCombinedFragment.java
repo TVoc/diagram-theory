@@ -354,14 +354,25 @@ public class LoopCombinedFragment extends CombinedFragment
 
 	protected void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output)
 	{
-		List<Message> messages = this.flattenMessages();
+		List<MessageContainer> containers = this.getAsContainers();
 
-		if (this.internalGetMessages().get(this.internalGetMessages().size() - 1).getSDPoint().getSequenceNumber() == messages.get(messages.size() - 1).getSDPoint().getSequenceNumber())
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
-			ExitForMessageBuilder exitFor = new ExitForMessageBuilder(this.getMessage(this.internalGetMessages().size() - 1));
-
-			this.processExit(store, output, exitFor);
-			output.add(exitFor.build());
+			MessageContainer container = containers.get(i);
+			
+			if (container instanceof Message)
+			{
+				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
+				
+				this.processExit(store, output, exitFor);
+				output.add(exitFor.build());
+				break;
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
 
 		for (CombinedFragment ele : this.internalGetChildren())
@@ -431,7 +442,7 @@ public class LoopCombinedFragment extends CombinedFragment
 
 		if (this.getParent().isPresent())
 		{
-			this.traverseUp(store, output, exit, intermediate); // TODO vervang door loop guard + intermediate
+			this.traverseUp(store, output, exit, intermediate.equals("") ? "~(" + this.getGuard() + ")" : intermediate + " & ~(" + this.getGuard() + ")");
 		}
 		else
 		{

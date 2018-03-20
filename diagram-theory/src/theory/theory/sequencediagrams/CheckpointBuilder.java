@@ -29,7 +29,6 @@ import theory.SeqDiagramStore;
 import data.sequencediagrams.SDPoint;
 
 // TODO update for more complex combined fragment handling
-// TODO add causes from return points
 // TODO overhaul SDPoint progression based on Prev(Time) : Time?
 
 public class CheckpointBuilder
