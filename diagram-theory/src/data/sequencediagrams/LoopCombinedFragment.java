@@ -437,7 +437,19 @@ public class LoopCombinedFragment extends CombinedFragment
 			}
 
 			exit.putExits(entryPoints);
-			return;
+
+			if (! nextFragments.get(nextFragments.size() - 1).optional())
+			{
+				return;
+			}
+			
+			Optional<Message> afterLastLoop = this.getMessageAfter(nextFragments.get(nextFragments.size() - 1).getFinalMessage(), this.flattenMessages(), 0);
+			
+			if (afterLastLoop.isPresent())
+			{
+				exit.putExit(afterLastLoop.get(), intermediate);
+				return;
+			}
 		}
 
 		if (this.getParent().isPresent())

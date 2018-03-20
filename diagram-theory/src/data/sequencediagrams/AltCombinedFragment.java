@@ -771,7 +771,19 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 
 				exit.putExits(entryPoints);
-				return; // TODO execution must actually continue if last member of nextFragments is a loop
+				// TODO execution must actually continue if last member of nextFragments is a loop
+				if (! nextFragments.get(nextFragments.size() - 1).optional())
+				{
+					return;
+				}
+				
+				Optional<Message> afterLastLoop = this.getMessageAfter(nextFragments.get(nextFragments.size() - 1).getFinalMessage(), this.flattenIf(), 0);
+				
+				if (afterLastLoop.isPresent())
+				{
+					exit.putExit(afterLastLoop.get(), intermediate);
+					return;
+				}
 			}
 			
 			if (this.getParent().isPresent())
@@ -827,7 +839,19 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 				
 				exit.putExits(entryPoints);
-				return;
+				
+				if (! nextFragments.get(nextFragments.size() - 1).optional())
+				{
+					return;
+				}
+				
+				Optional<Message> afterLastLoop = this.getMessageAfter(nextFragments.get(nextFragments.size() - 1).getFinalMessage(), this.flattenThen(), 0);
+				
+				if (afterLastLoop.isPresent())
+				{
+					exit.putExit(afterLastLoop.get(), intermediate);
+					return;
+				}
 			}
 			
 			if (this.getParent().isPresent())
