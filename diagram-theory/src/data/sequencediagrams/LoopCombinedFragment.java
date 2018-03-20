@@ -158,6 +158,24 @@ public class LoopCombinedFragment extends CombinedFragment
 	{
 		return this.internalGetMessages().contains(message);
 	}
+	
+	@Override
+	public boolean optional()
+	{
+		return true;
+	}
+	
+	public List<MessageContainer> getAsContainers()
+	{
+		List<MessageContainer> toReturn = new ArrayList<MessageContainer>();
+		
+		toReturn.addAll(this.internalGetMessages());
+		toReturn.addAll(this.internalGetChildren());
+		
+		MessageContainerSorter.sortMessageContainers(toReturn);
+		
+		return toReturn;
+	}
 
 	public List<Message> flattenMessages()
 	{
@@ -176,20 +194,36 @@ public class LoopCombinedFragment extends CombinedFragment
 	@Override
 	protected boolean isAFinalMessage(Message message)
 	{
-		if (this.getFinalMessage().equals(message))
+		List<MessageContainer> containers = this.getAsContainers();
+		
+		if (containers.get(containers.size() - 1) instanceof Message
+				&& containers.get(containers.size() - 1).equals(message))
 		{
 			return true;
 		}
 		
-		Iterator<CombinedFragment> it = this.getChildren().iterator();
-		
-		while (it.hasNext())
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
-			CombinedFragment child = it.next();
+			MessageContainer container = containers.get(i);
 			
-			if (child.isAFinalMessage(message))
+			if (container instanceof Message)
 			{
-				return ! it.hasNext();
+				if (container.equals(message))
+				{
+					return true;
+				}
+				
+				break;
+			}
+			
+			if (((CombinedFragment) container).isAFinalMessage(message))
+			{
+				return true;
+			}
+			
+			if (! container.optional())
+			{
+				break;
 			}
 		}
 		

@@ -1,12 +1,13 @@
 package data.sequencediagrams;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Message implements Comparable<Message>
+public class Message implements Comparable<Message>, MessageContainer
 {
 	public static final Pattern getterSetternPattern = Pattern.compile("(get|set).*");
 	
@@ -146,6 +147,18 @@ public class Message implements Comparable<Message>
 	{
 		return this.diagramName;
 	}
+	
+	@Override
+	public boolean containsMessage(Message message)
+	{
+		return this.equals(message);
+	}
+	
+	@Override
+	public boolean optional()
+	{
+		return false;
+	}
 
 	@Override
 	public int hashCode()
@@ -223,6 +236,33 @@ public class Message implements Comparable<Message>
 	public int compareTo(Message arg0)
 	{
 		return this.getSDPoint().compareTo(arg0.getSDPoint());
+	}
+	
+	@Override
+	public int compareMessageContainer(MessageContainer other)
+	{
+		if (other == this)
+		{
+			return 0;
+		}
+		if (other instanceof CombinedFragment)
+		{
+			List<Message> fragMessages = ((CombinedFragment) other).getMessages();
+			if (fragMessages.contains(this))
+			{
+				return 0;
+			}
+			if (this.getSDPoint().getSequenceNumber() < fragMessages.get(0).getSDPoint().getSequenceNumber())
+			{
+				return -1;
+			}
+			else // this.getSDPoint().getSequenceNumber() > fragMessages.get(last).getSDPoint().getSequenceNumber()
+			{
+				return 1;
+			}
+		}
+		
+		return Integer.compare(this.getSDPoint().getSequenceNumber(), ((Message) other).getSDPoint().getSequenceNumber());
 	}
 	
 	public String toString()

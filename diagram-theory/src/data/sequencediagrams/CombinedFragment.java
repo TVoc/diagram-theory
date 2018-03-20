@@ -19,7 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import theory.SeqDiagramStore;
 
-public abstract class CombinedFragment
+public abstract class CombinedFragment implements MessageContainer
 {
 	public CombinedFragment(Optional<CombinedFragment> parent) throws IllegalArgumentException
 	{
@@ -186,6 +186,7 @@ public abstract class CombinedFragment
 
 	public abstract String getDiagramName();
 
+	@Override
 	public abstract boolean containsMessage(Message message);
 
 	public Message getFinalMessage()
@@ -512,5 +513,47 @@ public abstract class CombinedFragment
 	public String toString()
 	{
 		return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).toString();
+	}
+	
+	public int compareMessageContainer(MessageContainer other)
+	{
+		if (this == other)
+		{
+			return 0;
+		}
+		
+		if (other instanceof Message)
+		{
+			List<Message> messages = this.getMessages();
+			
+			if (messages.contains(other))
+			{
+				return 0;
+			}
+			if (((Message) other).getSDPoint().getSequenceNumber() < messages.get(0).getSDPoint().getSequenceNumber())
+			{
+				return 1;
+			}
+			else // ((Message) other).getSDPoint().getSequenceNumber() > messages.get(last).getSDPoint().getSequenceNumber()
+			{
+				return -1;
+			}
+		}
+		
+		List<Message> messages = this.getMessages();
+		List<Message> otherMessages = ((CombinedFragment) other).getMessages();
+		
+		if (messages.containsAll(otherMessages) || otherMessages.containsAll(messages))
+		{
+			return 0;
+		}
+		if (messages.get(messages.size() - 1).getSDPoint().getSequenceNumber() < otherMessages.get(0).getSDPoint().getSequenceNumber())
+		{
+			return -1;
+		}
+		else // first message in messages comes after otherMessages
+		{
+			return 1;
+		}
 	}
 }

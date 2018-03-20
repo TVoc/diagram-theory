@@ -322,9 +322,16 @@ public class AltCombinedFragment extends CombinedFragment
 		return this.internalGetThenChildren().get(0).getDiagramName();
 	}
 	
+	@Override
 	public boolean containsMessage(Message message)
 	{
 		return this.ifContains(message) || this.thenContains(message);
+	}
+	
+	@Override
+	public boolean optional()
+	{
+		return false;
 	}
 
 	public List<Message> flattenMessages()
@@ -367,44 +374,96 @@ public class AltCombinedFragment extends CombinedFragment
 		return toReturn;
 	}
 	
+	public List<MessageContainer> getIfAsContainers()
+	{
+		List<MessageContainer> toReturn = new ArrayList<MessageContainer>();
+		
+		toReturn.addAll(this.internalGetIfMessages());
+		toReturn.addAll(this.internalGetIfChildren());
+		
+		MessageContainerSorter.sortMessageContainers(toReturn);
+		
+		return toReturn;
+	}
+	
+	public List<MessageContainer> getThenAsContainers()
+	{
+		List<MessageContainer> toReturn = new ArrayList<MessageContainer>();
+		
+		toReturn.addAll(this.internalGetThenMessages());
+		toReturn.addAll(this.internalGetThenChildren());
+		
+		MessageContainerSorter.sortMessageContainers(toReturn);
+		
+		return toReturn;
+	}
+	
 	@Override
 	protected boolean isAFinalMessage(Message message)
 	{	
-		List<Message> flattenedIf = this.flattenIf();
+		List<MessageContainer> containers = this.getIfAsContainers();
 		
-		if (flattenedIf.get(flattenedIf.size() - 1).equals(message))
+		if (containers.get(containers.size() - 1) instanceof Message
+				&& containers.get(containers.size() - 1).equals(message))
 		{
 			return true;
 		}
 		
-		List<Message> flattenedThen = this.flattenThen();
-		
-		if (flattenedThen.get(flattenedThen.size() - 1).equals(message))
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
-			return true;
-		}
-		
-		Iterator<CombinedFragment> it = this.getIfChildren().iterator();
-		
-		while (it.hasNext())
-		{
-			CombinedFragment child = it.next();
+			MessageContainer container = containers.get(i);
 			
-			if (child.isAFinalMessage(message))
+			if (container instanceof Message)
 			{
-				return ! it.hasNext();
+				if (container.equals(message))
+				{
+					return true;
+				}
+				
+				break;
+			}
+			
+			if (((CombinedFragment) container).isAFinalMessage(message))
+			{
+				return true;
+			}
+			
+			if (! container.optional())
+			{
+				break;
 			}
 		}
 		
-		it = this.getThenChildren().iterator();
+		containers = this.getThenAsContainers();
 		
-		while (it.hasNext())
+		if (containers.get(containers.size() - 1) instanceof Message
+				&& containers.get(containers.size() - 1).equals(message))
 		{
-			CombinedFragment child = it.next();
+			return true;
+		}
+		
+		for (int i = containers.size() - 1; i >= 0; i--)
+		{
+			MessageContainer container = containers.get(i);
 			
-			if (child.isAFinalMessage(message))
+			if (container instanceof Message)
 			{
-				return ! it.hasNext();
+				if (container.equals(message))
+				{
+					return true;
+				}
+				
+				break;
+			}
+			
+			if (((CombinedFragment) container).isAFinalMessage(message))
+			{
+				return true;
+			}
+			
+			if (! container.optional())
+			{
+				break;
 			}
 		}
 		
