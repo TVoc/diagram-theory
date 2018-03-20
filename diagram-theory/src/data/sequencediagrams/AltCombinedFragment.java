@@ -369,24 +369,7 @@ public class AltCombinedFragment extends CombinedFragment
 	
 	@Override
 	protected boolean isAFinalMessage(Message message)
-	{
-//		if (this.internalGetIfMessages().get(internalGetIfMessages().size() - 1).equals(message))
-//		{
-//			return true;
-//		}
-//		if (this.internalGetThenMessages().get(internalGetThenMessages().size() - 1).equals(message))
-//		{
-//			return true;
-//		}
-//		if (this.internalGetIfChildren().get(internalGetIfChildren().size() - 1).isAFinalMessage(message))
-//		{
-//			return true;
-//		}
-//		if (this.internalGetThenChildren().get(internalGetThenChildren().size() - 1).isAFinalMessage(message))
-//		{
-//			return true;
-//		}
-		
+	{	
 		List<Message> flattenedIf = this.flattenIf();
 		
 		if (flattenedIf.get(flattenedIf.size() - 1).equals(message))
@@ -396,7 +379,36 @@ public class AltCombinedFragment extends CombinedFragment
 		
 		List<Message> flattenedThen = this.flattenThen();
 		
-		return flattenedThen.get(flattenedThen.size() - 1).equals(message);
+		if (flattenedThen.get(flattenedThen.size() - 1).equals(message))
+		{
+			return true;
+		}
+		
+		Iterator<CombinedFragment> it = this.getIfChildren().iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment child = it.next();
+			
+			if (child.isAFinalMessage(message))
+			{
+				return ! it.hasNext();
+			}
+		}
+		
+		it = this.getThenChildren().iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment child = it.next();
+			
+			if (child.isAFinalMessage(message))
+			{
+				return ! it.hasNext();
+			}
+		}
+		
+		return false;
 	}
 
 	@Override

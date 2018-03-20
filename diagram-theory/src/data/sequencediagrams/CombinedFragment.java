@@ -325,14 +325,14 @@ public abstract class CombinedFragment
 
 		if (finalMsg.getSDPoint().getSequenceNumber() < diagramMessages.size())
 		{
-			List<LoopCombinedFragment> loops = this.gatherNextLoops(diagramMessages);
+			List<CombinedFragment> loops = this.gatherNextLoops(diagramMessages);
 			Map<Message, String> entryPoints = new TreeMap<Message, String>();
 
 			if (! loops.isEmpty())
 			{
 				StringBuilder intermediate = new StringBuilder();
 				
-				for (LoopCombinedFragment ele : loops)
+				for (CombinedFragment ele : loops)
 				{
 					Map<Message, String> elePoints = ele.getEntryPoints(intermediate.toString());
 
@@ -352,17 +352,25 @@ public abstract class CombinedFragment
 					}
 
 					exit.putExits(elePoints);
-					if (intermediate.toString().isEmpty())
+					
+					if (ele instanceof LoopCombinedFragment)
 					{
-						intermediate.append(" & ~(" + ele.getGuard() + ")");
+						if (intermediate.toString().isEmpty())
+						{
+							intermediate.append(" & ~(" + ((LoopCombinedFragment) ele).getGuard() + ")");
+						}
+						else
+						{
+							intermediate.append("~(" + ((LoopCombinedFragment) ele).getGuard() + ")");
+						}
 					}
-					else
-					{
-						intermediate.append("~(" + ele.getGuard() + ")");
-					}
+
 				}
 
-				return; // TODO only return if last in set isn't a loop
+				if (! (loops.get(loops.size() - 1) instanceof LoopCombinedFragment))
+				{
+					return;
+				}
 			}
 
 			Message next = store.getNextMessage(finalMsg).get();
@@ -409,9 +417,9 @@ public abstract class CombinedFragment
 		}
 	}
 
-	protected List<LoopCombinedFragment> gatherNextLoops(List<Message> diagramMessages)
+	protected List<CombinedFragment> gatherNextLoops(List<Message> diagramMessages)
 	{
-		List<LoopCombinedFragment> toReturn = new ArrayList<LoopCombinedFragment>();
+		List<CombinedFragment> toReturn = new ArrayList<CombinedFragment>();
 
 		Message message = this.getFinalMessage();
 
@@ -443,7 +451,7 @@ public abstract class CombinedFragment
 
 				if ((frag instanceof LoopCombinedFragment))
 				{
-					toReturn.add((LoopCombinedFragment) frag);				
+					toReturn.add(frag);				
 					
 					Message fragFinal = frag.getFinalMessage();
 
@@ -458,6 +466,7 @@ public abstract class CombinedFragment
 				}
 				else
 				{
+					toReturn.add(frag);
 					done = true; // TODO a non-loop fragment that follows on a loop should actually also be included and processed
 				}
 			}

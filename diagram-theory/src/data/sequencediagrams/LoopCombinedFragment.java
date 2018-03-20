@@ -176,9 +176,24 @@ public class LoopCombinedFragment extends CombinedFragment
 	@Override
 	protected boolean isAFinalMessage(Message message)
 	{
-		List<Message> flattened = this.flattenMessages();
+		if (this.getFinalMessage().equals(message))
+		{
+			return true;
+		}
 		
-		return flattened.get(flattened.size() - 1).equals(message);
+		Iterator<CombinedFragment> it = this.getChildren().iterator();
+		
+		while (it.hasNext())
+		{
+			CombinedFragment child = it.next();
+			
+			if (child.isAFinalMessage(message))
+			{
+				return ! it.hasNext();
+			}
+		}
+		
+		return false;
 	}
 	
 	@Override
