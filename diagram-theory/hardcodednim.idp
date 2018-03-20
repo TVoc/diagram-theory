@@ -393,9 +393,9 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,5; 1,-4; 2,4; 3,2; 4,-5; 5,1; 6,3; 7,0; 8,0; 9,-1; 10,-1; 11,-1; 12,-2; 13,-4; 14,-3; 15,5; 16,5; 17,2; 18,3; 19,4; 20,-5 }
+    RandomInt = { 0,-1; 1,-5; 2,-5; 3,5; 4,1; 5,4; 6,-3; 7,1; 8,-1; 9,4; 10,-1; 11,-3; 12,0; 13,0; 14,-4; 15,3; 16,-3; 17,-1; 18,5; 19,-2; 20,-5 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "7KHtYaUOmOAy6gxUrtJG"; "g9iLOaEr8ZN8GI6iWrZR"; "UmFawj4xk9xUz7uhgaTy"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
+    LimitedString = { "hljVHnFr1E1tjOAbd1T2"; "V0qnFlWVk01YpM7bDzMU"; "YlpuJDJDF64c1kPUojLJ"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
     
     Game = { Game1; Game2; Game3}
     Heap = { Heap1; Heap2; Heap3}

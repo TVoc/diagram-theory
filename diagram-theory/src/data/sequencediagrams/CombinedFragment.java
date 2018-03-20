@@ -91,32 +91,58 @@ public abstract class CombinedFragment implements MessageContainer
 
 	private void loopReentryHandleAlt(Map<Message, List<Pair<SDPoint, String>>> output, AltCombinedFragment alt)
 	{
-		List<Message> ifInternal = alt.getIfMessages();
-		List<Message> ifPart = alt.flattenIf();
-		List<Message> thenInternal = alt.getThenMessages();
-		List<Message> thenPart = alt.flattenThen();
-		Message finalIf = ifPart.get(ifPart.size() - 1);
-		Message finalThen = thenPart.get(thenPart.size() - 1);
-
-		if ((! ifInternal.isEmpty()) && finalIf.equals(ifInternal.get(ifInternal.size() - 1)))
+		List<MessageContainer> containers = alt.getIfAsContainers();
+		
+		for (int i = containers.size() - 1; i >= 0; i++)
 		{
-			this.loopReentryCrawlUp(output, finalIf, alt, "");
+			MessageContainer container = containers.get(i);
+			
+			if (container instanceof Message)
+			{
+				this.loopReentryCrawlUp(output, (Message) container, alt, "");
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
-		if ((! thenInternal.isEmpty()) && finalThen.equals(thenInternal.get(thenInternal.size() - 1)))
+		
+		containers = alt.getThenAsContainers();
+		
+		for (int i = containers.size() - 1; i >= 0; i++)
 		{
-			this.loopReentryCrawlUp(output, finalThen, alt, "");
+			MessageContainer container = containers.get(i);
+			
+			if (container instanceof Message)
+			{
+				this.loopReentryCrawlUp(output, (Message) container, alt, "");
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
 	}
 
 	private void loopReentryHandleLoop(Map<Message, List<Pair<SDPoint, String>>> output, LoopCombinedFragment loop)
 	{
-		List<Message> internal = loop.getMessages();
-		List<Message> flattened = loop.flattenMessages();
-		Message finalFlat = flattened.get(flattened.size() - 1);
-
-		if ((! internal.isEmpty()) && finalFlat.equals(internal.get(internal.size() - 1)))
+		List<MessageContainer> containers = loop.getAsContainers();
+		
+		for (int i = containers.size() - 1; i >= 0; i++)
 		{
-			this.loopReentryCrawlUp(output, finalFlat, loop, "");
+			MessageContainer container = containers.get(i);
+			
+			if (container instanceof Message)
+			{
+				this.loopReentryCrawlUp(output, (Message) container, loop, "");
+			}
+			
+			if (! container.optional())
+			{
+				break;
+			}
 		}
 	}
 
