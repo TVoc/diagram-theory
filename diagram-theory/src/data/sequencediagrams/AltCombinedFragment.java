@@ -663,6 +663,8 @@ public class AltCombinedFragment extends CombinedFragment
 	{
 		List<MessageContainer> containers = this.getIfAsContainers();
 		
+		StringBuilder intermediate = new StringBuilder();
+		
 		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
@@ -671,7 +673,7 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
 				
-				this.processExit(store, output, exitFor);
+				this.processExit(store, output, exitFor, intermediate.toString());
 				output.add(exitFor.build());
 				break;
 			}
@@ -679,11 +681,25 @@ public class AltCombinedFragment extends CombinedFragment
 			if (! container.optional())
 			{
 				break;
+			}
+			
+			if (container instanceof LoopCombinedFragment)
+			{
+				if (intermediate.length() == 0)
+				{
+					intermediate.append("~(" + ((LoopCombinedFragment) container).getGuard());
+				}
+				else
+				{
+					intermediate.append(" & ~(" + ((LoopCombinedFragment) container).getGuard());
+				}
 			}
 		}
 		
 		containers = this.getThenAsContainers();
 		
+		intermediate = new StringBuilder();
+		
 		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
@@ -692,7 +708,7 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
 				
-				this.processExit(store, output, exitFor);
+				this.processExit(store, output, exitFor, intermediate.toString());
 				output.add(exitFor.build());
 				break;
 			}
@@ -700,6 +716,18 @@ public class AltCombinedFragment extends CombinedFragment
 			if (! container.optional())
 			{
 				break;
+			}
+			
+			if (container instanceof LoopCombinedFragment)
+			{
+				if (intermediate.length() == 0)
+				{
+					intermediate.append("~(" + ((LoopCombinedFragment) container).getGuard());
+				}
+				else
+				{
+					intermediate.append(" & ~(" + ((LoopCombinedFragment) container).getGuard());
+				}
 			}
 		}
 		
@@ -713,15 +741,15 @@ public class AltCombinedFragment extends CombinedFragment
 		}
 	}
 	
-	private void processExit(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit)
+	private void processExit(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate)
 	{
 		if (this.getParent().isPresent())
 		{
-			this.getParent().get().traverseUp(store, output, exit, "");
+			this.getParent().get().traverseUp(store, output, exit, intermediate);
 		}
 		else
 		{
-			this.exitToOutside(store, output, exit, Optional.empty());
+			this.exitToOutside(store, output, exit, Optional.of(intermediate));
 		}
 	}
 	

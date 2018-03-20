@@ -356,6 +356,8 @@ public class LoopCombinedFragment extends CombinedFragment
 	{
 		List<MessageContainer> containers = this.getAsContainers();
 
+		StringBuilder intermediate = new StringBuilder();
+		
 		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
@@ -364,7 +366,7 @@ public class LoopCombinedFragment extends CombinedFragment
 			{
 				ExitForMessageBuilder exitFor = new ExitForMessageBuilder((Message) container);
 				
-				this.processExit(store, output, exitFor);
+				this.processExit(store, output, exitFor, intermediate.toString());
 				output.add(exitFor.build());
 				break;
 			}
@@ -372,6 +374,18 @@ public class LoopCombinedFragment extends CombinedFragment
 			if (! container.optional())
 			{
 				break;
+			}
+			
+			if (container instanceof LoopCombinedFragment)
+			{
+				if (intermediate.length() == 0)
+				{
+					intermediate.append("~(" + ((LoopCombinedFragment) container).getGuard());
+				}
+				else
+				{
+					intermediate.append(" & ~(" + ((LoopCombinedFragment) container).getGuard());
+				}
 			}
 		}
 
@@ -381,15 +395,15 @@ public class LoopCombinedFragment extends CombinedFragment
 		}
 	}
 
-	private void processExit(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit)
+	private void processExit(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate)
 	{
 		if (this.getParent().isPresent())
 		{
-			this.getParent().get().traverseUp(store, output, exit, "~(" + this.getGuard() + ")");
+			this.getParent().get().traverseUp(store, output, exit, "".equals(intermediate) ? "~(" + this.getGuard() + ")" : intermediate + " & ~(" + this.getGuard() + ")");
 		}
 		else
 		{
-			this.exitToOutside(store, output, exit, Optional.of("~(" + this.getGuard() + ")"));
+			this.exitToOutside(store, output, exit, "".equals(intermediate) ? Optional.of("~(" + this.getGuard() + ")") : Optional.of(intermediate + " & ~(" + this.getGuard() + ")"));
 		}
 	}
 
