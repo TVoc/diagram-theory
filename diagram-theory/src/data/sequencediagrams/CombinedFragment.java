@@ -265,6 +265,7 @@ public abstract class CombinedFragment implements MessageContainer
 
 			if (! (ele instanceof LoopCombinedFragment))
 			{
+				upTo++;
 				break;
 			}
 
