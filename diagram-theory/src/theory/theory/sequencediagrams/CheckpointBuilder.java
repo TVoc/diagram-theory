@@ -22,6 +22,7 @@ import data.sequencediagrams.CombinedFragment;
 import data.sequencediagrams.ExitForMessage;
 import data.sequencediagrams.LoopCombinedFragment;
 import data.sequencediagrams.Message;
+import data.sequencediagrams.OptionalCombinedFragment;
 import data.sequencediagrams.TempVar;
 import parser.XMLParser;
 import theory.OutputConvenienceFunctions;
@@ -115,6 +116,11 @@ public class CheckpointBuilder
 
 	public CheckpointBuilder processCombinedFragment(CombinedFragment frag, SeqDiagramStore store)
 	{
+		if (frag instanceof OptionalCombinedFragment)
+		{
+			this.ensureOptionalFragmentSkip((OptionalCombinedFragment) frag, store);
+		}
+		
 		Message prev = store.getRelativeMessage(frag.getMessage(0), -1);
 
 		if (prev.getFragment().isPresent())
@@ -364,6 +370,79 @@ public class CheckpointBuilder
 		this.getReturnPoints().add(returnMessage.getSDPoint());
 		
 		return this;
+	}
+	
+	private void ensureOptionalFragmentSkip(OptionalCombinedFragment frag, SeqDiagramStore store)
+	{
+		List<Message> diagramMessages = store.getMessagesForDiagram(frag.getDiagramName());
+		
+		Message beforeFrag = diagramMessages.get(diagramMessages.indexOf(frag.getMessage(0)) - 1);
+		
+		if (beforeFrag.getFragment().isPresent())
+		{
+			return;
+		}
+		
+		StringBuilder intermediate = new StringBuilder("~(" + frag.getGuard() + ")");
+		
+		boolean done = false;
+		CombinedFragment iterFrag = frag;
+		
+		while (! done)
+		{	
+			Message fragFinal = iterFrag.getFinalMessage();
+			
+			Message afterFrag = diagramMessages.get(diagramMessages.indexOf(fragFinal) + 1);
+			
+			if (! afterFrag.getFragment().isPresent())
+			{
+				if (! this.getEntryGuards().containsKey(afterFrag))
+				{
+					this.getEntryGuards().put(afterFrag, new ArrayList<Pair<SDPoint, String>>(
+							Arrays.asList(new ImmutablePair<SDPoint, String>(
+									beforeFrag.getSDPoint(), intermediate.toString()))));
+				}
+				else
+				{
+					this.getEntryGuards().get(afterFrag).add(new ImmutablePair<SDPoint, String>(
+							beforeFrag.getSDPoint(), intermediate.toString()));
+				}
+				
+				this.getNonStandardPoints().add(beforeFrag.getSDPoint());
+				
+				return;
+			}
+			
+			iterFrag = afterFrag.getFragment().get().getTopLevelFragment();
+			
+			Map<Message, String> entryPoints = iterFrag.getEntryPoints();
+			
+			for (Entry<Message, String> entry : entryPoints.entrySet())
+			{
+				if (! this.getEntryGuards().containsKey(entry.getKey()))
+				{
+					this.getEntryGuards().put(entry.getKey(), new ArrayList<Pair<SDPoint, String>>(
+							Arrays.asList(new ImmutablePair<SDPoint, String>(
+									beforeFrag.getSDPoint(), intermediate.toString()))));
+				}
+				else
+				{
+					this.getEntryGuards().get(entry.getKey()).add(
+							new ImmutablePair<SDPoint, String>(beforeFrag.getSDPoint(), intermediate.toString()));
+				}
+			}
+			
+			if (iterFrag instanceof OptionalCombinedFragment)
+			{
+				intermediate.append("& ~(" + ((OptionalCombinedFragment) iterFrag).getGuard() + ")");
+			}
+			else
+			{
+				done = true;
+			}
+		}
+		
+		this.getNonStandardPoints().add(beforeFrag.getSDPoint());
 	}
 
 	//	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)

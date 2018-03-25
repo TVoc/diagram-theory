@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import theory.SeqDiagramStore;
 
-public class LoopCombinedFragment extends CombinedFragment
+public class LoopCombinedFragment extends OptionalCombinedFragment
 {
 	LoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
 			, String guard, SDPoint sdStart, SDPoint sdEnd) throws IllegalArgumentException
@@ -63,6 +63,7 @@ public class LoopCombinedFragment extends CombinedFragment
 
 	private final SDPoint sdEnd;
 
+	@Override
 	public String getGuard()
 	{
 		return this.guard;
