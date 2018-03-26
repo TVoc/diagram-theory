@@ -187,8 +187,8 @@ public abstract class CombinedFragment implements MessageContainer
 			{
 				if (frag instanceof LoopCombinedFragment)
 				{
-					intermediate = intermediate.equals("") ? "~(" + ((LoopCombinedFragment) frag).getGuard() + ")"
-							: intermediate + " & ~(" + ((LoopCombinedFragment) frag).getGuard() + ")";
+					intermediate = intermediate.equals("") ? "~" + ((LoopCombinedFragment) frag).getGuard()
+							: intermediate + " & ~" + ((LoopCombinedFragment) frag).getGuard();
 				}
 
 				frag = frag.getParent().get();
@@ -255,11 +255,11 @@ public abstract class CombinedFragment implements MessageContainer
 				
 				if (intermediate.isEmpty())
 				{
-					intermediate = "~(" + eleL.getGuard() + ")";
+					intermediate = "~" + eleL.getGuard();
 				}
 				else
 				{
-					intermediate = intermediate + " & ~(" + eleL.getGuard() + ")";
+					intermediate = intermediate + " & ~" + eleL.getGuard();
 				}
 				
 				seen.add(eleL);
@@ -322,6 +322,45 @@ public abstract class CombinedFragment implements MessageContainer
 	protected abstract void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output);
 
 	protected abstract void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate);
+	
+	public String constructGuard(String aggregate, String entryGuard, String intermediate)
+	{
+		String toReturn = null;
+		
+		if (! ("".equals(aggregate) || "".equals(entryGuard)))
+		{
+			toReturn = aggregate + " & " + entryGuard; 
+		}
+		else if ("".equals(aggregate) && "".equals(entryGuard))
+		{
+			toReturn = "";
+		}
+		else if ("".equals(aggregate))
+		{
+			toReturn = entryGuard;
+		}
+		else // "".equals(entryGuard)
+		{
+			toReturn = aggregate;
+		}
+		
+		if (! ("".equals(toReturn) || "".equals(intermediate)))
+		{
+			return toReturn + " & " + intermediate;
+		}
+		else if ("".equals(toReturn) && "".equals(intermediate))
+		{
+			return "";
+		}
+		else if ("".equals(toReturn))
+		{
+			return intermediate;
+		}
+		else // "".equals(intermediate)
+		{
+			return toReturn;
+		}
+	}
 
 	protected int calculateSkips(Message message, SeqDiagramStore store)
 	{
@@ -385,11 +424,11 @@ public abstract class CombinedFragment implements MessageContainer
 					{
 						if (intermediate.toString().isEmpty())
 						{
-							intermediate.append(" & ~(" + ((LoopCombinedFragment) ele).getGuard() + ")");
+							intermediate.append(" & ~" + ((LoopCombinedFragment) ele).getGuard());
 						}
 						else
 						{
-							intermediate.append("~(" + ((LoopCombinedFragment) ele).getGuard() + ")");
+							intermediate.append("~" + ((LoopCombinedFragment) ele).getGuard());
 						}
 					}
 

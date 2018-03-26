@@ -383,7 +383,7 @@ public class CheckpointBuilder
 			return;
 		}
 		
-		StringBuilder intermediate = new StringBuilder("~(" + frag.getGuard() + ")");
+		StringBuilder intermediate = new StringBuilder("~" + frag.getGuard());
 		
 		boolean done = false;
 		CombinedFragment iterFrag = frag;
@@ -434,7 +434,7 @@ public class CheckpointBuilder
 			
 			if (iterFrag instanceof OptionalCombinedFragment)
 			{
-				intermediate.append("& ~(" + ((OptionalCombinedFragment) iterFrag).getGuard() + ")");
+				intermediate.append("& ~" + ((OptionalCombinedFragment) iterFrag).getGuard());
 			}
 			else
 			{

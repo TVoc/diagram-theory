@@ -107,12 +107,22 @@ public class AltCombinedFragment extends CombinedFragment
 
 	public String getIfGuard()
 	{
-		return this.ifGuard;
+		if ("".equals(this.ifGuard))
+		{
+			return "";
+		}
+		
+		return "(" + this.ifGuard + ")";
 	}
 
 	public String getThenGuard()
 	{
-		return this.thenGuard;
+		if ("".equals(this.thenGuard))
+		{
+			return "";
+		}
+		
+		return "(" + this.thenGuard + ")";
 	}
 
 	public SDPoint getSdIf()
@@ -501,7 +511,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetIfChildren(), true, true);
+				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, true);
 			}
 			
 			else
@@ -552,7 +562,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetThenChildren(), true, true);
+				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, true);
 			}
 			
 			else
@@ -618,7 +628,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetIfChildren(), true, false);
+				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, false);
 			}
 			
 			else
@@ -645,7 +655,7 @@ public class AltCombinedFragment extends CombinedFragment
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
 				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~(" + firstL.getGuard() + ")", this.internalGetThenChildren(), true, false);
+				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, false);
 			}
 			
 			else
@@ -687,11 +697,11 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				if (intermediate.length() == 0)
 				{
-					intermediate.append("~(" + ((LoopCombinedFragment) container).getGuard());
+					intermediate.append("~" + ((LoopCombinedFragment) container).getGuard());
 				}
 				else
 				{
-					intermediate.append(" & ~(" + ((LoopCombinedFragment) container).getGuard());
+					intermediate.append(" & ~" + ((LoopCombinedFragment) container).getGuard());
 				}
 			}
 		}
@@ -722,11 +732,11 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				if (intermediate.length() == 0)
 				{
-					intermediate.append("~(" + ((LoopCombinedFragment) container).getGuard());
+					intermediate.append("~" + ((LoopCombinedFragment) container).getGuard());
 				}
 				else
 				{
-					intermediate.append(" & ~(" + ((LoopCombinedFragment) container).getGuard());
+					intermediate.append(" & ~" + ((LoopCombinedFragment) container).getGuard());
 				}
 			}
 		}
@@ -781,20 +791,24 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				Map<Message, String> entryPoints = new HashMap<Message, String>();
 				
+				StringBuilder aggregate = new StringBuilder();
+				
 				for (CombinedFragment ele : nextFragments)
 				{
-					entryPoints.putAll(ele.getEntryPoints());
-				}
-				
-				for (Entry<Message, String> ele : entryPoints.entrySet())
-				{
-					if (ele.getValue().equals("") || "".equals(intermediate))
+					Map<Message, String> elePoints = ele.getEntryPoints();
+					
+					for (Entry<Message, String> entry : elePoints.entrySet())
 					{
-						ele.setValue(intermediate);
+						String newVal = this.constructGuard(aggregate.toString(), entry.getValue(), intermediate);
+						entry.setValue(newVal);
 					}
-					else
+					
+					entryPoints.putAll(elePoints);
+					
+					if (ele instanceof OptionalCombinedFragment)
 					{
-						ele.setValue(intermediate + " & " + ele.getValue());
+						aggregate.append(aggregate.length() == 0 ? "~" + ((OptionalCombinedFragment) ele).getGuard()
+								: " & ~" + ((OptionalCombinedFragment) ele).getGuard());
 					}
 				}
 
@@ -849,20 +863,24 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				Map<Message, String> entryPoints = new HashMap<Message, String>();
 				
+				StringBuilder aggregate = new StringBuilder();
+				
 				for (CombinedFragment ele : nextFragments)
 				{
-					entryPoints.putAll(ele.getEntryPoints());
-				}
-				
-				for (Entry<Message, String> ele : entryPoints.entrySet())
-				{
-					if (ele.getValue().equals("") || "".equals(intermediate))
+					Map<Message, String> elePoints = ele.getEntryPoints();
+					
+					for (Entry<Message, String> entry : elePoints.entrySet())
 					{
-						ele.setValue(intermediate);
+						String newVal = this.constructGuard(aggregate.toString(), entry.getValue(), intermediate);
+						entry.setValue(newVal);
 					}
-					else
+					
+					entryPoints.putAll(elePoints);
+					
+					if (ele instanceof OptionalCombinedFragment)
 					{
-						ele.setValue(intermediate + " & " + ele.getValue());
+						aggregate.append(aggregate.length() == 0 ? "~" + ((OptionalCombinedFragment) ele).getGuard()
+								: " & ~" + ((OptionalCombinedFragment) ele).getGuard());
 					}
 				}
 				
