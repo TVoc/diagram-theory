@@ -823,7 +823,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				if (afterLastLoop.isPresent())
 				{
-					exit.putExit(afterLastLoop.get(), intermediate);
+					exit.putExit(afterLastLoop.get(), intermediate + " & " + aggregate.toString());
 					return;
 				}
 			}
@@ -895,7 +895,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				if (afterLastLoop.isPresent())
 				{
-					exit.putExit(afterLastLoop.get(), intermediate);
+					exit.putExit(afterLastLoop.get(), intermediate + " & " + aggregate.toString());
 					return;
 				}
 			}

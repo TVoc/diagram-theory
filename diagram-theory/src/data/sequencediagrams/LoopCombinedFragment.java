@@ -471,7 +471,7 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 			
 			if (afterLastLoop.isPresent())
 			{
-				exit.putExit(afterLastLoop.get(), intermediate);
+				exit.putExit(afterLastLoop.get(), intermediate + " & " + aggregate.toString());
 				return;
 			}
 		}
