@@ -247,7 +247,7 @@ public class Message implements Comparable<Message>, MessageContainer
 		}
 		if (other instanceof CombinedFragment)
 		{
-			List<Message> fragMessages = ((CombinedFragment) other).getMessages();
+			List<Message> fragMessages = ((CombinedFragment) other).flattenMessages();
 			if (fragMessages.contains(this))
 			{
 				return 0;

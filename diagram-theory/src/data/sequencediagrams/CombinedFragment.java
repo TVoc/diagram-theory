@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,7 @@ public abstract class CombinedFragment implements MessageContainer
 	{
 		List<MessageContainer> containers = loop.getAsContainers();
 		
-		for (int i = containers.size() - 1; i >= 0; i++)
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
 			
@@ -150,6 +151,7 @@ public abstract class CombinedFragment implements MessageContainer
 			, String intermediate)
 	{
 		CombinedFragment prev;
+		Set<CombinedFragment> excluded = new HashSet<CombinedFragment>();
 
 		do
 		{
@@ -163,7 +165,7 @@ public abstract class CombinedFragment implements MessageContainer
 
 				if (loop.isAFinalMessage(message))
 				{
-					Map<Message, String> entries = loop.getFirstEntryPoints();
+					Map<Message, String> entries = loop.getFirstEntryPoints(Optional.of(excluded));
 
 					for (Entry<Message, String> entry : entries.entrySet())
 					{
@@ -181,6 +183,8 @@ public abstract class CombinedFragment implements MessageContainer
 						
 					}
 				}
+				
+				excluded.add(frag);
 			}
 
 			if (frag.getParent().isPresent())
@@ -190,7 +194,7 @@ public abstract class CombinedFragment implements MessageContainer
 					intermediate = intermediate.equals("") ? "~" + ((LoopCombinedFragment) frag).getGuard()
 							: intermediate + " & ~" + ((LoopCombinedFragment) frag).getGuard();
 				}
-
+				
 				frag = frag.getParent().get();
 			}
 		}
@@ -199,15 +203,15 @@ public abstract class CombinedFragment implements MessageContainer
 
 	protected abstract void fillTree(List<CombinedFragment> output);
 
-	public abstract TreeMap<Message, String> getEntryPoints(); // TODO what if a loop is never entered?
+	public abstract TreeMap<Message, String> getEntryPoints(Optional<Set<CombinedFragment>> excluded); // TODO what if a loop is never entered?
 	
-	public abstract TreeMap<Message, String> getEntryPoints(String intermediate);
+	public abstract TreeMap<Message, String> getEntryPoints(Optional<Set<CombinedFragment>> excluded, String intermediate);
 
 	public abstract List<Message> getMessages();
 
 	public Message getMessage(int index) throws IndexOutOfBoundsException
 	{
-		return this.flattenMessages().get(0);
+		return this.flattenMessages().get(index);
 	}
 
 	public abstract String getDiagramName();
@@ -224,9 +228,9 @@ public abstract class CombinedFragment implements MessageContainer
 
 	protected abstract boolean isAFinalMessage(Message message);
 
-	protected abstract void getEntryPointsRec(TreeMap<Message, String> output, String intermediate);
+	protected abstract void getEntryPointsRec(TreeMap<Message, String> output, String intermediate, Optional<Set<CombinedFragment>> excluded);
 
-	protected void wrapLoops(TreeMap<Message, String> output, Set<CombinedFragment> seen, String intermediate, List<CombinedFragment> children
+	protected void wrapLoops(TreeMap<Message, String> output, Set<CombinedFragment> seen, Optional<Set<CombinedFragment>> excluded, String intermediate, List<CombinedFragment> children
 			, boolean skipFirst, boolean all)
 	{
 		Iterator<CombinedFragment> it = children.iterator();
@@ -240,17 +244,22 @@ public abstract class CombinedFragment implements MessageContainer
 		{
 			CombinedFragment ele = it.next();
 
+			if (excluded.isPresent() && excluded.get().contains(ele))
+			{
+				continue;
+			}
+			
 			if (ele instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment eleL = (LoopCombinedFragment) ele;
 				
 				if (all)
 				{
-					eleL.getEntryPointsRec(output, intermediate);
+					eleL.getEntryPointsRec(output, intermediate, excluded);
 				}
 				else
 				{
-					eleL.getFirstEntryPointsRec(output, intermediate);
+					eleL.getFirstEntryPointsRec(output, intermediate, excluded);
 				}
 				
 				if (intermediate.isEmpty())
@@ -301,9 +310,9 @@ public abstract class CombinedFragment implements MessageContainer
 		fragments.subList(upTo, fragments.size()).clear();
 	}
 
-	public abstract TreeMap<Message, String> getFirstEntryPoints();
+	public abstract TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded);
 
-	protected abstract void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate);
+	protected abstract void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate, Optional<Set<CombinedFragment>> excluded);
 
 	public List<ExitForMessage> calcExitForMessages(SeqDiagramStore store)
 	{
@@ -321,7 +330,7 @@ public abstract class CombinedFragment implements MessageContainer
 
 	protected abstract void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output);
 
-	protected abstract void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate);
+	protected abstract void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate, Optional<Set<CombinedFragment>> excluded);
 	
 	public String constructGuard(String aggregate, String entryGuard, String intermediate)
 	{
@@ -360,6 +369,53 @@ public abstract class CombinedFragment implements MessageContainer
 		{
 			return toReturn;
 		}
+	}
+	
+	public String constructGuard(String left, String right)
+	{
+		if (! ("".equals(left) || "".equals(right)))
+		{
+			return left + " & " + right; 
+		}
+		else if ("".equals(left) && "".equals(right))
+		{
+			return "";
+		}
+		else if ("".equals(left))
+		{
+			return right;
+		}
+		else // "".equals(right)
+		{
+			return left;
+		}
+		
+	}
+	
+	protected void putExits(ExitForMessageBuilder exit, Map<Message, String> entryPoints)
+	{
+		for (Entry<Message, String> entry : entryPoints.entrySet())
+		{
+			this.putExit(exit, entry.getKey(), entry.getValue());
+		}
+	}
+	
+	protected void putExit(ExitForMessageBuilder exit, Message entry, String guard)
+	{	
+		if (entry.getSDPoint().compareTo(exit.getMessage().getSDPoint()) <= 0)
+		{
+			return;
+		}
+		
+		if (entry.getFragment().isPresent() &&
+				(entry.getFragment().get().equals(exit.getMessage().getFragment().get())
+						||
+				exit.getMessage().getFragment().get().hasAsDescendent(entry.getFragment().get())))
+		{
+			return;
+		}
+		
+		exit.putExit(entry, guard);
 	}
 
 	protected int calculateSkips(Message message, SeqDiagramStore store)
@@ -401,7 +457,7 @@ public abstract class CombinedFragment implements MessageContainer
 				
 				for (CombinedFragment ele : loops)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints(intermediate.toString());
+					Map<Message, String> elePoints = ele.getEntryPoints(Optional.empty(), intermediate.toString());
 
 					if (exitGuard.isPresent())
 					{
@@ -418,7 +474,7 @@ public abstract class CombinedFragment implements MessageContainer
 						}
 					}
 
-					exit.putExits(elePoints);
+					this.putExits(exit, elePoints);
 					
 					if (ele instanceof LoopCombinedFragment)
 					{
@@ -451,7 +507,7 @@ public abstract class CombinedFragment implements MessageContainer
 					frag = frag.getParent().get();
 				}
 
-				entryPoints.putAll(next.getFragment().get().getEntryPoints());
+				entryPoints.putAll(next.getFragment().get().getEntryPoints(Optional.empty()));
 
 				if (exitGuard.isPresent())
 				{
@@ -468,18 +524,18 @@ public abstract class CombinedFragment implements MessageContainer
 					}
 				}
 
-				exit.putExits(entryPoints);
+				this.putExits(exit, entryPoints);
 
 				return;
 			}
 
 			if (exitGuard.isPresent())
 			{
-				exit.putExit(next, exitGuard.get());
+				this.putExit(exit, next, exitGuard.get());
 			}
 			else
 			{
-				exit.putExit(next, "");
+				this.putExit(exit, next, "");
 			}
 		}
 	}
@@ -590,7 +646,7 @@ public abstract class CombinedFragment implements MessageContainer
 		
 		if (other instanceof Message)
 		{
-			List<Message> messages = this.getMessages();
+			List<Message> messages = this.flattenMessages();
 			
 			if (messages.contains(other))
 			{
@@ -606,8 +662,8 @@ public abstract class CombinedFragment implements MessageContainer
 			}
 		}
 		
-		List<Message> messages = this.getMessages();
-		List<Message> otherMessages = ((CombinedFragment) other).getMessages();
+		List<Message> messages = this.flattenMessages();
+		List<Message> otherMessages = ((CombinedFragment) other).flattenMessages();
 		
 		if (messages.containsAll(otherMessages) || otherMessages.containsAll(messages))
 		{

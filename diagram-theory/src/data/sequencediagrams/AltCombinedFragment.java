@@ -66,24 +66,24 @@ public class AltCombinedFragment extends CombinedFragment
 		this.ifGuard = ifGuard.replaceAll("\\s*", "");
 		this.thenGuard = thenGuard.replaceAll("\\s*", "");
 		
-		String diagramName;
-		
-		if (ifMessages.isPresent())
-		{
-			diagramName = ifMessages.get().get(0).getDiagramName();
-		}
-		else if (ifChildren.isPresent())
-		{
-			diagramName = ifChildren.get().get(0).getDiagramName();
-		}
-		else if (thenMessages.isPresent())
-		{
-			diagramName = thenMessages.get().get(0).getDiagramName();
-		}
-		else
-		{
-			diagramName = thenChildren.get().get(0).getDiagramName();
-		}
+//		String diagramName;
+//		
+//		if (ifMessages.isPresent())
+//		{
+//			diagramName = ifMessages.get().get(0).getDiagramName();
+//		}
+//		else if (ifChildren.isPresent())
+//		{
+//			diagramName = ifChildren.get().get(0).getDiagramName();
+//		}
+//		else if (thenMessages.isPresent())
+//		{
+//			diagramName = thenMessages.get().get(0).getDiagramName();
+//		}
+//		else
+//		{
+//			diagramName = thenChildren.get().get(0).getDiagramName();
+//		}
 		
 		this.sdIf = sdIf;
 		this.sdThen = sdThen;
@@ -481,22 +481,22 @@ public class AltCombinedFragment extends CombinedFragment
 	}
 
 	@Override
-	public TreeMap<Message, String> getEntryPoints()
+	public TreeMap<Message, String> getEntryPoints(Optional<Set<CombinedFragment>> excluded)
 	{
-		return this.getEntryPoints("");
+		return this.getEntryPoints(excluded, "");
 	}
 	
 	@Override
-	public TreeMap<Message, String> getEntryPoints(String intermediate)
+	public TreeMap<Message, String> getEntryPoints(Optional<Set<CombinedFragment>> excluded, String intermediate)
 	{
 		TreeMap<Message, String> output = new TreeMap<Message, String>();
 
-		this.getEntryPointsRec(output, intermediate);
+		this.getEntryPointsRec(output, intermediate, excluded);
 
 		return output;
 	}
 
-	protected void getEntryPointsRec(TreeMap<Message, String> output, String intermediate)
+	protected void getEntryPointsRec(TreeMap<Message, String> output, String intermediate, Optional<Set<CombinedFragment>> excluded)
 	{
 		List<Message> ifMsgs = this.flattenIf();
 
@@ -509,14 +509,22 @@ public class AltCombinedFragment extends CombinedFragment
 			if (first instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
-				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(firstL))
+				{
+					firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard(), excluded);
+				}
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, true);
+				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, true);
 			}
 			
 			else
 			{
-				this.internalGetIfChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(this.internalGetIfChildren().get(0)))
+				{
+					this.internalGetIfChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard(), excluded);
+				}
 			}
 			
 			Iterator<CombinedFragment> it = this.internalGetIfChildren().iterator();
@@ -526,9 +534,10 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				CombinedFragment ele = it.next();
 				
-				if (! seen.contains(ele))
+				if (! seen.contains(ele) ||
+						! (excluded.isPresent() && excluded.get().contains(ele)))
 				{
-					ele.getEntryPointsRec(output, "");
+					ele.getEntryPointsRec(output, "", excluded);
 				}
 			}
 		}
@@ -538,13 +547,14 @@ public class AltCombinedFragment extends CombinedFragment
 			
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
 			
-			this.wrapLoops(output, seen, "", this.internalGetIfChildren(), false, true);
+			this.wrapLoops(output, seen, excluded, "", this.internalGetIfChildren(), false, true);
 			
 			for (CombinedFragment ele : this.internalGetIfChildren())
 			{
-				if (! seen.contains(ele))
+				if (! seen.contains(ele) &&
+						! (excluded.isPresent() && excluded.get().contains(ele)))
 				{
-					ele.getEntryPointsRec(output, "");
+					ele.getEntryPointsRec(output, "", excluded);
 				}
 			}
 		}
@@ -560,14 +570,22 @@ public class AltCombinedFragment extends CombinedFragment
 			if (first instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
-				firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(firstL))
+				{
+					firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);
+				}
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, true);
+				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, true);
 			}
 			
 			else
 			{
-				this.internalGetThenChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				if (! excluded.isPresent() &&
+						! excluded.get().contains(this.internalGetThenChildren().get(0)))
+				{
+					this.internalGetThenChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);
+				}
 			}
 			
 			Iterator<CombinedFragment> it = this.internalGetThenChildren().iterator();
@@ -577,9 +595,10 @@ public class AltCombinedFragment extends CombinedFragment
 			{
 				CombinedFragment ele = it.next();
 				
-				if (! seen.contains(ele))
+				if (! seen.contains(ele) &&
+						! (excluded.isPresent() && excluded.get().contains(ele)))
 				{
-					ele.getEntryPointsRec(output, "");
+					ele.getEntryPointsRec(output, "", excluded);
 				}
 			}
 		}
@@ -589,30 +608,31 @@ public class AltCombinedFragment extends CombinedFragment
 
 			Set<CombinedFragment> seen = new HashSet<CombinedFragment>();
 			
-			this.wrapLoops(output, seen, "", this.internalGetThenChildren(), false, true);
+			this.wrapLoops(output, seen, excluded, "", this.internalGetThenChildren(), false, true);
 			
 			for (CombinedFragment ele : this.internalGetThenChildren())
 			{
-				if (! seen.contains(ele))
+				if (! seen.contains(ele)
+						&& ! (excluded.isPresent() && excluded.get().contains(ele)))
 				{
-					ele.getEntryPointsRec(output, "");
+					ele.getEntryPointsRec(output, "", excluded);
 				}
 			}
 		}
 	}
 	
 	@Override
-	public TreeMap<Message, String> getFirstEntryPoints()
+	public TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded)
 	{
 		TreeMap<Message, String> output = new TreeMap<Message, String>();
 		
-		this.getFirstEntryPointsRec(output, "");
+		this.getFirstEntryPointsRec(output, "", excluded);
 		
 		return output;
 	}
 	
 	@Override
-	protected void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate)
+	protected void getFirstEntryPointsRec(TreeMap<Message, String> output, String intermediate, Optional<Set<CombinedFragment>> excluded)
 	{
 		List<Message> ifMsgs = this.flattenIf();
 
@@ -626,14 +646,23 @@ public class AltCombinedFragment extends CombinedFragment
 			if (first instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
-				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				if (! excluded.isPresent() ||
+					! excluded.get().contains(firstL))
+				{
+					firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard(), excluded);
+
+				}
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, false);
+				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, false);
 			}
 			
 			else
 			{
-				this.internalGetIfChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(this.internalGetIfChildren().get(0)))
+				{
+					this.internalGetIfChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard(), excluded);
+				}
 			}
 			
 		}
@@ -653,14 +682,22 @@ public class AltCombinedFragment extends CombinedFragment
 			if (first instanceof LoopCombinedFragment)
 			{
 				LoopCombinedFragment firstL = (LoopCombinedFragment) first;
-				firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(firstL))
+				{
+					firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);
+				}
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
-				this.wrapLoops(output, seen, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, false);
+				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, false);
 			}
 			
 			else
 			{
-				this.internalGetThenChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+				if (! excluded.isPresent() ||
+						! excluded.get().contains(this.internalGetThenChildren().get(0)))
+				{
+					this.internalGetThenChildren().get(0).getFirstEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);
+				}
 			}
 		}
 		else
@@ -755,7 +792,7 @@ public class AltCombinedFragment extends CombinedFragment
 	{
 		if (this.getParent().isPresent())
 		{
-			this.getParent().get().traverseUp(store, output, exit, intermediate);
+			this.getParent().get().traverseUp(store, output, exit, intermediate, Optional.of(new HashSet<CombinedFragment>()));
 		}
 		else
 		{
@@ -763,7 +800,7 @@ public class AltCombinedFragment extends CombinedFragment
 		}
 	}
 	
-	protected void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate)
+	protected void traverseUp(SeqDiagramStore store, List<ExitForMessage> output, ExitForMessageBuilder exit, String intermediate, Optional<Set<CombinedFragment>> excluded)
 	{
 		List<Message> ifMsgs = this.flattenIf();
 		
@@ -782,7 +819,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				if (frag.equals(this))
 				{
-					exit.putExit(messageAfter.get(), intermediate);
+					this.putExit(exit, messageAfter.get(), intermediate);
 					return;
 				}
 				
@@ -795,7 +832,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (CombinedFragment ele : nextFragments)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints();
+					Map<Message, String> elePoints = ele.getEntryPoints(excluded);
 					
 					for (Entry<Message, String> entry : elePoints.entrySet())
 					{
@@ -812,25 +849,31 @@ public class AltCombinedFragment extends CombinedFragment
 					}
 				}
 
-				exit.putExits(entryPoints);
+				this.putExits(exit, entryPoints);
 				// TODO execution must actually continue if last member of nextFragments is a loop
 				if (! nextFragments.get(nextFragments.size() - 1).optional())
 				{
 					return;
 				}
 				
+				intermediate = this.constructGuard(intermediate, aggregate.toString());
+				
 				Optional<Message> afterLastLoop = this.getMessageAfter(nextFragments.get(nextFragments.size() - 1).getFinalMessage(), this.flattenIf(), 0);
 				
 				if (afterLastLoop.isPresent())
 				{
-					exit.putExit(afterLastLoop.get(), intermediate + " & " + aggregate.toString());
+					this.putExit(exit, afterLastLoop.get(), intermediate);
 					return;
 				}
 			}
 			
 			if (this.getParent().isPresent())
 			{
-				this.traverseUp(store, output, exit, intermediate);
+				if (excluded.isPresent())
+				{
+					excluded.get().add(this);
+				}
+				this.getParent().get().traverseUp(store, output, exit, intermediate, excluded);
 			}
 			else
 			{
@@ -854,7 +897,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				if (frag.equals(this))
 				{
-					exit.putExit(messageAfter.get(), intermediate);
+					this.putExit(exit, messageAfter.get(), intermediate);
 					return;
 				}
 				
@@ -867,7 +910,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (CombinedFragment ele : nextFragments)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints();
+					Map<Message, String> elePoints = ele.getEntryPoints(excluded);
 					
 					for (Entry<Message, String> entry : elePoints.entrySet())
 					{
@@ -884,25 +927,31 @@ public class AltCombinedFragment extends CombinedFragment
 					}
 				}
 				
-				exit.putExits(entryPoints);
+				this.putExits(exit, entryPoints);
 				
 				if (! nextFragments.get(nextFragments.size() - 1).optional())
 				{
 					return;
 				}
 				
+				intermediate = this.constructGuard(intermediate, aggregate.toString());
+				
 				Optional<Message> afterLastLoop = this.getMessageAfter(nextFragments.get(nextFragments.size() - 1).getFinalMessage(), this.flattenThen(), 0);
 				
 				if (afterLastLoop.isPresent())
 				{
-					exit.putExit(afterLastLoop.get(), intermediate + " & " + aggregate.toString());
+					this.putExit(exit, afterLastLoop.get(), intermediate);
 					return;
 				}
 			}
 			
 			if (this.getParent().isPresent())
 			{
-				this.traverseUp(store, output, exit, intermediate);
+				if (excluded.isPresent())
+				{
+					excluded.get().add(this);
+				}
+				this.getParent().get().traverseUp(store, output, exit, intermediate, excluded);
 			}
 			else
 			{

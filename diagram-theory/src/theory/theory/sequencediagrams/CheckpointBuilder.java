@@ -121,7 +121,8 @@ public class CheckpointBuilder
 			this.ensureOptionalFragmentSkip((OptionalCombinedFragment) frag, store);
 		}
 		
-		Message prev = store.getRelativeMessage(frag.getMessage(0), -1);
+		//Message prev = store.getRelativeMessage(frag.getMessage(0), -1);
+		 Message prev = store.getRelativeMessage(frag.flattenMessages().get(0), -1); // TODO getmessage <-> flattenmessage
 
 		if (prev.getFragment().isPresent())
 		{
@@ -149,7 +150,7 @@ public class CheckpointBuilder
 	private void processEntryPoints(CombinedFragment frag, SeqDiagramStore store) {
 		if (! this.getEntryPointsDetermined().contains(frag))
 		{
-			Map<Message, String> entryPoints = frag.getEntryPoints();
+			Map<Message, String> entryPoints = frag.getEntryPoints(Optional.empty());
 
 			this.getCanonicalEntryGuards().putAll(entryPoints);
 
@@ -182,7 +183,7 @@ public class CheckpointBuilder
 	private List<Message> calculateEntryPointTransition(Message message, SeqDiagramStore store)
 	{
 		CombinedFragment frag = message.getFragment().get();
-		Message prev = store.getRelativeMessage(frag.getMessage(0), -1);
+		Message prev = store.getRelativeMessage(frag.flattenMessages().get(0), -1); // TODO getmessage <-> flattenmessage
 		
 		if (! prev.getFragment().isPresent())
 		{
@@ -376,7 +377,7 @@ public class CheckpointBuilder
 	{
 		List<Message> diagramMessages = store.getMessagesForDiagram(frag.getDiagramName());
 		
-		Message beforeFrag = diagramMessages.get(diagramMessages.indexOf(frag.getMessage(0)) - 1);
+		Message beforeFrag = diagramMessages.get(diagramMessages.indexOf(frag.flattenMessages().get(0)) - 1); // TODO getmessage <-> flattenmessage
 		
 		if (beforeFrag.getFragment().isPresent())
 		{
@@ -415,7 +416,7 @@ public class CheckpointBuilder
 			
 			iterFrag = afterFrag.getFragment().get().getTopLevelFragment();
 			
-			Map<Message, String> entryPoints = iterFrag.getEntryPoints();
+			Map<Message, String> entryPoints = iterFrag.getEntryPoints(Optional.empty());
 			
 			for (Entry<Message, String> entry : entryPoints.entrySet())
 			{

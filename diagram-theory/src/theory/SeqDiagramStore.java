@@ -266,10 +266,10 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext, Cal
 			throw new IllegalArgumentException("store does not have diagram corresponding to message");
 		}
 		
-//		return this.internalGetDiagramMessages().get(message.getDiagramName())
-//				.get(message.getSDPoint().getSequenceNumber() + offset - 1);
 		return this.internalGetDiagramMessages().get(message.getDiagramName())
 				.get(this.internalGetDiagramMessages().get(message.getDiagramName()).indexOf(message) + offset);
+//		return this.internalGetDiagramMessages().get(message.getDiagramName())
+//				.get(this.internalGetDiagramMessages().get(message.getDiagramName()).indexOf(message) + offset - 1);
 	}
 	
 	public Optional<Message> getNextMessage(Message message)
