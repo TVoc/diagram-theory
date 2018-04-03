@@ -165,22 +165,59 @@ public abstract class CombinedFragment implements MessageContainer
 
 				if (loop.isAFinalMessage(message))
 				{
-					Map<Message, String> entries = loop.getFirstEntryPoints(Optional.of(excluded));
-
-					for (Entry<Message, String> entry : entries.entrySet())
+					List<MessageContainer> containers = loop.getAsContainers();
+					
+					if (containers.get(0) instanceof OptionalCombinedFragment)
 					{
-						if (output.containsKey(entry.getKey()))
+						boolean last = false;
+						
+						String beginAggregate = "";
+						List<MessageContainer> fragContainers = loop.getAsContainers();
+						
+						if (fragContainers.get(fragContainers.size() - 1) instanceof CombinedFragment
+								&& ((CombinedFragment) fragContainers.get(fragContainers.size() - 1))
+									.isAFinalMessage(message))
 						{
-							output.get(entry.getKey()).add(new ImmutablePair<SDPoint, String>(message.getSDPoint(),
-								intermediate.equals("") ? entry.getValue() : intermediate + " & " + entry.getValue()));
-						}
-						else
-						{
-							output.put(entry.getKey(), new ArrayList<Pair<SDPoint, String>>(
-								Arrays.asList(new ImmutablePair<SDPoint, String>(message.getSDPoint(),
-									intermediate.equals("") ? entry.getValue() : intermediate + " & " + entry.getValue()))));
+							beginAggregate = loop.getGuard();
 						}
 						
+						StringBuilder aggregate = new StringBuilder(beginAggregate);
+						
+						for (int i = 0; i < containers.size() & ! last; i++)
+						{
+							MessageContainer container = containers.get(i);
+							
+							if (container instanceof CombinedFragment)
+							{
+								if (! excluded.contains(container))
+								{	
+									this.doLoopCrawlEntryPoints(output, message
+											, this.constructGuard(intermediate, aggregate.toString())
+											, excluded, (CombinedFragment) container);
+								}
+							}
+							else
+							{
+								this.loopCrawlAddToOutput(output, message
+										, this.constructGuard(intermediate, aggregate.toString())
+										, (Message) container, loop.getGuard());
+							}
+							
+							if (! (container instanceof OptionalCombinedFragment))
+							{
+								last = true;
+							}
+							else
+							{
+								aggregate.append(aggregate.length() == 0 ? "~" + ((OptionalCombinedFragment) container).getGuard()
+										: " & ~" + ((OptionalCombinedFragment) container).getGuard());
+							}
+						}
+					}
+					else
+					{
+						this.doLoopCrawlEntryPoints(output, message, intermediate, excluded
+								, loop);
 					}
 				}
 				
@@ -199,6 +236,31 @@ public abstract class CombinedFragment implements MessageContainer
 			}
 		}
 		while (prev.getParent().isPresent());
+	}
+
+	private void doLoopCrawlEntryPoints(Map<Message, List<Pair<SDPoint, String>>> output, Message message,
+			String intermediate, Set<CombinedFragment> excluded, CombinedFragment loop) {
+		Map<Message, String> entries = loop.getFirstEntryPoints(Optional.of(excluded));
+
+		for (Entry<Message, String> entry : entries.entrySet())
+		{
+			loopCrawlAddToOutput(output, message, intermediate, entry.getKey(), entry.getValue());
+		}
+	}
+
+	private void loopCrawlAddToOutput(Map<Message, List<Pair<SDPoint, String>>> output, Message message,
+			String intermediate, Message from, String entry) {
+		if (output.containsKey(from))
+		{
+			output.get(from).add(new ImmutablePair<SDPoint, String>(message.getSDPoint(),
+				intermediate.equals("") ? entry : intermediate + " & " + entry));
+		}
+		else
+		{
+			output.put(from, new ArrayList<Pair<SDPoint, String>>(
+				Arrays.asList(new ImmutablePair<SDPoint, String>(message.getSDPoint(),
+					intermediate.equals("") ? entry : intermediate + " & " + entry))));
+		}
 	}
 
 	protected abstract void fillTree(List<CombinedFragment> output);
@@ -373,6 +435,18 @@ public abstract class CombinedFragment implements MessageContainer
 	
 	public String constructGuard(String left, String right)
 	{
+		if (left.equals(right))
+		{
+			return left;
+		}
+		if (left.contains(right) && ! left.contains("~" + right))
+		{
+			return left;
+		}
+		if (right.contains(left) && ! right.contains("~" + left))
+		{
+			return right;
+		}
 		if (! ("".equals(left) || "".equals(right)))
 		{
 			return left + " & " + right; 
@@ -411,6 +485,11 @@ public abstract class CombinedFragment implements MessageContainer
 				(entry.getFragment().get().equals(exit.getMessage().getFragment().get())
 						||
 				exit.getMessage().getFragment().get().hasAsDescendent(entry.getFragment().get())))
+		{
+			return;
+		}
+		
+		if (exit.getExitTos().keySet().contains(entry))
 		{
 			return;
 		}

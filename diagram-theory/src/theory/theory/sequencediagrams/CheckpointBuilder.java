@@ -156,23 +156,26 @@ public class CheckpointBuilder
 
 			for (Entry<Message, String> entryPoint : entryPoints.entrySet())
 			{
-				List<Message> trans = this.calculateEntryPointTransition(entryPoint.getKey(), store);
+				List<Pair<Message, Optional<String>>> trans =
+						this.calculateEntryPointTransition(entryPoint.getKey(), store);
 				
-				for (Message ele : trans)
+				for (Pair<Message, Optional<String>> ele : trans)
 				{
 					if (this.getEntryGuards().containsKey(entryPoint.getKey()))
 					{
 						this.getEntryGuards().get(entryPoint.getKey())
-						.add(new ImmutablePair<SDPoint, String>(ele.getSDPoint(), entryPoint.getValue()));
+						.add(new ImmutablePair<SDPoint, String>(ele.getLeft().getSDPoint(),
+								ele.getRight().orElse(entryPoint.getValue())));
 					}
 					else
 					{
 						this.getEntryGuards().put(entryPoint.getKey()
 								, new ArrayList<Pair<SDPoint, String>>(Arrays.asList(new ImmutablePair<SDPoint
-										, String>(ele.getSDPoint(), entryPoint.getValue()))));
+										, String>(ele.getLeft().getSDPoint(),
+												ele.getRight().orElse(entryPoint.getValue())))));
 					}
 					
-					this.getNonStandardPoints().add(ele.getSDPoint());
+					this.getNonStandardPoints().add(ele.getLeft().getSDPoint());
 				}
 			}
 			
@@ -180,17 +183,19 @@ public class CheckpointBuilder
 		}
 	}
 	
-	private List<Message> calculateEntryPointTransition(Message message, SeqDiagramStore store)
+	private List<Pair<Message, Optional<String>>> calculateEntryPointTransition(Message message
+			, SeqDiagramStore store)
 	{
 		CombinedFragment frag = message.getFragment().get();
 		Message prev = store.getRelativeMessage(frag.flattenMessages().get(0), -1); // TODO getmessage <-> flattenmessage
 		
 		if (! prev.getFragment().isPresent())
 		{
-			return Collections.singletonList(prev);
+			return Collections.singletonList(new ImmutablePair<Message, Optional<String>>(prev,
+					Optional.empty()));
 		}
 		
-		List<Message> toReturn = new ArrayList<Message>();
+		List<Pair<Message, Optional<String>>> toReturn = new ArrayList<>();
 		
 		List<ExitForMessage> exitsForPrevFrag = prev.getFragment().get().calcExitForMessages(store);
 		
@@ -198,13 +203,15 @@ public class CheckpointBuilder
 		{
 			if (this.containsExitTo(ele, message))
 			{
-				toReturn.add(ele.getMessage());
+				toReturn.add(new ImmutablePair<>(ele.getMessage(),
+						Optional.of(ele.getExitTos().get(message))));
 			}
 		}
 		
 		if (toReturn.isEmpty())
 		{
-			toReturn.add(prev);
+			toReturn.add(new ImmutablePair<Message, Optional<String>>(prev,
+					Optional.empty()));
 		}
 		
 		return toReturn;
@@ -656,9 +663,12 @@ public class CheckpointBuilder
 			
 			for (Pair<SDPoint, String> entryGuard : entryGuards.getValue())
 			{
-				if (this.sameGuards.containsKey(entryGuard.getRight()))
+				Optional<String> theKey = CheckpointBuilder.containsKey(sameGuards.keySet(), entryGuard.getRight());
+				
+				if (theKey.isPresent())
 				{
-					this.sameGuards.get(entryGuard.getRight()).add(entryGuard.getLeft());
+					this.sameGuards.get(theKey.get())
+						.add(entryGuard.getLeft());
 				}
 				else
 				{
@@ -725,5 +735,28 @@ public class CheckpointBuilder
 		{
 			return CheckpointBuilder.this;
 		}
+	}
+	
+	static Optional<String> containsKey(Set<String> keySet, String ele)
+	{
+		String eleSorted = ele.chars()
+                .sorted()
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+		
+		for (String key : keySet)
+		{
+			String keySorted = key.chars()
+	                .sorted()
+	                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+	                .toString();
+			
+			if (keySorted.equals(eleSorted))
+			{
+				return Optional.of(key);
+			}
+		}
+		
+		return Optional.empty();
 	}
 }
