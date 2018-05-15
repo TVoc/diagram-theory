@@ -39,13 +39,13 @@ public class HardcodedExample {
 		TempVar a = new TempVar(new UserDefinedType("A"), "a");
 		
 		TempVar loop1 = new TempVar(new UserDefinedType("boolean"), "loop1");
-		TempVar loop1alt1if = new TempVar(new UserDefinedType("boolean"), "loop1alt1if");
-		TempVar loop1alt1then = new TempVar(new UserDefinedType("boolean"), "loop1alt1then");
-		TempVar loop1loop1 = new TempVar(new UserDefinedType("boolean"), "loop1loop1");
-		TempVar loop1loop1loop1 = new TempVar(new UserDefinedType("boolean"), "loop1loop1loop1");
-		TempVar loop1loop1loop1alt1if = new TempVar(new UserDefinedType("boolean"), "loop1loop1loop1alt1if");
-		TempVar loop1loop1loop1alt1then = new TempVar(new UserDefinedType("boolean"), "loop1loop1loop1alt1then");
-		TempVar loop1loop1loop2 = new TempVar(new UserDefinedType("boolean"), "loop1loop1loop2");
+		TempVar loop1alt1if = new TempVar(new UserDefinedType("boolean"), "alt1a");
+		TempVar loop1alt1then = new TempVar(new UserDefinedType("boolean"), "alt1b");
+		TempVar loop1loop1 = new TempVar(new UserDefinedType("boolean"), "loop2");
+		TempVar loop1loop1loop1 = new TempVar(new UserDefinedType("boolean"), "loop3");
+		TempVar loop1loop1loop1alt1if = new TempVar(new UserDefinedType("boolean"), "alt2a");
+		TempVar loop1loop1loop1alt1then = new TempVar(new UserDefinedType("boolean"), "alt2b");
+		TempVar loop1loop1loop2 = new TempVar(new UserDefinedType("boolean"), "loop4");
 		
 		// MESSAGES
 		
@@ -74,13 +74,13 @@ public class HardcodedExample {
 
 		store.addTempVar("a", a);
 		store.addTempVar("loop1", loop1);
-		store.addTempVar("loop1alt1if", loop1alt1if);
-		store.addTempVar("loop1alt1then", loop1alt1then);
-		store.addTempVar("loop1loop1", loop1loop1);
-		store.addTempVar("loop1loop1loop1", loop1loop1loop1);
-		store.addTempVar("loop1loop1loop1alt1if", loop1loop1loop1alt1if);
-		store.addTempVar("loop1loop1loop1alt1then", loop1loop1loop1alt1then);
-		store.addTempVar("loop1loop1loop2", loop1loop1loop2);
+		store.addTempVar("alt1a", loop1alt1if);
+		store.addTempVar("alt1b", loop1alt1then);
+		store.addTempVar("loop2", loop1loop1);
+		store.addTempVar("loop3", loop1loop1loop1);
+		store.addTempVar("alt2a", loop1loop1loop1alt1if);
+		store.addTempVar("alt2b", loop1loop1loop1alt1then);
+		store.addTempVar("loop4", loop1loop1loop2);
 		
 		Message dummyMessage = new Message("fragexample", "fragexample",
 				1, false, Optional.empty(), Optional.empty(), "fragexample", false);
@@ -112,24 +112,24 @@ public class HardcodedExample {
 				Optional.of(loop1frag), Optional.empty(), Optional.empty(), 
 				Optional.of(new ArrayList<Message>(Arrays.asList(message3, message4))),
 				Optional.of(new ArrayList<Message>(Arrays.asList(message5))), 
-				"loop1alt1if=T", "loop1alt1then=T", dummy, dummy1, dummy2, store);
+				"alt1a=T", "alt1b=T", dummy, dummy1, dummy2, store);
 		LoopCombinedFragment loop1loop1frag = CombinedFragmentFactory.createLoopCombinedFragment(
 				Optional.of(loop1frag), Optional.empty(), 
 				Optional.empty(),
-				"loop1loop1=T", dummy, dummy2, store);
+				"loop2=T", dummy, dummy2, store);
 		LoopCombinedFragment loop1loop1loop1frag = CombinedFragmentFactory.createLoopCombinedFragment(
 				Optional.of(loop1loop1frag), Optional.empty(), 
 				Optional.empty(),
-				"loop1loop1loop1=T", dummy, dummy2, store);
+				"loop3=T", dummy, dummy2, store);
 		AltCombinedFragment loop1loop1loop1alt1 = CombinedFragmentFactory.createAltCombinedFragment(
 				Optional.of(loop1loop1loop1frag), Optional.empty(), Optional.empty(), 
 				Optional.of(new ArrayList<Message>(Arrays.asList(message6))),
 				Optional.of(new ArrayList<Message>(Arrays.asList(message7))), 
-				"loop1loop1loop1alt1if=T", "loop1loop1loop1alt1then=T", dummy, dummy1, dummy2, store);
+				"alt2a=T", "alt2b=T", dummy, dummy1, dummy2, store);
 		LoopCombinedFragment loop1loop1loop2frag = CombinedFragmentFactory.createLoopCombinedFragment(
 				Optional.of(loop1loop1frag), Optional.empty(), 
 				Optional.of(new ArrayList<Message>(Arrays.asList(message8))),
-				"loop1loop1loop2=T", dummy, dummy2, store);
+				"loop4=T", dummy, dummy2, store);
 		loop1frag.setChildren(Arrays.asList(loop1alt1, loop1loop1frag));
 		loop1loop1frag.setChildren(Arrays.asList(loop1loop1loop1frag, loop1loop1loop2frag));
 		loop1loop1loop1frag.setChildren(Arrays.asList(loop1loop1loop1alt1));

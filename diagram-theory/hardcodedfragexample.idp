@@ -32,41 +32,41 @@ LTCvocabulary V {
     RandomInt(Time) : LimitedInt
     type A
     
-    Loop1alt1ifT(Time, StackLevel, boolean)
-    I_Loop1alt1ifT(StackLevel, boolean)
-    C_Loop1alt1ifT(Time, StackLevel, boolean)
+    Alt1aT(Time, StackLevel, boolean)
+    I_Alt1aT(StackLevel, boolean)
+    C_Alt1aT(Time, StackLevel, boolean)
+    
+    Alt2bT(Time, StackLevel, boolean)
+    I_Alt2bT(StackLevel, boolean)
+    C_Alt2bT(Time, StackLevel, boolean)
     
     AT(Time, StackLevel, A)
     I_AT(StackLevel, A)
     C_AT(Time, StackLevel, A)
     
-    Loop1loop1loop1alt1ifT(Time, StackLevel, boolean)
-    I_Loop1loop1loop1alt1ifT(StackLevel, boolean)
-    C_Loop1loop1loop1alt1ifT(Time, StackLevel, boolean)
+    Alt2aT(Time, StackLevel, boolean)
+    I_Alt2aT(StackLevel, boolean)
+    C_Alt2aT(Time, StackLevel, boolean)
     
-    Loop1loop1T(Time, StackLevel, boolean)
-    I_Loop1loop1T(StackLevel, boolean)
-    C_Loop1loop1T(Time, StackLevel, boolean)
+    Alt1bT(Time, StackLevel, boolean)
+    I_Alt1bT(StackLevel, boolean)
+    C_Alt1bT(Time, StackLevel, boolean)
+    
+    Loop4T(Time, StackLevel, boolean)
+    I_Loop4T(StackLevel, boolean)
+    C_Loop4T(Time, StackLevel, boolean)
+    
+    Loop2T(Time, StackLevel, boolean)
+    I_Loop2T(StackLevel, boolean)
+    C_Loop2T(Time, StackLevel, boolean)
+    
+    Loop3T(Time, StackLevel, boolean)
+    I_Loop3T(StackLevel, boolean)
+    C_Loop3T(Time, StackLevel, boolean)
     
     Loop1T(Time, StackLevel, boolean)
     I_Loop1T(StackLevel, boolean)
     C_Loop1T(Time, StackLevel, boolean)
-    
-    Loop1loop1loop1alt1thenT(Time, StackLevel, boolean)
-    I_Loop1loop1loop1alt1thenT(StackLevel, boolean)
-    C_Loop1loop1loop1alt1thenT(Time, StackLevel, boolean)
-    
-    Loop1loop1loop1T(Time, StackLevel, boolean)
-    I_Loop1loop1loop1T(StackLevel, boolean)
-    C_Loop1loop1loop1T(Time, StackLevel, boolean)
-    
-    Loop1alt1thenT(Time, StackLevel, boolean)
-    I_Loop1alt1thenT(StackLevel, boolean)
-    C_Loop1alt1thenT(Time, StackLevel, boolean)
-    
-    Loop1loop1loop2T(Time, StackLevel, boolean)
-    I_Loop1loop1loop2T(StackLevel, boolean)
-    C_Loop1loop1loop2T(Time, StackLevel, boolean)
     
 }
 theory T:V {
@@ -74,20 +74,20 @@ theory T:V {
         ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)& ~((s = finished) | (s = fragexample_1) | (s = fragexample_2) | (s = fragexample_4) | (s = fragexample_5) | (s = fragexample_6) | (s = fragexample_7) | (s = fragexample_8) | (s = fragexample_9) | (s = fragexample_10)).
         
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_2) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_9) | SDPointAt(t, fragexample_1)) & ( ? loop1 [boolean] : Loop1T(Next(t), st, loop1) & (loop1=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_3) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_2) & ( ? loop1alt1if [boolean] : Loop1alt1ifT(Next(t), st, loop1alt1if) & (loop1alt1if=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_2) & ( ? loop1alt1then [boolean] : Loop1alt1thenT(Next(t), st, loop1alt1then) & (loop1alt1then=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop1loop1loop1 [boolean] loop1loop1loop1alt1if [boolean] : Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1ifT(Next(t), st, loop1loop1loop1alt1if) & (loop1loop1loop1=T) & (loop1loop1loop1alt1if=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop1loop1loop2 [boolean] loop1loop1 [boolean] loop1loop1loop1 [boolean] loop1loop1loop1alt1if [boolean] : Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & Loop1loop1T(Next(t), st, loop1loop1) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1ifT(Next(t), st, loop1loop1loop1alt1if) & ~(loop1loop1loop2=T) & (loop1loop1=T) & (loop1loop1loop1=T) & (loop1loop1loop1alt1if=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop1loop1 [boolean] loop1loop1loop1 [boolean] loop1loop1loop1alt1if [boolean] : Loop1loop1T(Next(t), st, loop1loop1) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1ifT(Next(t), st, loop1loop1loop1alt1if) & (loop1loop1=T) & (loop1loop1loop1=T) & (loop1loop1loop1alt1if=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop1loop1 [boolean] loop1loop1loop1 [boolean] loop1loop1loop1alt1then [boolean] : Loop1loop1T(Next(t), st, loop1loop1) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1thenT(Next(t), st, loop1loop1loop1alt1then) & (loop1loop1=T) & (loop1loop1loop1=T) & (loop1loop1loop1alt1then=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop1loop1loop1 [boolean] loop1loop1loop1alt1then [boolean] : Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1thenT(Next(t), st, loop1loop1loop1alt1then) & (loop1loop1loop1=T) & (loop1loop1loop1alt1then=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop1loop1loop2 [boolean] loop1loop1 [boolean] loop1loop1loop1 [boolean] loop1loop1loop1alt1then [boolean] : Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & Loop1loop1T(Next(t), st, loop1loop1) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop1alt1thenT(Next(t), st, loop1loop1loop1alt1then) & ~(loop1loop1loop2=T) & (loop1loop1=T) & (loop1loop1loop1=T) & (loop1loop1loop1alt1then=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop1loop1loop2 [boolean] loop1loop1loop1 [boolean] : Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & (loop1loop1loop2=T) & ~(loop1loop1loop1=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop1loop1 [boolean] loop1loop1loop1 [boolean] loop1loop1loop2 [boolean] : Loop1loop1T(Next(t), st, loop1loop1) & Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & (loop1loop1=T) & ~(loop1loop1loop1=T) & (loop1loop1loop2=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop1loop1loop2 [boolean] : Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & (loop1loop1loop2=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop1loop1loop1 [boolean] loop1loop1loop2 [boolean] loop1loop1 [boolean] : Loop1loop1loop1T(Next(t), st, loop1loop1loop1) & Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & Loop1loop1T(Next(t), st, loop1loop1) & ~(loop1loop1loop1=T) & ~(loop1loop1loop2=T) & ~(loop1loop1=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop1loop1loop2 [boolean] loop1loop1 [boolean] : Loop1loop1loop2T(Next(t), st, loop1loop1loop2) & Loop1loop1T(Next(t), st, loop1loop1) & ~(loop1loop1loop2=T) & ~(loop1loop1=T)).
-        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop1loop1 [boolean] : Loop1loop1T(Next(t), st, loop1loop1) & ~(loop1loop1=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_3) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_2) & ( ? alt1a [boolean] : Alt1aT(Next(t), st, alt1a) & (alt1a=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_5) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_2) & ( ? alt1b [boolean] : Alt1bT(Next(t), st, alt1b) & (alt1b=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop3 [boolean] alt2a [boolean] : Loop3T(Next(t), st, loop3) & Alt2aT(Next(t), st, alt2a) & (loop3=T) & (alt2a=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop2 [boolean] loop3 [boolean] alt2a [boolean] : Loop2T(Next(t), st, loop2) & Loop3T(Next(t), st, loop3) & Alt2aT(Next(t), st, alt2a) & (loop2=T) & (loop3=T) & (alt2a=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_6) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop4 [boolean] loop2 [boolean] loop3 [boolean] alt2a [boolean] : Loop4T(Next(t), st, loop4) & Loop2T(Next(t), st, loop2) & Loop3T(Next(t), st, loop3) & Alt2aT(Next(t), st, alt2a) & ~(loop4=T) & (loop2=T) & (loop3=T) & (alt2a=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop3 [boolean] alt2b [boolean] : Loop3T(Next(t), st, loop3) & Alt2bT(Next(t), st, alt2b) & (loop3=T) & (alt2b=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop2 [boolean] loop3 [boolean] alt2b [boolean] : Loop2T(Next(t), st, loop2) & Loop3T(Next(t), st, loop3) & Alt2bT(Next(t), st, alt2b) & (loop2=T) & (loop3=T) & (alt2b=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_7) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop4 [boolean] loop2 [boolean] loop3 [boolean] alt2b [boolean] : Loop4T(Next(t), st, loop4) & Loop2T(Next(t), st, loop2) & Loop3T(Next(t), st, loop3) & Alt2bT(Next(t), st, alt2b) & ~(loop4=T) & (loop2=T) & (loop3=T) & (alt2b=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop2 [boolean] loop3 [boolean] loop4 [boolean] : Loop2T(Next(t), st, loop2) & Loop3T(Next(t), st, loop3) & Loop4T(Next(t), st, loop4) & (loop2=T) & ~(loop3=T) & (loop4=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop4 [boolean] loop3 [boolean] : Loop4T(Next(t), st, loop4) & Loop3T(Next(t), st, loop3) & (loop4=T) & ~(loop3=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_8) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop4 [boolean] : Loop4T(Next(t), st, loop4) & (loop4=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_5) | SDPointAt(t, fragexample_4)) & ( ? loop2 [boolean] : Loop2T(Next(t), st, loop2) & ~(loop2=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_8) & ( ? loop4 [boolean] loop2 [boolean] : Loop4T(Next(t), st, loop4) & Loop2T(Next(t), st, loop2) & ~(loop4=T) & ~(loop2=T)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_9) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_7) | SDPointAt(t, fragexample_6)) & ( ? loop3 [boolean] loop4 [boolean] loop2 [boolean] : Loop3T(Next(t), st, loop3) & Loop4T(Next(t), st, loop4) & Loop2T(Next(t), st, loop2) & ~(loop3=T) & ~(loop4=T) & ~(loop2=T)).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_10) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_9) | SDPointAt(t, fragexample_1)) & ( ? loop1 [boolean] : Loop1T(Next(t), st, loop1) & ~(loop1=T)).
         
         ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (SDPointAt(t, fragexample_10) | SDPointAt(t, fragexample_2)).
@@ -107,41 +107,41 @@ theory T:V {
             ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(t, st, sd) <- C_ReturnPoint(t, st, sd).
             ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(Next(t), st, sd) <- ReturnPoint(t, st, sd) & ~Cn_ReturnPoint(Next(t), st, sd).
             
-            ! x [boolean] st [StackLevel] : Loop1alt1ifT(Start, st, x) <- I_Loop1alt1ifT(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1alt1ifT(t, st, x) <- C_Loop1alt1ifT(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1alt1ifT(Next(t), st, x) <- Loop1alt1ifT(t, st, x) & ~( ? x1 [boolean] : C_Loop1alt1ifT(Next(t), st, x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : Alt1aT(Start, st, x) <- I_Alt1aT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt1aT(t, st, x) <- C_Alt1aT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt1aT(Next(t), st, x) <- Alt1aT(t, st, x) & ~( ? x1 [boolean] : C_Alt1aT(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [boolean] st [StackLevel] : Alt2bT(Start, st, x) <- I_Alt2bT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt2bT(t, st, x) <- C_Alt2bT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt2bT(Next(t), st, x) <- Alt2bT(t, st, x) & ~( ? x1 [boolean] : C_Alt2bT(Next(t), st, x1) & ~(x = x1)).
             
             ! x [A] st [StackLevel] : AT(Start, st, x) <- I_AT(st, x).
             ! t [Time] st [StackLevel] x [A] : AT(t, st, x) <- C_AT(t, st, x).
             ! t [Time] st [StackLevel] x [A] : AT(Next(t), st, x) <- AT(t, st, x) & ~( ? x1 [A] : C_AT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] st [StackLevel] : Loop1loop1loop1alt1ifT(Start, st, x) <- I_Loop1loop1loop1alt1ifT(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1alt1ifT(t, st, x) <- C_Loop1loop1loop1alt1ifT(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1alt1ifT(Next(t), st, x) <- Loop1loop1loop1alt1ifT(t, st, x) & ~( ? x1 [boolean] : C_Loop1loop1loop1alt1ifT(Next(t), st, x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : Alt2aT(Start, st, x) <- I_Alt2aT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt2aT(t, st, x) <- C_Alt2aT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt2aT(Next(t), st, x) <- Alt2aT(t, st, x) & ~( ? x1 [boolean] : C_Alt2aT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [boolean] st [StackLevel] : Loop1loop1T(Start, st, x) <- I_Loop1loop1T(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1T(t, st, x) <- C_Loop1loop1T(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1T(Next(t), st, x) <- Loop1loop1T(t, st, x) & ~( ? x1 [boolean] : C_Loop1loop1T(Next(t), st, x1) & ~(x = x1)).
+            ! x [boolean] st [StackLevel] : Alt1bT(Start, st, x) <- I_Alt1bT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt1bT(t, st, x) <- C_Alt1bT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Alt1bT(Next(t), st, x) <- Alt1bT(t, st, x) & ~( ? x1 [boolean] : C_Alt1bT(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [boolean] st [StackLevel] : Loop4T(Start, st, x) <- I_Loop4T(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop4T(t, st, x) <- C_Loop4T(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop4T(Next(t), st, x) <- Loop4T(t, st, x) & ~( ? x1 [boolean] : C_Loop4T(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [boolean] st [StackLevel] : Loop2T(Start, st, x) <- I_Loop2T(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop2T(t, st, x) <- C_Loop2T(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop2T(Next(t), st, x) <- Loop2T(t, st, x) & ~( ? x1 [boolean] : C_Loop2T(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [boolean] st [StackLevel] : Loop3T(Start, st, x) <- I_Loop3T(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop3T(t, st, x) <- C_Loop3T(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : Loop3T(Next(t), st, x) <- Loop3T(t, st, x) & ~( ? x1 [boolean] : C_Loop3T(Next(t), st, x1) & ~(x = x1)).
             
             ! x [boolean] st [StackLevel] : Loop1T(Start, st, x) <- I_Loop1T(st, x).
             ! t [Time] st [StackLevel] x [boolean] : Loop1T(t, st, x) <- C_Loop1T(t, st, x).
             ! t [Time] st [StackLevel] x [boolean] : Loop1T(Next(t), st, x) <- Loop1T(t, st, x) & ~( ? x1 [boolean] : C_Loop1T(Next(t), st, x1) & ~(x = x1)).
-            
-            ! x [boolean] st [StackLevel] : Loop1loop1loop1alt1thenT(Start, st, x) <- I_Loop1loop1loop1alt1thenT(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1alt1thenT(t, st, x) <- C_Loop1loop1loop1alt1thenT(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1alt1thenT(Next(t), st, x) <- Loop1loop1loop1alt1thenT(t, st, x) & ~( ? x1 [boolean] : C_Loop1loop1loop1alt1thenT(Next(t), st, x1) & ~(x = x1)).
-            
-            ! x [boolean] st [StackLevel] : Loop1loop1loop1T(Start, st, x) <- I_Loop1loop1loop1T(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1T(t, st, x) <- C_Loop1loop1loop1T(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop1T(Next(t), st, x) <- Loop1loop1loop1T(t, st, x) & ~( ? x1 [boolean] : C_Loop1loop1loop1T(Next(t), st, x1) & ~(x = x1)).
-            
-            ! x [boolean] st [StackLevel] : Loop1alt1thenT(Start, st, x) <- I_Loop1alt1thenT(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1alt1thenT(t, st, x) <- C_Loop1alt1thenT(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1alt1thenT(Next(t), st, x) <- Loop1alt1thenT(t, st, x) & ~( ? x1 [boolean] : C_Loop1alt1thenT(Next(t), st, x1) & ~(x = x1)).
-            
-            ! x [boolean] st [StackLevel] : Loop1loop1loop2T(Start, st, x) <- I_Loop1loop1loop2T(st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop2T(t, st, x) <- C_Loop1loop1loop2T(t, st, x).
-            ! t [Time] st [StackLevel] x [boolean] : Loop1loop1loop2T(Next(t), st, x) <- Loop1loop1loop2T(t, st, x) & ~( ? x1 [boolean] : C_Loop1loop1loop2T(Next(t), st, x1) & ~(x = x1)).
             
             
     }
@@ -158,9 +158,9 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,4; 1,-5; 2,-4; 3,-5; 4,2; 5,5; 6,5; 7,1; 8,-3; 9,3; 10,-2; 11,0; 12,-4; 13,-5; 14,2; 15,2; 16,-5; 17,2; 18,0; 19,-3; 20,-2 }
+    RandomInt = { 0,1; 1,-3; 2,4; 3,4; 4,-3; 5,-2; 6,-1; 7,2; 8,-5; 9,-3; 10,0; 11,4; 12,-2; 13,2; 14,5; 15,-2; 16,3; 17,2; 18,4; 19,-1; 20,-2 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "AiwT6OBKM6NMYaYWdmxe"; "3E6WnrUjnU6xkAAr0Am7"; "SN6svvbSxlOtRXGIow2t"; "loop1alt1if"; "a"; "loop1loop1loop1alt1if"; "loop1loop1"; "loop1"; "loop1loop1loop1alt1then"; "loop1loop1loop1"; "loop1alt1then"; "loop1loop1loop2"} 
+    LimitedString = { "3oyq5duBW0epuZvfuV5q"; "wDFXYhDcOsrn1H8o1T2l"; "xnNe7VNSsz9RFapgmius"; "alt1a"; "alt2b"; "a"; "alt2a"; "alt1b"; "loop4"; "loop2"; "loop3"; "loop1"} 
     
     A = { A1; A2; A3}
     NextSD = { fragexample_1->fragexample_2; fragexample_2->fragexample_3; fragexample_3->fragexample_4; fragexample_4->fragexample_5; fragexample_5->fragexample_6; fragexample_6->fragexample_7; fragexample_7->fragexample_8; fragexample_8->fragexample_9; fragexample_9->fragexample_10; fragexample_10->fragexample_1; fragexample_1->fragexample_2 }
