@@ -312,6 +312,8 @@ public abstract class CombinedFragment implements MessageContainer
 
 	protected abstract boolean isAFinalMessage(Message message);
 	
+	protected abstract boolean endsOnOptional();
+	
 	public boolean inSameBranch(Message one, Message other)
 	{
 		if (! this.flattenMessages().contains(one) || ! this.flattenMessages().contains(other))

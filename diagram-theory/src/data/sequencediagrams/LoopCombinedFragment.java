@@ -237,6 +237,14 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 	}
 	
 	@Override
+	protected boolean endsOnOptional()
+	{
+		List<MessageContainer> containers = this.getAsContainers();
+		
+		return containers.get(containers.size() - 1) instanceof OptionalCombinedFragment;
+	}
+	
+	@Override
 	protected boolean inSameBranchTemplate(Message one, Message other)
 	{
 		for (CombinedFragment ele : this.getChildren())
@@ -296,6 +304,7 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 					firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard(), excluded);
 				}
 				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetChildren(), true, true);
 			}
 			
@@ -376,6 +385,7 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 					firstL.getFirstEntryPointsRec(output, intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard(), excluded);
 				}
 				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
+
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetChildren(), true, true);
 			}
 			
@@ -504,7 +514,8 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 
 			this.putExits(exit, entryPoints);
 
-			if (! nextFragments.get(nextFragments.size() - 1).optional())
+			if (! nextFragments.get(nextFragments.size() - 1).optional()
+					&& ! nextFragments.get(nextFragments.size() - 1).endsOnOptional())
 			{
 				return;
 			}

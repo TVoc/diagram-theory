@@ -115,7 +115,7 @@ public class CheckpointBuilder
 	}
 
 	public CheckpointBuilder processCombinedFragment(CombinedFragment frag, SeqDiagramStore store)
-	{
+	{		
 		if (frag instanceof OptionalCombinedFragment)
 		{
 			this.ensureOptionalFragmentSkip((OptionalCombinedFragment) frag, store);
@@ -172,7 +172,7 @@ public class CheckpointBuilder
 						this.calculateEntryPointTransition(entryPoint.getKey(), store);
 				
 				for (Pair<Message, Optional<String>> ele : trans)
-				{
+				{					
 					if (this.getEntryGuards().containsKey(entryPoint.getKey()))
 					{
 						this.getEntryGuards().get(entryPoint.getKey())
@@ -285,9 +285,9 @@ public class CheckpointBuilder
 			List<ExitForMessage> exitPoints = frag.calcExitForMessages(store);
 
 			for (ExitForMessage exitForMessage : exitPoints)
-			{
+			{	
 				for (Entry<Message, String> exitPoint : exitForMessage.getExitTos().entrySet())
-				{
+				{	
 					if (this.getEntryGuards().containsKey(exitPoint.getKey()))
 					{
 						this.getEntryGuards().get(exitPoint.getKey())
@@ -417,7 +417,12 @@ public class CheckpointBuilder
 	}
 	
 	private void ensureOptionalFragmentSkip(OptionalCombinedFragment frag, SeqDiagramStore store)
-	{
+	{	
+		if (frag.getParent().isPresent())
+		{
+			return;
+		}
+		
 		List<Message> diagramMessages = store.getMessagesForDiagram(frag.getDiagramName());
 		
 		Message beforeFrag = diagramMessages.get(diagramMessages.indexOf(frag.flattenMessages().get(0)) - 1); // TODO getmessage <-> flattenmessage

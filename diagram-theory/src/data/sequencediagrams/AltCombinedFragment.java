@@ -481,6 +481,16 @@ public class AltCombinedFragment extends CombinedFragment
 	}
 	
 	@Override
+	protected boolean endsOnOptional()
+	{
+		List<MessageContainer> ifContainers = this.getIfAsContainers();
+		List<MessageContainer> thenContainers = this.getThenAsContainers();
+		
+		return ifContainers.get(ifContainers.size() - 1) instanceof OptionalCombinedFragment
+				|| thenContainers.get(thenContainers.size() - 1) instanceof OptionalCombinedFragment;
+	}
+	
+	@Override
 	protected boolean inSameBranchTemplate(Message one, Message other)
 	{
 		if (this.flattenIf().contains(one) && this.flattenThen().contains(other))
@@ -527,7 +537,7 @@ public class AltCombinedFragment extends CombinedFragment
 	}
 
 	protected void getEntryPointsRec(TreeMap<Message, String> output, String intermediate, Optional<Set<CombinedFragment>> excluded)
-	{
+	{	
 		List<Message> ifMsgs = this.flattenIf();
 
 		if (this.internalGetIfMessages().isEmpty() || 
@@ -545,6 +555,7 @@ public class AltCombinedFragment extends CombinedFragment
 					firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard(), excluded);
 				}
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
+
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, true);
 			}
 			
@@ -606,6 +617,7 @@ public class AltCombinedFragment extends CombinedFragment
 					firstL.getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);
 				}
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
+
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, true);
 			}
 			
@@ -743,7 +755,7 @@ public class AltCombinedFragment extends CombinedFragment
 	}
 	
 	protected void exitForHandleChildren(SeqDiagramStore store, List<ExitForMessage> output)
-	{
+	{	
 		List<MessageContainer> containers = this.getIfAsContainers();
 		
 		StringBuilder intermediate = new StringBuilder();
@@ -850,7 +862,7 @@ public class AltCombinedFragment extends CombinedFragment
 //				{
 //					return;
 //				}
-				
+
 				CombinedFragment frag = messageAfter.get().getFragment().get();
 				
 				while (! frag.equals(this) && ! frag.getParent().get().equals(this))
@@ -892,7 +904,8 @@ public class AltCombinedFragment extends CombinedFragment
 
 				this.putExits(exit, entryPoints);
 				// TODO execution must actually continue if last member of nextFragments is a loop
-				if (! nextFragments.get(nextFragments.size() - 1).optional())
+				if (! nextFragments.get(nextFragments.size() - 1).optional()
+						&& ! nextFragments.get(nextFragments.size() - 1).endsOnOptional())
 				{
 					return;
 				}
@@ -975,7 +988,8 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				this.putExits(exit, entryPoints);
 				
-				if (! nextFragments.get(nextFragments.size() - 1).optional())
+				if (! nextFragments.get(nextFragments.size() - 1).optional()
+						&& ! nextFragments.get(nextFragments.size() - 1).endsOnOptional())
 				{
 					return;
 				}
