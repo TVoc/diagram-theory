@@ -1,5 +1,6 @@
 package data.classdiagrams;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,6 +15,13 @@ public interface Class
 	 * @return An unmodifiable view of this class's attributes
 	 */
 	public Optional<Set<DataUnit>> getAllAttributes();
+	
+	/**
+	 * 
+	 * @param attrNames
+	 * @return	True iff this class has corresponding attributes for all the given names
+	 */
+	public boolean hasAttributesByName(Collection<String> attrNames);
 	
 	/**
 	 * 

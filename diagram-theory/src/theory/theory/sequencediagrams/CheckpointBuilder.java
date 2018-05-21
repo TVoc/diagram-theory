@@ -127,7 +127,7 @@ public class CheckpointBuilder
 		if (prev.getFragment().isPresent())
 		{
 			CombinedFragment top = prev.getFragment().get().getTopLevelFragment();
-
+			
 			if (! this.getEntryPointsDetermined().contains(top))
 			{
 				this.processCombinedFragment(top, store);

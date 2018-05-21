@@ -1,6 +1,8 @@
 package data.classdiagrams;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -97,6 +99,32 @@ public class UserDefinedClass implements Class
 		{
 			return Optional.of(Collections.unmodifiableSet(this.internalGetAttributes().get()));
 		}
+	}
+	
+	@Override
+	public boolean hasAttributesByName(Collection<String> attrNames)
+	{
+		if (! this.internalGetAttributes().isPresent())
+		{
+			return false;
+		}
+		
+		Set<String> names = new HashSet<String>();
+		
+		for (DataUnit attr : this.internalGetAttributes().get())
+		{
+			names.add(attr.getName());
+		}
+		
+		for (String name : attrNames)
+		{
+			if (! names.contains(name))
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override

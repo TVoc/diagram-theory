@@ -1,5 +1,6 @@
 package data.classdiagrams;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,6 +35,12 @@ public enum PrimitiveClass implements Class
 		return this.name;
 	}
 
+	@Override
+	public boolean hasAttributesByName(Collection<String> attrNames)
+	{
+		return false;
+	}
+	
 	@Override
 	public Optional<Set<DataUnit>> getAllAttributes()
 	{

@@ -581,7 +581,7 @@ public class AltCombinedFragment extends CombinedFragment
 			
 			else
 			{
-				if (! excluded.isPresent() &&
+				if (! excluded.isPresent() ||
 						! excluded.get().contains(this.internalGetThenChildren().get(0)))
 				{
 					this.internalGetThenChildren().get(0).getEntryPointsRec(output, intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard(), excluded);

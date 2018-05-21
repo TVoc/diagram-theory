@@ -94,7 +94,7 @@ public abstract class CombinedFragment implements MessageContainer
 	{
 		List<MessageContainer> containers = alt.getIfAsContainers();
 		
-		for (int i = containers.size() - 1; i >= 0; i++)
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
 			
@@ -111,7 +111,7 @@ public abstract class CombinedFragment implements MessageContainer
 		
 		containers = alt.getThenAsContainers();
 		
-		for (int i = containers.size() - 1; i >= 0; i++)
+		for (int i = containers.size() - 1; i >= 0; i--)
 		{
 			MessageContainer container = containers.get(i);
 			
@@ -480,7 +480,6 @@ public abstract class CombinedFragment implements MessageContainer
 		{
 			return;
 		}
-		
 		if (entry.getFragment().isPresent() &&
 				(entry.getFragment().get().equals(exit.getMessage().getFragment().get())
 						||

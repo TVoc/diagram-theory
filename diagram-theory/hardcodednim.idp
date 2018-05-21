@@ -133,22 +133,22 @@ LTCvocabulary V {
     I_TtHeapT(StackLevel, Heap)
     C_TtHeapT(Time, StackLevel, Heap)
     
-    Gamep1Win(Time, Game, boolean)
-    I_Gamep1Win(Game, boolean)
-    C_Gamep1Win(Time, Game, boolean)
-    Cn_Gamep1Win(Time, Game, boolean)
-    
     GamegameFinished(Time, Game, boolean)
     I_GamegameFinished(Game, boolean)
     C_GamegameFinished(Time, Game, boolean)
     Cn_GamegameFinished(Time, Game, boolean)
+    
+    Gamep1Win(Time, Game, boolean)
+    I_Gamep1Win(Game, boolean)
+    C_Gamep1Win(Time, Game, boolean)
+    Cn_Gamep1Win(Time, Game, boolean)
     
     HeapamountObjects(Time, Heap, LimitedInt)
     I_HeapamountObjects(Heap, LimitedInt)
     C_HeapamountObjects(Time, Heap, LimitedInt)
     Cn_HeapamountObjects(Time, Heap, LimitedInt)
     
-    HeapandGame(Heap, Game)
+    GameandHeap(Game, Heap)
     partial GameFirstHeap(Game) : Heap
     partial GameGetHeap(Game, LimitedInt) : Heap
     partial GameNextHeap(Game, Heap) : Heap
@@ -352,13 +352,13 @@ theory T:V {
             ! t [Time] st [StackLevel] x [Heap] : TtHeapT(t, st, x) <- C_TtHeapT(t, st, x).
             ! t [Time] st [StackLevel] x [Heap] : TtHeapT(Next(t), st, x) <- TtHeapT(t, st, x) & ~( ? x1 [Heap] : C_TtHeapT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Game] y [boolean] : Gamep1Win(Start, x, y) <- I_Gamep1Win(x, y).
-            ! t [Time] x [Game] y [boolean] : Gamep1Win(t, x, y) <- C_Gamep1Win(t, x, y).
-            ! t [Time] x [Game] y [boolean] : Gamep1Win(Next(t), x, y) <- Gamep1Win(t, x, y) & ~Cn_Gamep1Win(Next(t), x, y).
-            
             ! x [Game] y [boolean] : GamegameFinished(Start, x, y) <- I_GamegameFinished(x, y).
             ! t [Time] x [Game] y [boolean] : GamegameFinished(t, x, y) <- C_GamegameFinished(t, x, y).
             ! t [Time] x [Game] y [boolean] : GamegameFinished(Next(t), x, y) <- GamegameFinished(t, x, y) & ~Cn_GamegameFinished(Next(t), x, y).
+            
+            ! x [Game] y [boolean] : Gamep1Win(Start, x, y) <- I_Gamep1Win(x, y).
+            ! t [Time] x [Game] y [boolean] : Gamep1Win(t, x, y) <- C_Gamep1Win(t, x, y).
+            ! t [Time] x [Game] y [boolean] : Gamep1Win(Next(t), x, y) <- Gamep1Win(t, x, y) & ~Cn_Gamep1Win(Next(t), x, y).
             
             ! x [Heap] y [LimitedInt] : HeapamountObjects(Start, x, y) <- I_HeapamountObjects(x, y).
             ! t [Time] x [Heap] y [LimitedInt] : HeapamountObjects(t, x, y) <- C_HeapamountObjects(t, x, y).
@@ -371,17 +371,17 @@ theory T:V {
         ! f [Game] i [LimitedInt] to [Heap] : GameGetHeap(f, i) = to <- ( ? to1 [Heap] : GameGetHeap(f, (i-1)) = to1 & GameNextHeap(f, to1) = to).
     }
 
-        ! x [Game] : ?1 v [boolean] : I_Gamep1Win(x, v).
-        ! t [Time] x [Game] : ?1 v [boolean] : Gamep1Win(t, x, v).
-        
         ! x [Game] : ?1 v [boolean] : I_GamegameFinished(x, v).
         ! t [Time] x [Game] : ?1 v [boolean] : GamegameFinished(t, x, v).
+        
+        ! x [Game] : ?1 v [boolean] : I_Gamep1Win(x, v).
+        ! t [Time] x [Game] : ?1 v [boolean] : Gamep1Win(t, x, v).
         
         ! x [Heap] : ?1 v [LimitedInt] : I_HeapamountObjects(x, v).
         ! t [Time] x [Heap] : ?1 v [LimitedInt] : HeapamountObjects(t, x, v).
         
-        ! x2 [Game] : #{ x1 [Heap] : HeapandGame(x1, x2)} >= 1.
-        ! x1 [Heap] : ?1 x2 [Game] : HeapandGame(x1, x2).
+        ! x2 [Heap] : ?1 x1 [Game] : GameandHeap(x1, x2).
+        ! x1 [Game] : #{ x2 [Heap] : GameandHeap(x1, x2)} >= 1.
         
 
 }
@@ -393,9 +393,9 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,-4; 1,-1; 2,-2; 3,4; 4,-2; 5,-5; 6,5; 7,4; 8,-4; 9,-3; 10,0; 11,3; 12,4; 13,-3; 14,-1; 15,-2; 16,5; 17,5; 18,-5; 19,5; 20,4 }
+    RandomInt = { 0,2; 1,4; 2,1; 3,0; 4,0; 5,4; 6,4; 7,-4; 8,0; 9,-2; 10,4; 11,-4; 12,-2; 13,-2; 14,-1; 15,3; 16,2; 17,-2; 18,2; 19,3; 20,3 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "wSs3GhJU7pflnsaGFHru"; "gfeYG2J5M6lKdKV7RxMc"; "pMKcOL0i3Hoy2RS4kgVl"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
+    LimitedString = { "M4yiITXHsovnvcP7IKpm"; "hAATITbKh3PDvIFQSz9g"; "ghKbpHMNnTFB5VmDtFFN"; "ttBreak"; "tHeap"; "tCurr"; "ttNumHeaps"; "tNum"; "pGame"; "aheHeap"; "ieToReturn"; "aheGame"; "ttWhichHeap"; "aheHeapEmpty"; "pFinished"; "ieNumObj"; "ttGame"; "aheNumHeaps"; "ttNumObj"; "aheToReturn"; "ttTakeNum"; "pAllEmpty"; "ieHeap"; "pP1Turn"; "aheCounter"; "tNew"; "ttHeapEmpty"; "ttHeap"} 
     
     Game = { Game1; Game2; Game3}
     Heap = { Heap1; Heap2; Heap3}

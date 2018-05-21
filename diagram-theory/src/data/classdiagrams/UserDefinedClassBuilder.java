@@ -1,5 +1,6 @@
 package data.classdiagrams;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -80,6 +81,26 @@ public class UserDefinedClassBuilder implements Class
 		return this.attributes;
 	}
 
+	public boolean hasAttributesByName(Collection<String> attrNames)
+	{
+		Set<String> names = new HashSet<String>();
+		
+		for (DataUnit attr : this.getAttributes())
+		{
+			names.add(attr.getName());
+		}
+		
+		for (String name : attrNames)
+		{
+			if (! names.contains(name))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * 
 	 * @return An unmodifiable view of the new class's attributes so far

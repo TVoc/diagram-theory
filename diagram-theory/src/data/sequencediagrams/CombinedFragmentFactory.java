@@ -22,7 +22,25 @@ public class CombinedFragmentFactory
 			thenMessages = Optional.of(new ArrayList<Message>(thenMessages.get()));
 			expander.expandWithCallPoints(thenMessages.get());
 		}
-		return new AltCombinedFragment(parent, ifChildren, thenChildren, ifMessages, thenMessages, ifGuard, thenGuard, sdIf, sdThen, sdExit);
+		
+		AltCombinedFragment toReturn = new AltCombinedFragment(parent, ifChildren, thenChildren, ifMessages, thenMessages, ifGuard, thenGuard, sdIf, sdThen, sdExit);
+		
+		if (ifMessages.isPresent())
+		{
+			for (Message ele : ifMessages.get())
+			{
+				ele.setFragment(Optional.of(toReturn));
+			}
+		}
+		if (thenMessages.isPresent())
+		{
+			for (Message ele : thenMessages.get())
+			{
+				ele.setFragment(Optional.of(toReturn));
+			}
+		}
+		
+		return toReturn;
 	}
 	
 	public static LoopCombinedFragment createLoopCombinedFragment(Optional<CombinedFragment> parent, Optional<List<CombinedFragment>> children, Optional<List<Message>> messages
@@ -33,6 +51,17 @@ public class CombinedFragmentFactory
 			messages = Optional.of(new ArrayList<Message>(messages.get()));
 			expander.expandWithCallPoints(messages.get());
 		}
-		return new LoopCombinedFragment(parent, children, messages, guard, sdStart, sdEnd);
+		
+		LoopCombinedFragment toReturn = new LoopCombinedFragment(parent, children, messages, guard, sdStart, sdEnd);
+		
+		if (messages.isPresent())
+		{
+			for (Message ele : messages.get())
+			{
+				ele.setFragment(Optional.of(toReturn));
+			}
+		}
+		
+		return toReturn;
 	}
 }

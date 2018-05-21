@@ -51,10 +51,10 @@ public class HardcodedReversi {
 		// OPERATIONS
 		
 		DataUnit posCNP = new DataUnit("posCN", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit xOffsetCNP = new DataUnit("xOffsetCN", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit yOffsetCNP = new DataUnit("yOffsetCN", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit xOffSetCNP = new DataUnit("xOffSetCN", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit yOffSetCNP = new DataUnit("yOffSetCN", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit CNresultP = new DataUnit("return", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
-		Operation calcNeighbor = new Operation("calcNeighbor", CNresultP, Optional.of(Arrays.asList(posCNP, xOffsetCNP, yOffsetCNP)));
+		Operation calcNeighbor = new Operation("calcNeighbor", CNresultP, Optional.of(Arrays.asList(posCNP, xOffSetCNP, yOffSetCNP)));
 		
 		DataUnit posTestP = new DataUnit("posTest", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit xTestP = new DataUnit("xTest", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
@@ -84,17 +84,17 @@ public class HardcodedReversi {
 		
 		DataUnit beginBTFP = new DataUnit("beginBTF", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit endBTFP = new DataUnit("endBTF", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit xOffsetBTFP = new DataUnit("xOffsetBTF", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit yOffsetBTFP = new DataUnit("yOffsetBTF", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit xOffSetBTFP = new DataUnit("xOffSetBTF", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit yOffSetBTFP = new DataUnit("yOffSetBTF", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit BTFreturnP = new DataUnit("return", PrimitiveType.VOID, Optional.of(Multiplicity.EXACTLY_ONE));
-		Operation backtrackFlip = new Operation("backtrackFlip", BTFreturnP, Optional.of(Arrays.asList(beginBTFP, endBTFP, xOffsetBTFP, yOffsetBTFP)));
+		Operation backtrackFlip = new Operation("backtrackFlip", BTFreturnP, Optional.of(Arrays.asList(beginBTFP, endBTFP, xOffSetBTFP, yOffSetBTFP)));
 		
 		DataUnit beginFIDP = new DataUnit("beginFID", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit endFIDP = new DataUnit("endFID", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit xOffsetFIDP = new DataUnit("xOffsetFID", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
-		DataUnit yOffsetFIDP = new DataUnit("yOffsetFID", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit xOffSetFIDP = new DataUnit("xOffSetFID", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
+		DataUnit yOffSetFIDP = new DataUnit("yOffSetFID", PrimitiveType.INTEGER, Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit FIDreturnP = new DataUnit("return", PrimitiveType.VOID, Optional.of(Multiplicity.EXACTLY_ONE));
-		Operation flipTilesInDir = new Operation("flipTilesInDir", FIDreturnP, Optional.of(Arrays.asList(beginFIDP, endFIDP, xOffsetFIDP, yOffsetFIDP)));
+		Operation flipTilesInDir = new Operation("flipTilesInDir", FIDreturnP, Optional.of(Arrays.asList(beginFIDP, endFIDP, xOffSetFIDP, yOffSetFIDP)));
 		
 		DataUnit posFTP = new DataUnit("posFT", new UserDefinedType("Position"), Optional.of(Multiplicity.EXACTLY_ONE));
 		DataUnit FTreturnP = new DataUnit("return", PrimitiveType.VOID, Optional.of(Multiplicity.EXACTLY_ONE));
@@ -257,6 +257,7 @@ public class HardcodedReversi {
 		// TEMP VARS
 		
 		TempVar boardCP = new TempVar(new UserDefinedType("Board"), "boardCP");
+		TempVar posCP = new TempVar(new UserDefinedType("Position"), "posCP");
 		TempVar blackCP = new TempVar(new UserDefinedType("boolean"), "blackCP");
 		TempVar xMaxCP = new TempVar(new UserDefinedType("int"), "xMaxCP");
 		TempVar yMaxCP = new TempVar(new UserDefinedType("int"), "yMaxCP");
@@ -292,6 +293,7 @@ public class HardcodedReversi {
 				, "canPlay_12", counter++, true, Optional.of("boardCP"), Optional.empty(), "canPlay", false);
 		
 		store.addTempVar("boardCP", boardCP);
+		store.addTempVar("posCP", posCP);
 		store.addTempVar("blackCP", blackCP);
 		store.addTempVar("xMaxCP", xMaxCP);
 		store.addTempVar("yMaxCP", yMaxCP);
@@ -341,9 +343,9 @@ public class HardcodedReversi {
 				, "randomPossiblePos_3", counter++, false, Optional.of("boardRPP"), Optional.of("boardRPP"), "randomPossiblePos", false);
 		Message randomPossiblePos_4 = new Message("yCoMaxRPP = getYCoMax()"
 				, "randomPossiblePos_4", counter++, false, Optional.of("boardRPP"), Optional.of("boardRPP"), "randomPossiblePos", false);
-		Message randomPossiblePos_5 = new Message("ranXRPP = randomInt(xCoMaxRPP)"
+		Message randomPossiblePos_5 = new Message("ranXRPP = randomInt(1, xCoMaxRPP)"
 				, "randomPossiblePos_5", counter++, false, Optional.of("boardRPP"), Optional.of("boardRPP"), "randomPossiblePos", false);
-		Message randomPossiblePos_6 = new Message("ranYRPP = randomInt(yCoMaxRPP)"
+		Message randomPossiblePos_6 = new Message("ranYRPP = randomInt(1, yCoMaxRPP)"
 				, "randomPossiblePos_6", counter++, false, Optional.of("boardRPP"), Optional.of("boardRPP"), "randomPossiblePos", false);
 		Message randomPossiblePos_7 = new Message("randomPosRPP = getPositionByXCoandYCo(ranXRPP, ranYRPP)"
 				, "randomPossiblePos_7", counter++, false, Optional.of("boardRPP"), Optional.of("boardRPP"), "randomPossiblePos", false);
@@ -384,8 +386,8 @@ public class HardcodedReversi {
 		TempVar givenIP = new TempVar(new UserDefinedType("Position"), "givenIP");
 		TempVar blackIP = new TempVar(new UserDefinedType("boolean"), "blackIP");
 		TempVar boardIP = new TempVar(new UserDefinedType("Board"), "boardIP");
-		TempVar xOffsetIP = new TempVar(new UserDefinedType("int"), "xOffsetIP");
-		TempVar yOffsetIP = new TempVar(new UserDefinedType("int"), "yOffsetIP");
+		TempVar xOffSetIP = new TempVar(new UserDefinedType("int"), "xOffSetIP");
+		TempVar yOffSetIP = new TempVar(new UserDefinedType("int"), "yOffSetIP");
 		TempVar isPlayableIP = new TempVar(new UserDefinedType("boolean"), "isPlayableIP");
 		TempVar numTrappedIP = new TempVar(new UserDefinedType("int"), "numTrappedIP");
 		
@@ -393,23 +395,23 @@ public class HardcodedReversi {
 
 		Message isPlayable_1 = new Message("isPlayable(givenIP, blackIP)"
 				, "isPlayable_1", counter++, false, Optional.empty(), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_2 = new Message("xOffsetIP = 1"
+		Message isPlayable_2 = new Message("xOffSetIP = 1"
 				, "isPlayable_2", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_3 = new Message("yOffsetIP = 0"
+		Message isPlayable_3 = new Message("yOffSetIP = 0"
 				, "isPlayable_3", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_4 = new Message("isPlayableIP = F"
 				, "isPlayable_4", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_5 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIp,yOffsetIp)"
+		Message isPlayable_5 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_5", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_6 = new Message("isPlayableIP = T"
 				, "isPlayable_6", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_7 = new Message("noop"
 				, "isPlayable_7", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_8 = new Message("xOffsetIP = 1"
+		Message isPlayable_8 = new Message("xOffSetIP = 1"
 				, "isPlayable_8", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_9 = new Message("yOffsetIP = -1"
+		Message isPlayable_9 = new Message("yOffSetIP = -1"
 				, "isPlayable_9", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_10 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_10 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_10", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_11 = new Message("isPlayableIP = T"
 				, "isPlayable_11", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -417,11 +419,11 @@ public class HardcodedReversi {
 				, "isPlayable_12", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_13 = new Message("noop"
 				, "isPlayable_13", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_14 = new Message("xOffsetIP = 0"
+		Message isPlayable_14 = new Message("xOffSetIP = 0"
 				, "isPlayable_14", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_15 = new Message("yOffsetIP = -1"
+		Message isPlayable_15 = new Message("yOffSetIP = -1"
 				, "isPlayable_15", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_16 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_16 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_16", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_17 = new Message("isPlayableIP = T"
 				, "isPlayable_17", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -429,11 +431,11 @@ public class HardcodedReversi {
 				, "isPlayable_18", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_19 = new Message("noop"
 				, "isPlayable_19", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_20 = new Message("xOffsetIP = -1 "
+		Message isPlayable_20 = new Message("xOffSetIP = -1 "
 				, "isPlayable_20", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_21 = new Message("yOffsetIP = -1"
+		Message isPlayable_21 = new Message("yOffSetIP = -1"
 				, "isPlayable_21", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_22 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_22 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_22", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_23 = new Message("isPlayableIP = T"
 				, "isPlayable_23", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -441,11 +443,11 @@ public class HardcodedReversi {
 				, "isPlayable_24", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_25 = new Message("noop"
 				, "isPlayable_25", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_26 = new Message("xOffsetIP = -1"
+		Message isPlayable_26 = new Message("xOffSetIP = -1"
 				, "isPlayable_26", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_27 = new Message("yOffsetIP = 0"
+		Message isPlayable_27 = new Message("yOffSetIP = 0"
 				, "isPlayable_27", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_28 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_28 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_28", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_29 = new Message("isPlayableIP = T"
 				, "isPlayable_29", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -453,11 +455,11 @@ public class HardcodedReversi {
 				, "isPlayable_30", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_31 = new Message("noop"
 				, "isPlayable_31", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_32 = new Message("xOffsetIP = -1"
+		Message isPlayable_32 = new Message("xOffSetIP = -1"
 				, "isPlayable_32", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_33 = new Message("yOffsetIP = 1"
+		Message isPlayable_33 = new Message("yOffSetIP = 1"
 				, "isPlayable_33", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_34 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_34 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_34", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_35 = new Message("isPlayableIP = T"
 				, "isPlayable_35", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -465,11 +467,11 @@ public class HardcodedReversi {
 				, "isPlayable_36", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_37 = new Message("noop"
 				, "isPlayable_37", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_38 = new Message("xOffsetIP = 0"
+		Message isPlayable_38 = new Message("xOffSetIP = 0"
 				, "isPlayable_38", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_39 = new Message("yOffsetIP = 1"
+		Message isPlayable_39 = new Message("yOffSetIP = 1"
 				, "isPlayable_39", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_40 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_40 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_40", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_41 = new Message("isPlayableIP = T"
 				, "isPlayable_41", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -477,11 +479,11 @@ public class HardcodedReversi {
 				, "isPlayable_42", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_43 = new Message("noop"
 				, "isPlayable_43", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_44 = new Message("xOffsetIP = 1"
+		Message isPlayable_44 = new Message("xOffSetIP = 1"
 				, "isPlayable_44", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_45 = new Message("yOffsetIP = 1"
+		Message isPlayable_45 = new Message("yOffSetIP = 1"
 				, "isPlayable_45", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
-		Message isPlayable_46 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffsetIP, yOffsetIP)"
+		Message isPlayable_46 = new Message("numTrappedIP = calcNumTrapped(givenIP, blackIP, xOffSetIP, yOffSetIP)"
 				, "isPlayable_46", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
 		Message isPlayable_47 = new Message("isPlayableIP = T"
 				, "isPlayable_47", counter++, false, Optional.of("boardIP"), Optional.of("boardIP"), "isPlayable", false);
@@ -495,8 +497,8 @@ public class HardcodedReversi {
 		store.addTempVar("givenIP", givenIP);
 		store.addTempVar("blackIP", blackIP);
 		store.addTempVar("boardIP", boardIP);
-		store.addTempVar("xOffsetIP", xOffsetIP);
-		store.addTempVar("yOffsetIP", yOffsetIP);
+		store.addTempVar("xOffSetIP", xOffSetIP);
+		store.addTempVar("yOffSetIP", yOffSetIP);
 		store.addTempVar("isPlayableIP", isPlayableIP);
 		store.addTempVar("numTrappedIP", numTrappedIP);
 		
@@ -659,8 +661,8 @@ public class HardcodedReversi {
 
 		TempVar beginBTF = new TempVar(new UserDefinedType("Position"), "beginBTF");
 		TempVar endBTF = new TempVar(new UserDefinedType("Position"), "endBTF");
-		TempVar xOffsetBTF = new TempVar(new UserDefinedType("int"), "xOffsetBTF");
-		TempVar yOffsetBTF = new TempVar(new UserDefinedType("int"), "yOffsetBTF");
+		TempVar xOffSetBTF = new TempVar(new UserDefinedType("int"), "xOffSetBTF");
+		TempVar yOffSetBTF = new TempVar(new UserDefinedType("int"), "yOffSetBTF");
 		TempVar boardBTF = new TempVar(new UserDefinedType("Board"), "boardBTF");
 		TempVar toFlipBTF = new TempVar(new UserDefinedType("Position"), "toFlipBTF");
 		TempVar stopBTF = new TempVar(new UserDefinedType("boolean"), "stopBTF");
@@ -668,9 +670,9 @@ public class HardcodedReversi {
 		
 		// MESSAGES
 
-		Message backtrackFlip_1 = new Message("backtrackFlip(beginBTF, endBTF, xOffsetBTF, yOffsetBTF)"
+		Message backtrackFlip_1 = new Message("backtrackFlip(beginBTF, endBTF, xOffSetBTF, yOffSetBTF)"
 				, "backtrackFlip_1", counter++, false, Optional.empty(), Optional.of("boardBTF"), "backtrackFlip", false);
-		Message backtrackFlip_2 = new Message("toFlipBTF = calcNeighbor(beginBTF, xOffsetBTF, yOffsetBTF)"
+		Message backtrackFlip_2 = new Message("toFlipBTF = calcNeighbor(beginBTF, xOffSetBTF, yOffSetBTF)"
 				, "backtrackFlip_2", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
 		Message backtrackFlip_3 = new Message("stopBTF = (toFlipBTF = endBTF)"
 				, "backtrackFlip_3", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
@@ -682,7 +684,7 @@ public class HardcodedReversi {
 				, "backtrackFlip_6", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
 		Message backtrackFlip_7 = new Message("setBlack(blackBTF)"
 				, "backtrackFlip_7", counter++, false, Optional.of("boardBTF"), Optional.of("toFlipBTF"), "backtrackFlip", false);
-		Message backtrackFlip_8 = new Message("toFlipBTF = calcNeighbor(toFlipBTF, xOffsetBTF, yOffsetBTF)"
+		Message backtrackFlip_8 = new Message("toFlipBTF = calcNeighbor(toFlipBTF, xOffSetBTF, yOffSetBTF)"
 				, "backtrackFlip_8", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
 		Message backtrackFlip_9 = new Message("stopBTF = T"
 				, "backtrackFlip_9", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
@@ -691,8 +693,8 @@ public class HardcodedReversi {
 
 		store.addTempVar("beginBTF", beginBTF);
 		store.addTempVar("endBTF", endBTF);
-		store.addTempVar("xOffsetBTF", xOffsetBTF);
-		store.addTempVar("yOffsetBTF", yOffsetBTF);
+		store.addTempVar("xOffSetBTF", xOffSetBTF);
+		store.addTempVar("yOffSetBTF", yOffSetBTF);
 		store.addTempVar("boardBTF", boardBTF);
 		store.addTempVar("toFlipBTF", toFlipBTF);
 		store.addTempVar("stopBTF", stopBTF);
@@ -720,8 +722,8 @@ public class HardcodedReversi {
 
 		TempVar beginFID = new TempVar(new UserDefinedType("Position"), "beginFID");
 		TempVar playerFID = new TempVar(new UserDefinedType("boolean"), "playerFID");
-		TempVar xOffsetFID = new TempVar(new UserDefinedType("int"), "xOffsetFID");
-		TempVar yOffsetFID = new TempVar(new UserDefinedType("int"), "yOffsetFID");
+		TempVar xOffSetFID = new TempVar(new UserDefinedType("int"), "xOffSetFID");
+		TempVar yOffSetFID = new TempVar(new UserDefinedType("int"), "yOffSetFID");
 		TempVar boardFID = new TempVar(new UserDefinedType("Board"), "boardFID");
 		TempVar neighborFID = new TempVar(new UserDefinedType("Position"), "neighborFID");
 		TempVar neighborExistsFID = new TempVar(new UserDefinedType("boolean"), "neighborExistsFID");
@@ -729,11 +731,11 @@ public class HardcodedReversi {
 		TempVar occupiedFID = new TempVar(new UserDefinedType("boolean"), "occupiedFID");
 		TempVar stopFID = new TempVar(new UserDefinedType("boolean"), "stopFID");
 
-		Message flipTilesInDir_1 = new Message("flipTilesInDir(beginFID, playerFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_1 = new Message("flipTilesInDir(beginFID, playerFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_1", counter++, false, Optional.empty(), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_2 = new Message("neighborExistsFID = neighborExists(beginFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_2 = new Message("neighborExistsFID = neighborExists(beginFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_2", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_3 = new Message("neighborFID = calcNeighbor(beginFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_3 = new Message("neighborFID = calcNeighbor(beginFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_3", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
 		Message flipTilesInDir_4 = new Message("getBlack()"
 				, "flipTilesInDir_4", counter++, false, Optional.of("boardFID"), Optional.of("neighborFID"), "flipTilesInDir", false);
@@ -745,9 +747,9 @@ public class HardcodedReversi {
 				, "flipTilesInDir_7", counter++, false, Optional.of("neighborFID"), Optional.of("boardFID"), "flipTilesInDir", false);
 		Message flipTilesInDir_8 = new Message("stopFID = F"
 				, "flipTilesInDir_8", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_9 = new Message("neighborExistsFID = (neighborFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_9 = new Message("neighborExistsFID = neighborExists(neighborFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_9", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_10 = new Message("neighborFID = calcNeighbor(neighborFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_10 = new Message("neighborFID = calcNeighbor(neighborFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_10", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
 		Message flipTilesInDir_11 = new Message("getBlack()"
 				, "flipTilesInDir_11", counter++, false, Optional.of("boardFID"), Optional.of("neighborFID"), "flipTilesInDir", false);
@@ -757,11 +759,11 @@ public class HardcodedReversi {
 				, "flipTilesInDir_13", counter++, false, Optional.of("boardFID"), Optional.of("neighborFID"), "flipTilesInDir", false);
 		Message flipTilesInDir_14 = new Message("occupiedFID"
 				, "flipTilesInDir_14", counter++, false, Optional.of("neighborFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_15 = new Message("xOffsetFID = -xOffsetFID"
+		Message flipTilesInDir_15 = new Message("xOffSetFID = -xOffSetFID"
 				, "flipTilesInDir_15", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_16 = new Message("yOffsetFID = -yOffsetFID"
+		Message flipTilesInDir_16 = new Message("yOffSetFID = -yOffSetFID"
 				, "flipTilesInDir_16", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
-		Message flipTilesInDir_17 = new Message("backtrackFlip(neighborFID, beginFID, xOffsetFID, yOffsetFID)"
+		Message flipTilesInDir_17 = new Message("backtrackFlip(neighborFID, beginFID, xOffSetFID, yOffSetFID)"
 				, "flipTilesInDir_17", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
 		Message flipTilesInDir_18 = new Message("stopFID = T"
 				, "flipTilesInDir_18", counter++, false, Optional.of("boardFID"), Optional.of("boardFID"), "flipTilesInDir", false);
@@ -778,8 +780,8 @@ public class HardcodedReversi {
 
 		store.addTempVar("beginFID", beginFID);
 		store.addTempVar("playerFID", playerFID);
-		store.addTempVar("xOffsetFID", xOffsetFID);
-		store.addTempVar("yOffsetFID", yOffsetFID);
+		store.addTempVar("xOffSetFID", xOffSetFID);
+		store.addTempVar("yOffSetFID", yOffSetFID);
 		store.addTempVar("boardFID", boardFID);
 		store.addTempVar("neighborFID", neighborFID);
 		store.addTempVar("neighborExistsFID", neighborExistsFID);
@@ -826,8 +828,8 @@ public class HardcodedReversi {
 		TempVar posFT = new TempVar(new UserDefinedType("Position"), "posFT");
 		TempVar boardFT = new TempVar(new UserDefinedType("Board"), "boardFT");
 		TempVar blackFT = new TempVar(new UserDefinedType("boolean"), "blackFT");
-		TempVar xOffsetFT = new TempVar(new UserDefinedType("int"), "xOffsetFT");
-		TempVar yOffsetFT = new TempVar(new UserDefinedType("int"), "yOffsetFT");
+		TempVar xOffSetFT = new TempVar(new UserDefinedType("int"), "xOffSetFT");
+		TempVar yOffSetFT = new TempVar(new UserDefinedType("int"), "yOffSetFT");
 		
 		Message flipTiles_1 = new Message("flipTiles(posFT)"
 				, "flipTiles_1", counter++, false, Optional.empty(), Optional.of("boardFT"), "flipTiles", false);		
@@ -835,60 +837,60 @@ public class HardcodedReversi {
 				, "flipTiles_2", counter++, false, Optional.of("boardFT"), Optional.of("posFT"), "flipTiles", false);		
 		Message flipTiles_3 = new Message("blackFT"
 				, "flipTiles_3", counter++, false, Optional.of("posFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_4 = new Message("xOffsetFT = 1"
+		Message flipTiles_4 = new Message("xOffSetFT = 1"
 				, "flipTiles_4", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_5 = new Message("yOffsetFT = 0"
+		Message flipTiles_5 = new Message("yOffSetFT = 0"
 				, "flipTiles_5", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_6 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_6 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_6", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_7 = new Message("xOffsetFT = 1"
+		Message flipTiles_7 = new Message("xOffSetFT = 1"
 				, "flipTiles_7", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_8 = new Message("yOffsetFT= -1"
+		Message flipTiles_8 = new Message("yOffSetFT= -1"
 				, "flipTiles_8", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_9 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_9 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_9", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_10 = new Message("xOffsetFT = 0"
+		Message flipTiles_10 = new Message("xOffSetFT = 0"
 				, "flipTiles_10", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_11 = new Message("yOffsetFT = -1"
+		Message flipTiles_11 = new Message("yOffSetFT = -1"
 				, "flipTiles_11", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_12 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_12 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_12", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_13 = new Message("xOffsetFT = -1"
+		Message flipTiles_13 = new Message("xOffSetFT = -1"
 				, "flipTiles_13", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_14 = new Message("yOffsetFT = -1"
+		Message flipTiles_14 = new Message("yOffSetFT = -1"
 				, "flipTiles_14", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_15 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_15 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_15", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_16 = new Message("xOffsetFT = -1"
+		Message flipTiles_16 = new Message("xOffSetFT = -1"
 				, "flipTiles_16", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_17 = new Message("yOffsetFT = 0"
+		Message flipTiles_17 = new Message("yOffSetFT = 0"
 				, "flipTiles_17", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_18 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_18 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_18", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_19 = new Message("xOffsetFT = -1"
+		Message flipTiles_19 = new Message("xOffSetFT = -1"
 				, "flipTiles_19", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_20 = new Message("yOffsetFT = 1"
+		Message flipTiles_20 = new Message("yOffSetFT = 1"
 				, "flipTiles_20", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_21 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_21 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_21", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_22 = new Message("xOffsetFT = 0"
+		Message flipTiles_22 = new Message("xOffSetFT = 0"
 				, "flipTiles_22", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_23 = new Message("yOffsetFT = 1"
+		Message flipTiles_23 = new Message("yOffSetFT = 1"
 				, "flipTiles_23", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_24 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_24 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_24", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_25 = new Message("xOffsetFT = 1"
+		Message flipTiles_25 = new Message("xOffSetFT = 1"
 				, "flipTiles_25", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_26 = new Message("yOffsetFT = 1"
+		Message flipTiles_26 = new Message("yOffSetFT = 1"
 				, "flipTiles_26", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);		
-		Message flipTiles_27 = new Message("flipTilesInDir(posFT, blackFT, xOffsetFT, yOffsetFT)"
+		Message flipTiles_27 = new Message("flipTilesInDir(posFT, blackFT, xOffSetFT, yOffSetFT)"
 				, "flipTiles_27", counter++, false, Optional.of("boardFT"), Optional.of("boardFT"), "flipTiles", false);
 
 		store.addTempVar("posFT", posFT);
 		store.addTempVar("boardFT", boardFT);
 		store.addTempVar("blackFT", blackFT);
-		store.addTempVar("xOffsetFT", xOffsetFT);
-		store.addTempVar("yOffsetFT", yOffsetFT);
+		store.addTempVar("xOffSetFT", xOffSetFT);
+		store.addTempVar("yOffSetFT", yOffSetFT);
 		
 		store.addMessages(Arrays.asList(flipTiles_1, flipTiles_2, flipTiles_3, flipTiles_4
 				, flipTiles_5, flipTiles_6, flipTiles_7, flipTiles_8, flipTiles_9
@@ -963,7 +965,7 @@ public class HardcodedReversi {
 				, "play_10", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
 		Message play_11 = new Message("canPlayP = canPlay(F)"
 				, "play_11", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
-		Message play_12 = new Message("skipCount = 0"
+		Message play_12 = new Message("skipCountP = 0"
 				, "play_12", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
 		Message play_13 = new Message("playPosP = randomPossiblePos(F)"
 				, "play_13", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
@@ -1044,7 +1046,7 @@ public class HardcodedReversi {
 		TempVar yCoMaxC = new TempVar(new UserDefinedType("int"), "yCoMaxC");
 		TempVar xCoC = new TempVar(new UserDefinedType("int"), "xCoC");
 		TempVar yCoC = new TempVar(new UserDefinedType("int"), "yCoC");
-		TempVar posC = new TempVar(new UserDefinedType("int"), "posC");
+		TempVar posC = new TempVar(new UserDefinedType("Position"), "posC");
 		TempVar colorC = new TempVar(new UserDefinedType("boolean"), "colorC");
 		TempVar occupiedC = new TempVar(new UserDefinedType("boolean"), "occupiedC");
 		
@@ -1052,37 +1054,37 @@ public class HardcodedReversi {
 		
 		Message count_1 = new Message("count(blackC)"
 				, "count_1", counter++, false, Optional.empty(), Optional.of("boardC"), "count", false);			
-		Message count_2 = new Message("count(blackC)"
+		Message count_2 = new Message("countC = 0"
 				, "count_2", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_3 = new Message("count(blackC)"
+		Message count_3 = new Message("xCoMaxC = getXCoMax()"
 				, "count_3", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_4 = new Message("count(blackC)"
+		Message count_4 = new Message("yCoMaxC = getYCoMax()"
 				, "count_4", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_5 = new Message("count(blackC)"
+		Message count_5 = new Message("xCoC = 1"
 				, "count_5", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_6 = new Message("count(blackC)"
+		Message count_6 = new Message("yCoC = 1"
 				, "count_6", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_7 = new Message("count(blackC)"
+		Message count_7 = new Message("posC = getPositionByXCoandYCo(xCoC, yCoC)"
 				, "count_7", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_8 = new Message("count(blackC)"
-				, "count_8", counter++, false, Optional.of("boardC"), Optional.of("posCC"), "count", false);			
-		Message count_9 = new Message("count(blackC)"
+		Message count_8 = new Message("getBlack()"
+				, "count_8", counter++, false, Optional.of("boardC"), Optional.of("posC"), "count", false);			
+		Message count_9 = new Message("colorC"
 				, "count_9", counter++, false, Optional.of("posC"), Optional.of("boardC"), "count", false);			
-		Message count_10 = new Message("count(blackC)"
+		Message count_10 = new Message("getOccupied()"
 				, "count_10", counter++, false, Optional.of("boardC"), Optional.of("posC"), "count", false);			
-		Message count_11 = new Message("count(blackC)"
+		Message count_11 = new Message("occupiedC"
 				, "count_11", counter++, false, Optional.of("posC"), Optional.of("boardC"), "count", false);			
-		Message count_12 = new Message("count(blackC)"
+		Message count_12 = new Message("countC = countC + 1"
 				, "count_12", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_13 = new Message("count(blackC)"
+		Message count_13 = new Message("noop"
 				, "count_13", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_14 = new Message("count(blackC)"
+		Message count_14 = new Message("yCoC = yCoC + 1"
 				, "count_14", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_15 = new Message("count(blackC)"
+		Message count_15 = new Message("xCoC = xCoC + 1"
 				, "count_15", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_16 = new Message("count(blackC)"
+		Message count_16 = new Message("yCoC = 1"
 				, "count_16", counter++, false, Optional.of("boardC"), Optional.of("boardC"), "count", false);			
-		Message count_17 = new Message("count(blackC)"
+		Message count_17 = new Message("countC"
 				, "count_17", counter++, true, Optional.of("boardC"), Optional.empty(), "count", false);	
 		
 		/*
@@ -1152,7 +1154,7 @@ public class HardcodedReversi {
 		canPlay_11.setFragment(Optional.of(cpOuter));
 		LoopCombinedFragment cpInner = CombinedFragmentFactory.createLoopCombinedFragment(Optional.of(cpOuter)
 				, Optional.empty(), Optional.of(Arrays.asList(canPlay_7, canPlay_8, canPlay_9))
-				, "yCoCP = =< yCoMaxCP & (canPlay = F)", dummy, dummy1, store);
+				, "yCoCP =< yCoMaxCP & (canPlay = F)", dummy, dummy1, store);
 		canPlay_7.setFragment(Optional.of(cpInner));
 		canPlay_8.setFragment(Optional.of(cpInner));
 		canPlay_9.setFragment(Optional.of(cpInner));
@@ -1193,16 +1195,16 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_6)), 
 				Optional.of(Arrays.asList(isPlayable_7)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_6.setFragment(Optional.of(ipSimple));
 		isPlayable_7.setFragment(Optional.of(ipSimple));
 		AltCombinedFragment ipOuter1 = CombinedFragmentFactory.createAltCombinedFragment(Optional.empty()
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_8, isPlayable_9, isPlayable_10)), 
 				Optional.of(Arrays.asList(isPlayable_13)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_8.setFragment(Optional.of(ipOuter1));
 		isPlayable_9.setFragment(Optional.of(ipOuter1));
 		isPlayable_10.setFragment(Optional.of(ipOuter1));
@@ -1211,8 +1213,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_11)), 
 				Optional.of(Arrays.asList(isPlayable_12)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_11.setFragment(Optional.of(ipInner1));
 		isPlayable_12.setFragment(Optional.of(ipInner1));
 		ipOuter1.setIfChildren(Arrays.asList(ipInner1));
@@ -1220,8 +1222,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_14, isPlayable_15, isPlayable_16)), 
 				Optional.of(Arrays.asList(isPlayable_19)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_14.setFragment(Optional.of(ipOuter2));
 		isPlayable_15.setFragment(Optional.of(ipOuter2));
 		isPlayable_16.setFragment(Optional.of(ipOuter2));
@@ -1230,8 +1232,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_17)), 
 				Optional.of(Arrays.asList(isPlayable_18)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_17.setFragment(Optional.of(ipInner2));
 		isPlayable_18.setFragment(Optional.of(ipInner2));
 		ipOuter2.setIfChildren(Arrays.asList(ipInner2));
@@ -1239,8 +1241,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_20, isPlayable_21, isPlayable_22)), 
 				Optional.of(Arrays.asList(isPlayable_25)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_20.setFragment(Optional.of(ipOuter3));
 		isPlayable_21.setFragment(Optional.of(ipOuter3));
 		isPlayable_22.setFragment(Optional.of(ipOuter3));
@@ -1249,8 +1251,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_23)), 
 				Optional.of(Arrays.asList(isPlayable_24)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_23.setFragment(Optional.of(ipInner3));
 		isPlayable_24.setFragment(Optional.of(ipInner3));
 		ipOuter3.setIfChildren(Arrays.asList(ipInner3));
@@ -1258,8 +1260,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_26, isPlayable_27, isPlayable_28)), 
 				Optional.of(Arrays.asList(isPlayable_31)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_26.setFragment(Optional.of(ipOuter4));
 		isPlayable_27.setFragment(Optional.of(ipOuter4));
 		isPlayable_28.setFragment(Optional.of(ipOuter4));
@@ -1268,8 +1270,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_29)), 
 				Optional.of(Arrays.asList(isPlayable_30)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_29.setFragment(Optional.of(ipInner4));
 		isPlayable_30.setFragment(Optional.of(ipInner4));
 		ipOuter4.setIfChildren(Arrays.asList(ipInner4));
@@ -1277,8 +1279,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_32, isPlayable_33, isPlayable_34)), 
 				Optional.of(Arrays.asList(isPlayable_37)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_32.setFragment(Optional.of(ipOuter5));
 		isPlayable_33.setFragment(Optional.of(ipOuter5));
 		isPlayable_34.setFragment(Optional.of(ipOuter5));
@@ -1287,8 +1289,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_35)), 
 				Optional.of(Arrays.asList(isPlayable_36)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_35.setFragment(Optional.of(ipInner5));
 		isPlayable_36.setFragment(Optional.of(ipInner5));
 		ipOuter5.setIfChildren(Arrays.asList(ipInner5));
@@ -1296,8 +1298,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_38, isPlayable_39, isPlayable_40)), 
 				Optional.of(Arrays.asList(isPlayable_43)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_38.setFragment(Optional.of(ipOuter6));
 		isPlayable_39.setFragment(Optional.of(ipOuter6));
 		isPlayable_40.setFragment(Optional.of(ipOuter6));
@@ -1306,8 +1308,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_41)), 
 				Optional.of(Arrays.asList(isPlayable_42)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_41.setFragment(Optional.of(ipInner6));
 		isPlayable_42.setFragment(Optional.of(ipInner6));
 		ipOuter6.setIfChildren(Arrays.asList(ipInner6));
@@ -1315,8 +1317,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_44, isPlayable_45, isPlayable_46)), 
 				Optional.of(Arrays.asList(isPlayable_49)), 
-				"isPlayable = F", 
-				"isPlayable = T", dummy, dummy1, dummy2, store);
+				"isPlayableIP = F", 
+				"isPlayableIP = T", dummy, dummy1, dummy2, store);
 		isPlayable_44.setFragment(Optional.of(ipOuter7));
 		isPlayable_45.setFragment(Optional.of(ipOuter7));
 		isPlayable_46.setFragment(Optional.of(ipOuter7));
@@ -1325,8 +1327,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(isPlayable_47)), 
 				Optional.of(Arrays.asList(isPlayable_48)), 
-				"numTrapped > 0", 
-				"numTrapped = 0", dummy, dummy1, dummy2, store);
+				"numTrappedIP > 0", 
+				"numTrappedIP = 0", dummy, dummy1, dummy2, store);
 		isPlayable_47.setFragment(Optional.of(ipInner7));
 		isPlayable_48.setFragment(Optional.of(ipInner7));
 		ipOuter7.setIfChildren(Arrays.asList(ipInner7));
@@ -1470,8 +1472,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(play_5, play_6, play_7, play_8, play_9)), 
 				Optional.of(Arrays.asList(play_10)), 
-				"canPlay = T", 
-				"canPlay = F", dummy, dummy1, dummy2, store);
+				"canPlayP = T", 
+				"canPlayP = F", dummy, dummy1, dummy2, store);
 		play_5.setFragment(Optional.of(playAltChild1));
 		play_6.setFragment(Optional.of(playAltChild1));
 		play_7.setFragment(Optional.of(playAltChild1));
@@ -1482,8 +1484,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(play_11)), 
 				Optional.of(Arrays.asList(play_18)), 
-				"skipCount < 2", 
-				"skipCount >= 2", dummy, dummy1, dummy2, store);
+				"skipCountP < 2", 
+				"skipCountP >= 2", dummy, dummy1, dummy2, store);
 		play_11.setFragment(Optional.of(playAltChild2));
 		play_18.setFragment(Optional.of(playAltChild2));
 		playLoop.setChildren(Arrays.asList(playAltChild1, playAltChild2));
@@ -1491,8 +1493,8 @@ public class HardcodedReversi {
 				, Optional.empty(), Optional.empty(), 
 				Optional.of(Arrays.asList(play_12, play_13, play_14, play_15, play_16)), 
 				Optional.of(Arrays.asList(play_17)), 
-				"canPlay = T", 
-				"canPlay = F", dummy, dummy1, dummy2, store);
+				"canPlayP = T", 
+				"canPlayP = F", dummy, dummy1, dummy2, store);
 		play_12.setFragment(Optional.of(playAltInner));
 		play_13.setFragment(Optional.of(playAltInner));
 		play_14.setFragment(Optional.of(playAltInner));
@@ -1526,7 +1528,7 @@ public class HardcodedReversi {
 				"~((occupiedC = T) & colorC = blackC))", dummy, dummy1, dummy2, store);
 		count_12.setFragment(Optional.of(countAlt));
 		count_13.setFragment(Optional.of(countAlt));
-		countOuter.setChildren(Arrays.asList(countAlt));
+		countInner.setChildren(Arrays.asList(countAlt));
 		
 		store.addAltCombinedFragment(neAlt);
 		store.addAltCombinedFragment(rppOuter);
@@ -1576,8 +1578,8 @@ public class HardcodedReversi {
 		store.addDiagramInfo("randomPossiblePos", new DiagramInfo("randomPossiblePos", boardRPP, Optional.of(Arrays.asList(blackRPP)), Optional.of(randomPosRPP)));
 		store.addDiagramInfo("isPlayable", new DiagramInfo("isPlayable", boardIP, Optional.of(Arrays.asList(givenIP, blackIP)), Optional.of(isPlayableIP)));
 		store.addDiagramInfo("calcNumTrapped", new DiagramInfo("calcNumTrapped", boardNT, Optional.of(Arrays.asList(posNT, blackNT, xOffNT, yOffNT)), Optional.of(numTrappedNT)));
-		store.addDiagramInfo("backtrackFlip", new DiagramInfo("backtrackFlip", boardBTF, Optional.of(Arrays.asList(beginBTF, endBTF, xOffsetBTF, yOffsetBTF)), Optional.empty()));
-		store.addDiagramInfo("flipTilesInDir", new DiagramInfo("flipTilesInDir", boardFID, Optional.of(Arrays.asList(beginFID, playerFID, xOffsetFID, yOffsetFID)), Optional.empty()));
+		store.addDiagramInfo("backtrackFlip", new DiagramInfo("backtrackFlip", boardBTF, Optional.of(Arrays.asList(beginBTF, endBTF, xOffSetBTF, yOffSetBTF)), Optional.empty()));
+		store.addDiagramInfo("flipTilesInDir", new DiagramInfo("flipTilesInDir", boardFID, Optional.of(Arrays.asList(beginFID, playerFID, xOffSetFID, yOffSetFID)), Optional.empty()));
 		store.addDiagramInfo("flipTiles", new DiagramInfo("flipTiles", boardFT, Optional.of(Arrays.asList(posFT)), Optional.empty()));
 		store.addDiagramInfo("play", new DiagramInfo("play", boardP, Optional.empty(), Optional.of(neighborCN)));
 		store.addDiagramInfo("count", new DiagramInfo("count", boardC, Optional.of(Arrays.asList(blackC)), Optional.of(countC)));

@@ -78,7 +78,7 @@ public class SeqDiagramStore extends DiagramStore implements TempVarContext, Cal
 			{
 				for (Entry<String, Message> entry : firstInstructions.entrySet())
 				{
-					if (message.getContent().contains(entry.getKey()))
+					if (message.getContent().contains(entry.getKey() + "("))
 					{
 						callPoints.put(message, entry.getValue());
 					}

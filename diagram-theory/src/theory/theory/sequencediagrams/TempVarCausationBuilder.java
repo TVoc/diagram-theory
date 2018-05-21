@@ -53,7 +53,7 @@ public class TempVarCausationBuilder
 		}
 		else if (message.getContent().split("\\(")[0].contains("get"))
 		{
-			TempVar assigned = store.resolveTempVar(store.getMessage(message.getSDPoint().getSequenceNumber()).getContent());
+			TempVar assigned = store.resolveTempVar(store.getNextMessage(message).get().getContent());
 			
 			return this.handleGetStatement(message, false, store, assigned, message.getContent());
 		}
@@ -145,6 +145,11 @@ public class TempVarCausationBuilder
 			{
 				assoc = ele;
 				
+				if (attrSpec.length > 1) // getByAttr1[andAttr2]
+				{
+					break;
+				}
+				
 				if (assoc.getNbOfEnds() == 2 && assoc.isCollection(toGetClassName, store).orElse(false))
 				{
 					String index = this.findGetterValue(rhs);
@@ -166,8 +171,26 @@ public class TempVarCausationBuilder
 		if (by)
 		{
 			String classVarName = StringUtils.uncapitalize(attrSpec[1].split("\\(")[0]);
-			String getterValue = this.findGetterValue(attrSpec[1]);
-			makeGetterPredicate = makeGetterPredicate + toGetClassName + classVarName + "(t, " + assigned.getName() + ", " + getterValue + ")).";
+			
+			String[] andParts = classVarName.split("and");
+			
+			for (int i = 0; i < andParts.length; i++)
+			{
+				andParts[i] = StringUtils.uncapitalize(andParts[i]);
+			}
+			
+			Class toGetClass = store.getClassByName(toGetClassName);
+			
+			if (andParts.length > 1 && toGetClass.hasAttributesByName(Arrays.asList(andParts))) // make sure it isn't a case where an attribute name contains "and"
+			{
+				String[] valueParts = this.findGetterValue(attrSpec[1]).split(ARGLIST_SEPARATOR);
+				makeGetterPredicate = makeGetterPredicate + this.handleMultiPartBy(andParts, valueParts, toGetClass, assigned, store) + ".";
+			}
+			else
+			{
+				String getterValue = this.findGetterValue(attrSpec[1]);
+				makeGetterPredicate = makeGetterPredicate + toGetClassName + classVarName + "(t, " + assigned.getName() + ", " + getterValue + ")).";
+			}
 		}		
 		
 		String toAppend = " ! t [Time] st [StackLevel] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
@@ -290,6 +313,46 @@ public class TempVarCausationBuilder
 				+ ") & (? b1 [boolean] : " + getPredicateName + "(t, st, b1) & b = flipBool(b1)).", this.getTabLevel()));
 		
 		return this;
+	}
+	
+	private String handleMultiPartBy(String[] andParts, String[] valueParts, Class toGetClass
+			, TempVar assigned, SeqDiagramStore store)
+	{
+		boolean hasTempVars = false;
+		
+		// These are relevant if there are temp vars
+		StringBuilder quantifiers = new StringBuilder ("? ");
+		StringBuilder varPredicates = new StringBuilder();
+		StringBuilder attrPredicates = new StringBuilder();
+		
+		for (int i = 0; i < andParts.length; i++)
+		{
+			DataUnit attr = toGetClass.getAttributeByName(andParts[i]).get();
+			
+			if (store.hasTempVar(valueParts[i]))
+			{
+				hasTempVars = true;
+				TempVar indexVar = store.resolveTempVar(valueParts[i]);
+				quantifiers.append(valueParts[i] + " [" + OutputConvenienceFunctions.toIDPType(indexVar.getType(), store) + "] ");
+				String amp = i > 0 ? " & " : "";
+				varPredicates.append(amp + OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(valueParts[i])) + "(t, " + valueParts[i] + ")");
+				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(" + assigned.getName() + ", " + valueParts[i] + ")");
+			}
+			else
+			{
+				String amp = i > 0 ? " & " : "";
+				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(" + assigned.getName() + ", " + valueParts[i]);
+			}
+		}
+		
+		if (hasTempVars)
+		{
+			return "(" + quantifiers.toString() + ": " + varPredicates.toString() + " & " + attrPredicates.toString() + ")";
+		}
+		else
+		{
+			return attrPredicates.toString();
+		}
 	}
 	
 	private String[] getRandomBounds(String rhs)
