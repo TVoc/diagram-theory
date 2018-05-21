@@ -38,4 +38,9 @@ public class ExitForMessage
 	{
 		return Collections.unmodifiableMap(this.internalGetExitTos());
 	}
+
+	@Override
+	public String toString() {
+		return "ExitForMessage [message=" + message + ", exitTos=" + exitTos + "]";
+	}
 }

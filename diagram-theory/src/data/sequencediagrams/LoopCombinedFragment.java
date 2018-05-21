@@ -237,6 +237,20 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 	}
 	
 	@Override
+	protected boolean inSameBranchTemplate(Message one, Message other)
+	{
+		for (CombinedFragment ele : this.getChildren())
+		{
+			if (! ele.inSameBranchTemplate(one, other))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
 	public String getDiagramName()
 	{
 		if (! this.internalGetMessages().isEmpty())
@@ -327,14 +341,18 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 		}
 	}
 	
-
-	
 	@Override
 	public TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded)
 	{
+		return this.getFirstEntryPoints(excluded, "");
+	}
+	
+	@Override
+	public TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded, String intermediate)
+	{
 		TreeMap<Message, String> output = new TreeMap<Message, String>();
 		
-		this.getFirstEntryPointsRec(output, "", excluded);
+		this.getFirstEntryPointsRec(output, intermediate, excluded);
 		
 		return output;
 	}
@@ -440,6 +458,11 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 
 		if (messageAfter.isPresent())
 		{
+//			if (! this.inSameBranch(exit.getMessage(), messageAfter.get()))
+//			{
+//				return;
+//			}
+			
 			CombinedFragment frag = messageAfter.get().getFragment().get();
 
 			while (! frag.equals(this) && ! frag.getParent().get().equals(this))

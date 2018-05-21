@@ -479,6 +479,36 @@ public class AltCombinedFragment extends CombinedFragment
 		
 		return false;
 	}
+	
+	@Override
+	protected boolean inSameBranchTemplate(Message one, Message other)
+	{
+		if (this.flattenIf().contains(one) && this.flattenThen().contains(other))
+		{
+			return false;
+		}
+		if (this.flattenThen().contains(one) && this.flattenIf().contains(other))
+		{
+			return false;
+		}
+		
+		for (CombinedFragment ele : this.getIfChildren())
+		{
+			if (! ele.inSameBranchTemplate(one, other))
+			{
+				return false;
+			}
+		}
+		for (CombinedFragment ele : this.getThenChildren())
+		{
+			if (! ele.inSameBranchTemplate(one, other))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	@Override
 	public TreeMap<Message, String> getEntryPoints(Optional<Set<CombinedFragment>> excluded)
@@ -624,9 +654,15 @@ public class AltCombinedFragment extends CombinedFragment
 	@Override
 	public TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded)
 	{
+		return this.getFirstEntryPoints(excluded, "");
+	}
+	
+	@Override
+	public TreeMap<Message, String> getFirstEntryPoints(Optional<Set<CombinedFragment>> excluded, String intermediate)
+	{
 		TreeMap<Message, String> output = new TreeMap<Message, String>();
 		
-		this.getFirstEntryPointsRec(output, "", excluded);
+		this.getFirstEntryPointsRec(output, intermediate, excluded);
 		
 		return output;
 	}
@@ -810,6 +846,11 @@ public class AltCombinedFragment extends CombinedFragment
 			
 			if (messageAfter.isPresent())
 			{
+//				if (! this.inSameBranch(exit.getMessage(), messageAfter.get()))
+//				{
+//					return;
+//				}
+				
 				CombinedFragment frag = messageAfter.get().getFragment().get();
 				
 				while (! frag.equals(this) && ! frag.getParent().get().equals(this))
@@ -888,6 +929,11 @@ public class AltCombinedFragment extends CombinedFragment
 			
 			if (messageAfter.isPresent())
 			{
+//				if (! this.inSameBranch(exit.getMessage(), messageAfter.get()))
+//				{
+//					return;
+//				}
+				
 				CombinedFragment frag = messageAfter.get().getFragment().get();
 				
 				while (! frag.equals(this) && ! frag.getParent().get().equals(this))

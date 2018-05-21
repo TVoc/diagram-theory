@@ -132,6 +132,10 @@ public class CheckpointBuilder
 			{
 				this.processCombinedFragment(top, store);
 			}
+			if (top.getTree().contains(frag)) // ensure that entry points are calculated if this and previous belong to same hierarchy
+			{
+				//this.processEntryPoints(frag, store);
+			}
 			
 			this.determineExits(frag, store);
 			this.calculateLoopReentry(frag, store);
@@ -150,6 +154,14 @@ public class CheckpointBuilder
 	private void processEntryPoints(CombinedFragment frag, SeqDiagramStore store) {
 		if (! this.getEntryPointsDetermined().contains(frag))
 		{
+			if (frag.getParent().isPresent())
+			{
+				if (frag.getParent().get().getMessage(0).getFragment().isPresent())
+				{
+					return;
+				}
+			}
+			
 			Map<Message, String> entryPoints = frag.getEntryPoints(Optional.empty());
 
 			this.getCanonicalEntryGuards().putAll(entryPoints);
@@ -195,12 +207,36 @@ public class CheckpointBuilder
 					Optional.empty()));
 		}
 		
+		// check that message and prev aren't in divergent branches due to alt
+		
+		boolean notInDivergentBranch = false;
+		
+		do
+		{
+			CombinedFragment messageTop = message.getFragment().get().getTopLevelFragment();
+			CombinedFragment prevTop = prev.getFragment().get().getTopLevelFragment();
+			
+			if (! messageTop.equals(prevTop) || messageTop.inSameBranch(message, prev))
+			{
+				notInDivergentBranch = true;
+				continue;
+			}
+			
+			prev = store.getRelativeMessage(prev, -1);
+		} while(! notInDivergentBranch);
+		
 		List<Pair<Message, Optional<String>>> toReturn = new ArrayList<>();
 		
 		List<ExitForMessage> exitsForPrevFrag = prev.getFragment().get().calcExitForMessages(store);
 		
 		for (ExitForMessage ele : exitsForPrevFrag)
 		{
+			if (message.belongsToSameFragHierarchy(ele.getMessage()) && 
+					message.compareTo(ele.getMessage()) <= 0)
+			{
+				continue;
+			}
+			
 			if (this.containsExitTo(ele, message))
 			{
 				toReturn.add(new ImmutablePair<>(ele.getMessage(),
@@ -623,8 +659,14 @@ public class CheckpointBuilder
 			TempVar tempVar = store.resolveTempVar(part.replaceAll("\\s", ""));
 			String idpType = OutputConvenienceFunctions.toIDPType(tempVar.getType(), store);
 
-			guardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
-			guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(Next(t), st, " + tempVar.getName() + ") & ");
+			if (! guardQuantifiers.toString().contains(tempVar.getName()))
+			{
+				guardQuantifiers.append(tempVar.getName() + " [" + idpType + "] ");
+			}
+			if (! guardBuilder.toString().contains(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar)))
+			{
+				guardBuilder.append(OutputConvenienceFunctions.singleTempVarPredicateName(tempVar) + "(Next(t), st, " + tempVar.getName() + ") & ");
+			}
 		}
 		
 		return guardQuantifiers.toString() + guardBuilder.toString() + guard + ")";

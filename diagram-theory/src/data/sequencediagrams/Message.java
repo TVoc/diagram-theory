@@ -138,6 +138,17 @@ public class Message implements Comparable<Message>, MessageContainer
 		this.fragment = fragment;
 	}
 	
+	public boolean belongsToSameFragHierarchy(Message message)
+	{
+		if (! this.getFragment().isPresent() || ! message.getFragment().isPresent())
+		{
+			return false;
+		}
+		
+		return this.getFragment().get().getTopLevelFragment()
+				.equals(message.getFragment().get().getTopLevelFragment());
+	}
+	
 	public boolean isReturn()
 	{
 		return this.isReturn;

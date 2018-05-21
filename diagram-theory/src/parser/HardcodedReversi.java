@@ -959,7 +959,7 @@ public class HardcodedReversi {
 				, "play_7", counter++, false, Optional.of("boardP"), Optional.of("playPosP"), "play", false);	
 		Message play_8 = new Message("setBlack(T)"
 				, "play_8", counter++, false, Optional.of("boardP"), Optional.of("playPosP"), "play", false);	
-		Message play_9 = new Message("flipPos(playPosP)"
+		Message play_9 = new Message("flipTiles(playPosP)"
 				, "play_9", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
 		Message play_10 = new Message("skipCountP = skipCountP + 1"
 				, "play_10", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
@@ -973,7 +973,7 @@ public class HardcodedReversi {
 				, "play_14", counter++, false, Optional.of("boardP"), Optional.of("playPosP"), "play", false);	
 		Message play_15 = new Message("setBlack(F)"
 				, "play_15", counter++, false, Optional.of("boardP"), Optional.of("playPosP"), "play", false);	
-		Message play_16 = new Message("flipPos(playPosP)"
+		Message play_16 = new Message("flipTiles(playPosP)"
 				, "play_16", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
 		Message play_17 = new Message("skipCountP = skipCountP + 1"
 				, "play_17", counter++, false, Optional.of("boardP"), Optional.of("boardP"), "play", false);	
@@ -1154,7 +1154,7 @@ public class HardcodedReversi {
 		canPlay_11.setFragment(Optional.of(cpOuter));
 		LoopCombinedFragment cpInner = CombinedFragmentFactory.createLoopCombinedFragment(Optional.of(cpOuter)
 				, Optional.empty(), Optional.of(Arrays.asList(canPlay_7, canPlay_8, canPlay_9))
-				, "yCoCP =< yCoMaxCP & (canPlay = F)", dummy, dummy1, store);
+				, "yCoCP =< yMaxCP & (canPlay = F)", dummy, dummy1, store);
 		canPlay_7.setFragment(Optional.of(cpInner));
 		canPlay_8.setFragment(Optional.of(cpInner));
 		canPlay_9.setFragment(Optional.of(cpInner));

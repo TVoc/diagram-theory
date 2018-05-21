@@ -54,4 +54,9 @@ public class ExitForMessageBuilder
 	{
 		return new ExitForMessage(this.getMessage(), this.getExitTos());
 	}
+
+	@Override
+	public String toString() {
+		return "ExitForMessageBuilder [message=" + message + ", exitTos=" + exitTos + "]";
+	}
 }
