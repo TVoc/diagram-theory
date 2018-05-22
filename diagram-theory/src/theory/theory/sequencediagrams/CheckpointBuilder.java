@@ -197,7 +197,7 @@ public class CheckpointBuilder
 	
 	private List<Pair<Message, Optional<String>>> calculateEntryPointTransition(Message message
 			, SeqDiagramStore store)
-	{
+	{	
 		CombinedFragment frag = message.getFragment().get();
 		Message prev = store.getRelativeMessage(frag.flattenMessages().get(0), -1); // TODO getmessage <-> flattenmessage
 		

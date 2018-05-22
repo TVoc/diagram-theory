@@ -562,6 +562,11 @@ public abstract class CombinedFragment implements MessageContainer
 		Message finalMsg = messages.get(messages.size() - 1);
 		List<Message> diagramMessages = store.getMessagesForDiagram(finalMsg.getDiagramName());
 
+		if (exitGuard.isPresent())
+		{
+			exitGuard = exitGuard.get().equals("") ? Optional.empty() : exitGuard;
+		}
+		
 		if (finalMsg.getSDPoint().getSequenceNumber() < diagramMessages.size())
 		{
 			List<CombinedFragment> loops = this.gatherNextLoops(diagramMessages);

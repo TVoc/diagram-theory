@@ -557,6 +557,27 @@ public class AltCombinedFragment extends CombinedFragment
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
 
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, true);
+				
+				// catch messages after loops
+				
+				List<MessageContainer> ifContainers = this.getIfAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < ifContainers.size(); i++)
+				{
+					MessageContainer container = ifContainers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -619,6 +640,25 @@ public class AltCombinedFragment extends CombinedFragment
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, true);
+				
+				List<MessageContainer> thenContainers = this.getThenAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < thenContainers.size(); i++)
+				{
+					MessageContainer container = thenContainers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -702,6 +742,27 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 				String intermediateP = (intermediate.equals("") ? this.getIfGuard() : intermediate + " & " + this.getIfGuard());
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetIfChildren(), true, false);
+				
+				// catch message after loops
+				
+				List<MessageContainer> ifContainers = this.getIfAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < ifContainers.size(); i++)
+				{
+					MessageContainer container = ifContainers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -737,6 +798,25 @@ public class AltCombinedFragment extends CombinedFragment
 				}
 				String intermediateP = (intermediate.equals("") ? this.getThenGuard() : intermediate + " & " + this.getThenGuard());
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetThenChildren(), true, false);
+				
+				List<MessageContainer> thenContainers = this.getThenAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < thenContainers.size(); i++)
+				{
+					MessageContainer container = thenContainers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -885,7 +965,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (CombinedFragment ele : nextFragments)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints(excluded);
+					Map<Message, String> elePoints = ele.getFirstEntryPoints(excluded);
 					
 					for (Entry<Message, String> entry : elePoints.entrySet())
 					{
@@ -969,7 +1049,7 @@ public class AltCombinedFragment extends CombinedFragment
 				
 				for (CombinedFragment ele : nextFragments)
 				{
-					Map<Message, String> elePoints = ele.getEntryPoints(excluded);
+					Map<Message, String> elePoints = ele.getFirstEntryPoints(excluded);
 					
 					for (Entry<Message, String> entry : elePoints.entrySet())
 					{

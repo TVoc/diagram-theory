@@ -158,9 +158,9 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,2; 1,-3; 2,-2; 3,-2; 4,4; 5,4; 6,-1; 7,2; 8,-3; 9,-2; 10,-4; 11,0; 12,0; 13,3; 14,-2; 15,-4; 16,2; 17,-2; 18,0; 19,0; 20,-3 }
+    RandomInt = { 0,4; 1,-3; 2,0; 3,2; 4,5; 5,3; 6,-5; 7,2; 8,0; 9,-3; 10,3; 11,-3; 12,4; 13,-3; 14,-1; 15,0; 16,-4; 17,-3; 18,1; 19,-4; 20,1 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "MMZZkdUEorQbZu8OetU4"; "pOkkc3eXPwBII7BjAyAj"; "2d6VkPZKNEZ3doWaMrwT"; "alt1a"; "alt2b"; "a"; "alt2a"; "alt1b"; "loop4"; "loop2"; "loop3"; "loop1"} 
+    LimitedString = { "KCYeFWVFKMuZmqOHrnwc"; "2Y3jUkpi58Y0Rs0xtRaa"; "DTFUZb5rXxqLow3AH7Ur"; "alt1a"; "alt2b"; "a"; "alt2a"; "alt1b"; "loop4"; "loop2"; "loop3"; "loop1"} 
     
     A = { A1; A2; A3}
     NextSD = { fragexample_1->fragexample_2; fragexample_2->fragexample_3; fragexample_3->fragexample_4; fragexample_4->fragexample_5; fragexample_5->fragexample_6; fragexample_6->fragexample_7; fragexample_7->fragexample_8; fragexample_8->fragexample_9; fragexample_9->fragexample_10; fragexample_10->fragexample_1; fragexample_1->fragexample_2 }

@@ -306,6 +306,27 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
 
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetChildren(), true, true);
+				
+				// catch message after loop
+				
+				List<MessageContainer> containers = this.getAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < containers.size(); i++)
+				{
+					MessageContainer container = containers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -387,6 +408,25 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 				String intermediateP = (intermediate.equals("") ? this.getGuard() : intermediate + " & " + this.getGuard());
 
 				this.wrapLoops(output, seen, excluded, intermediateP + " & ~" + firstL.getGuard(), this.internalGetChildren(), true, true);
+				
+				List<MessageContainer> containers = this.getAsContainers();
+				String loopGuards = intermediateP;
+				
+				for (int i = 0; i < containers.size(); i++)
+				{
+					MessageContainer container = containers.get(i);
+					
+					if (container instanceof OptionalCombinedFragment)
+					{
+						loopGuards = loopGuards + " & ~" + ((OptionalCombinedFragment) container).getGuard();
+					}
+					
+					if (container instanceof Message)
+					{
+						output.put((Message) container, loopGuards);
+						break;
+					}
+				}
 			}
 			
 			else
@@ -495,7 +535,7 @@ public class LoopCombinedFragment extends OptionalCombinedFragment
 			
 			for (CombinedFragment ele : nextFragments)
 			{
-				Map<Message, String> elePoints = ele.getEntryPoints(excluded);
+				Map<Message, String> elePoints = ele.getFirstEntryPoints(excluded);
 				
 				for (Entry<Message, String> entry : elePoints.entrySet())
 				{
