@@ -587,7 +587,7 @@ public class HardcodedReversi {
 				, "calcNumTrapped_1", counter++, false, Optional.empty(), Optional.of("boardNT"), "calcNumTrapped", false);
 		Message calcNumTrapped_2 = new Message("numTrappedNT = 0"
 				, "calcNumTrapped_2", counter++, false, Optional.of("boardNT"), Optional.of("boardNT"), "calcNumTrapped", false);
-		Message calcNumTrapped_3 = new Message("toCheckNT = not(blackNT)"
+		Message calcNumTrapped_3 = new Message("toCheckNT = flipBool(blackNT)"
 				, "calcNumTrapped_3", counter++, false, Optional.of("boardNT"), Optional.of("boardNT"), "calcNumTrapped", false);
 		Message calcNumTrapped_4 = new Message("neighExistsNT = neighborExists(posNT, xOffNT, yOffNT)"
 				, "calcNumTrapped_4", counter++, false, Optional.of("boardNT"), Optional.of("boardNT"), "calcNumTrapped", false);
@@ -680,7 +680,7 @@ public class HardcodedReversi {
 				, "backtrackFlip_4", counter++, false, Optional.of("boardBTF"), Optional.of("toFlipBTF"), "backtrackFlip", false);
 		Message backtrackFlip_5 = new Message("blackBTF"
 				, "backtrackFlip_5", counter++, false, Optional.of("toFlipBTF"), Optional.of("boardTF"), "backtrackFlip", false);
-		Message backtrackFlip_6 = new Message("blackBTF = not(blackBTF)"
+		Message backtrackFlip_6 = new Message("blackBTF = flipBool(blackBTF)"
 				, "backtrackFlip_6", counter++, false, Optional.of("boardBTF"), Optional.of("boardBTF"), "backtrackFlip", false);
 		Message backtrackFlip_7 = new Message("setBlack(blackBTF)"
 				, "backtrackFlip_7", counter++, false, Optional.of("boardBTF"), Optional.of("toFlipBTF"), "backtrackFlip", false);

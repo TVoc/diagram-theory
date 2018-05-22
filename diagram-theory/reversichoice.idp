@@ -1,0 +1,8 @@
+    ! t [Time] st [StackLevel] r [LimitedInt] : C_RanXRPPT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_5) & ChosenX(t, r).
+    ! t [Time] st [StackLevel] r [LimitedInt] : C_RanYRPPT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_6) & ChosenY(t, r).
+
+	! t [Time] : SDPointAt(t, randomPossiblePos_5) => ( ?1 n [LimitedInt] : ChosenX(t, n)).
+    ! t [Time] n [LimitedInt] : ChosenX(t, n) => (SDPointAt(t, randomPossiblePos_5) & ( ? st [StackLevel] n1 [LimitedInt] : (CurrentStackLevel(t) = st) & XCoMaxRPPT(t, st, n1) & n >= 1 & n =< n1)).
+    
+    ! t [Time] : SDPointAt(t, randomPossiblePos_6) => ( ?1 n [LimitedInt] : ChosenY(t, n)).
+    ! t [Time] n [LimitedInt] : ChosenY(t, n) => (SDPointAt(t, randomPossiblePos_6) & ( ? st [StackLevel] n1 [LimitedInt] : (CurrentStackLevel(t) = st) & YCoMaxRPPT(t, st, n1) & n >= 1 & n =< n1)).

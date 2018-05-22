@@ -1416,17 +1416,128 @@ structure S:V {
     Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20 }
 
     I_CurrentStackLevel = 1
+	I_ReturnPoint = { 1,finished }
 
-    LimitedInt = { -5..5 }
+    LimitedInt = { 1..4 }
     RandomInt = { 0,4; 1,1; 2,-2; 3,-2; 4,-1; 5,2; 6,3; 7,-3; 8,-2; 9,0; 10,-2; 11,-2; 12,-1; 13,4; 14,-2; 15,-1; 16,-5; 17,4; 18,5; 19,-1; 20,-3 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
     LimitedString = { "nk28RBOV7ocb6H1iBzaG"; "FBUVsFVWi3BKtiA15ddd"; "e1KLV30Rj3nij4q7FCr3"; "xCoNE"; "xCoMaxC"; "boardNE"; "xOffSetFT"; "xCoC"; "givenNE"; "xMaxCP"; "isPlayableRPP"; "playerFID"; "blackRPP"; "numTrappedIP"; "boardBTF"; "xOffSetFID"; "neighborExistsFID"; "yOffSetIP"; "xOffNT"; "blackIP"; "boardIP"; "occupiedFID"; "givenIP"; "boardC"; "playerP"; "yCoMaxRPP"; "xCoTestNE"; "posCP"; "yOffCN"; "yCoMaxC"; "yCoC"; "playPosP"; "blackBTF"; "boardFT"; "randomPosRPP"; "numTrappedNT"; "beginBTF"; "boardRPP"; "boardP"; "occupiedC"; "xOffSetBTF"; "stopFID"; "posStepNT"; "countWhiteP"; "blackWinsP"; "canPlayP"; "boardNT"; "yCoCN"; "yOffSetFID"; "boardFID"; "yCoCP"; "ranYRPP"; "yMaxCP"; "neighborCN"; "countBlackP"; "posNT"; "yOffSetBTF"; "canPlayCP"; "boardCN"; "xCoCP"; "boardCP"; "xOffCN"; "toCheckNT"; "yCoMaxNE"; "isPlayableIP"; "neighborFID"; "xCoCN"; "xCoMaxNE"; "skipCountP"; "occupiedNT"; "countC"; "xCoMaxRPP"; "yCoTestNE"; "ranXRPP"; "posC"; "stopBTF"; "beginFID"; "blackCP"; "posCN"; "occupiedRPP"; "existsNE"; "neighExistsNT"; "xOffSetIP"; "endBTF"; "loopNT"; "toFlipBTF"; "yCoNE"; "blackNT"; "tieP"; "yOffSetFT"; "posFT"; "blackFID"; "blackFT"; "blackC"; "colorC"; "foundRPP"; "yOffNT"} 
     
-    Board = { Board1; Board2; Board3}
-    Position = { Position1; Position2; Position3}
+    Board = { Board1 }
+    Position = { Position1; Position2; Position3; Position4}
     NextSD = { calcNeighbor_1->calcNeighbor_2; calcNeighbor_2->calcNeighbor_3; calcNeighbor_3->calcNeighbor_4; calcNeighbor_4->calcNeighbor_5; calcNeighbor_5->calcNeighbor_6; calcNeighbor_6->calcNeighbor_7; calcNeighbor_7->calcNeighbor_8; calcNeighbor_8->calcNeighbor_9; play_1->play_2; play_2->play_3; play_3->play_4; play_4->play_4post; play_4post->play_5; play_5->play_6; play_6->play_6post; play_6post->play_7; play_7->play_8; play_8->play_9; play_9->play_9post; play_9post->play_10; play_10->play_11; play_11->play_11post; play_11post->play_12; play_12->play_13; play_13->play_13post; play_13post->play_14; play_14->play_15; play_15->play_16; play_16->play_16post; play_16post->play_17; play_17->play_18; play_18->play_19; play_19->play_19post; play_19post->play_20; play_20->play_20post; play_20post->play_21; play_21->play_22; play_22->play_23; play_23->play_24; play_24->play_25; play_25->play_26; isPlayable_1->isPlayable_2; isPlayable_2->isPlayable_3; isPlayable_3->isPlayable_4; isPlayable_4->isPlayable_5; isPlayable_5->isPlayable_5post; isPlayable_5post->isPlayable_6; isPlayable_6->isPlayable_7; isPlayable_7->isPlayable_8; isPlayable_8->isPlayable_9; isPlayable_9->isPlayable_10; isPlayable_10->isPlayable_10post; isPlayable_10post->isPlayable_11; isPlayable_11->isPlayable_12; isPlayable_12->isPlayable_13; isPlayable_13->isPlayable_14; isPlayable_14->isPlayable_15; isPlayable_15->isPlayable_16; isPlayable_16->isPlayable_16post; isPlayable_16post->isPlayable_17; isPlayable_17->isPlayable_18; isPlayable_18->isPlayable_19; isPlayable_19->isPlayable_20; isPlayable_20->isPlayable_21; isPlayable_21->isPlayable_22; isPlayable_22->isPlayable_22post; isPlayable_22post->isPlayable_23; isPlayable_23->isPlayable_24; isPlayable_24->isPlayable_25; isPlayable_25->isPlayable_26; isPlayable_26->isPlayable_27; isPlayable_27->isPlayable_28; isPlayable_28->isPlayable_28post; isPlayable_28post->isPlayable_29; isPlayable_29->isPlayable_30; isPlayable_30->isPlayable_31; isPlayable_31->isPlayable_32; isPlayable_32->isPlayable_33; isPlayable_33->isPlayable_34; isPlayable_34->isPlayable_34post; isPlayable_34post->isPlayable_35; isPlayable_35->isPlayable_36; isPlayable_36->isPlayable_37; isPlayable_37->isPlayable_38; isPlayable_38->isPlayable_39; isPlayable_39->isPlayable_40; isPlayable_40->isPlayable_40post; isPlayable_40post->isPlayable_41; isPlayable_41->isPlayable_42; isPlayable_42->isPlayable_43; isPlayable_43->isPlayable_44; isPlayable_44->isPlayable_43; isPlayable_43->isPlayable_44; isPlayable_44->isPlayable_45; isPlayable_45->isPlayable_46; isPlayable_46->isPlayable_46post; isPlayable_46post->isPlayable_47; isPlayable_47->isPlayable_48; isPlayable_48->isPlayable_49; isPlayable_49->isPlayable_50; backtrackFlip_1->backtrackFlip_2; backtrackFlip_2->backtrackFlip_2post; backtrackFlip_2post->backtrackFlip_3; backtrackFlip_3->backtrackFlip_4; backtrackFlip_4->backtrackFlip_5; backtrackFlip_5->backtrackFlip_6; backtrackFlip_6->backtrackFlip_7; backtrackFlip_7->backtrackFlip_8; backtrackFlip_8->backtrackFlip_8post; backtrackFlip_8post->backtrackFlip_9; backtrackFlip_9->backtrackFlip_10; backtrackFlip_10->backtrackFlip_11; flipTilesInDir_1->flipTilesInDir_2; flipTilesInDir_2->flipTilesInDir_2post; flipTilesInDir_2post->flipTilesInDir_3; flipTilesInDir_3->flipTilesInDir_3post; flipTilesInDir_3post->flipTilesInDir_4; flipTilesInDir_4->flipTilesInDir_5; flipTilesInDir_5->flipTilesInDir_6; flipTilesInDir_6->flipTilesInDir_7; flipTilesInDir_7->flipTilesInDir_8; flipTilesInDir_8->flipTilesInDir_9; flipTilesInDir_9->flipTilesInDir_9post; flipTilesInDir_9post->flipTilesInDir_10; flipTilesInDir_10->flipTilesInDir_10post; flipTilesInDir_10post->flipTilesInDir_11; flipTilesInDir_11->flipTilesInDir_12; flipTilesInDir_12->flipTilesInDir_13; flipTilesInDir_13->flipTilesInDir_14; flipTilesInDir_14->flipTilesInDir_15; flipTilesInDir_15->flipTilesInDir_16; flipTilesInDir_16->flipTilesInDir_17; flipTilesInDir_17->flipTilesInDir_17post; flipTilesInDir_17post->flipTilesInDir_18; flipTilesInDir_18->flipTilesInDir_19; flipTilesInDir_19->flipTilesInDir_20; flipTilesInDir_20->flipTilesInDir_21; flipTilesInDir_21->flipTilesInDir_22; flipTilesInDir_22->flipTilesInDir_23; flipTilesInDir_23->flipTilesInDir_24; neighborExists_1->neighborExists_2; neighborExists_2->neighborExists_3; neighborExists_3->neighborExists_4; neighborExists_4->neighborExists_5; neighborExists_5->neighborExists_6; neighborExists_6->neighborExists_7; neighborExists_7->neighborExists_8; neighborExists_8->neighborExists_9; neighborExists_9->neighborExists_10; calcNumTrapped_1->calcNumTrapped_2; calcNumTrapped_2->calcNumTrapped_3; calcNumTrapped_3->calcNumTrapped_4; calcNumTrapped_4->calcNumTrapped_4post; calcNumTrapped_4post->calcNumTrapped_5; calcNumTrapped_5->calcNumTrapped_6; calcNumTrapped_6->calcNumTrapped_6post; calcNumTrapped_6post->calcNumTrapped_7; calcNumTrapped_7->calcNumTrapped_8; calcNumTrapped_8->calcNumTrapped_9; calcNumTrapped_9->calcNumTrapped_10; calcNumTrapped_10->calcNumTrapped_10post; calcNumTrapped_10post->calcNumTrapped_11; calcNumTrapped_11->calcNumTrapped_11post; calcNumTrapped_11post->calcNumTrapped_12; calcNumTrapped_12->calcNumTrapped_13; calcNumTrapped_13->calcNumTrapped_14; calcNumTrapped_14->calcNumTrapped_15; calcNumTrapped_15->calcNumTrapped_16; calcNumTrapped_16->calcNumTrapped_17; randomPossiblePos_1->randomPossiblePos_2; randomPossiblePos_2->randomPossiblePos_3; randomPossiblePos_3->randomPossiblePos_4; randomPossiblePos_4->randomPossiblePos_5; randomPossiblePos_5->randomPossiblePos_6; randomPossiblePos_6->randomPossiblePos_7; randomPossiblePos_7->randomPossiblePos_8; randomPossiblePos_8->randomPossiblePos_9; randomPossiblePos_9->randomPossiblePos_10; randomPossiblePos_10->randomPossiblePos_10post; randomPossiblePos_10post->randomPossiblePos_11; randomPossiblePos_11->randomPossiblePos_12; randomPossiblePos_12->randomPossiblePos_13; canPlay_1->canPlay_2; canPlay_2->canPlay_3; canPlay_3->canPlay_4; canPlay_4->canPlay_5; canPlay_5->canPlay_6; canPlay_6->canPlay_7; canPlay_7->canPlay_8; canPlay_8->canPlay_8post; canPlay_8post->canPlay_9; canPlay_9->canPlay_10; canPlay_10->canPlay_11; canPlay_11->canPlay_12; count_1->count_2; count_2->count_3; count_3->count_4; count_4->count_5; count_5->count_6; count_6->count_7; count_7->count_8; count_8->count_9; count_9->count_10; count_10->count_11; count_11->count_12; count_12->count_13; count_13->count_14; count_14->count_15; count_15->count_16; count_16->count_17; flipTiles_1->flipTiles_2; flipTiles_2->flipTiles_3; flipTiles_3->flipTiles_4; flipTiles_4->flipTiles_5; flipTiles_5->flipTiles_6; flipTiles_6->flipTiles_6post; flipTiles_6post->flipTiles_7; flipTiles_7->flipTiles_8; flipTiles_8->flipTiles_9; flipTiles_9->flipTiles_9post; flipTiles_9post->flipTiles_10; flipTiles_10->flipTiles_11; flipTiles_11->flipTiles_12; flipTiles_12->flipTiles_12post; flipTiles_12post->flipTiles_13; flipTiles_13->flipTiles_14; flipTiles_14->flipTiles_15; flipTiles_15->flipTiles_15post; flipTiles_15post->flipTiles_16; flipTiles_16->flipTiles_17; flipTiles_17->flipTiles_18; flipTiles_18->flipTiles_18post; flipTiles_18post->flipTiles_19; flipTiles_19->flipTiles_20; flipTiles_20->flipTiles_21; flipTiles_21->flipTiles_21post; flipTiles_21post->flipTiles_22; flipTiles_22->flipTiles_23; flipTiles_23->flipTiles_24; flipTiles_24->flipTiles_24post; flipTiles_24post->flipTiles_25; flipTiles_25->flipTiles_26; flipTiles_26->flipTiles_27; flipTiles_27->flipTiles_27post; flipTiles_27post->flipTiles_28 }
     flipBool = { T->F;F->T}
+	
+	I_BoardxCoMax = { Board1,2 }
+	I_BoardyCoMax = { Board1,2 }
+	I_BoardblackWinner = { Board1,F }
+	I_Boardtie = { Board1,F }
+	I_BoardgameOver = { Board1,F }
+	
+	I_PositionxCo = { Position1,1; Position2,1; Position3,2; Position4,2 }
+	I_PositionyCo = { Position1,1; Position2,2; Position3,1; Position4,2 }
+	I_Positionblack = { Position1,T; Position2,F; Position3,F; Position4,F }
+	I_Positionoccupied = { Position1,T; Position2,F; Position3,F; Position4,T }
+	
+	BoardandPosition = { Board1,Position1; Board1,Position2; Board1,Position3; Board1,Position4 }
+	BoardFirstPosition = { Board1->Position1 }
+	BoardNextPosition = { Board1,Position1->Position2; Board1,Position2->Position3; Board1,Position3->Position4 }
+	
+	I_XCoNET = {}
+	I_XCoMaxCT = {}
+	I_BoardNET = []
+	I_XOffSetFTT = {}
+	I_XCoCT = {}
+	I_GivenNET = {}
+	I_XMaxCPT = {}
+	I_IsPlayableRPPT = {}
+	I_PlayerFIDT = {}
+	I_BlackRPPT = {}
+	I_NumTrappedIPT = {}
+	I_BoardBTFT = {}
+	I_XOffSetFIDT = {}
+	I_NeighborExistsFIDT = {}
+	I_YOffSetIPT = {}
+	I_XOffNTT = {}
+	I_BlackIPT = {}
+	I_BoardIPT = {}
+	I_OccupiedFIDT = {}
+	I_GivenIPT = {}
+	I_BoardCT = {}
+	I_PlayerPT = {}
+	I_YCoMaxRPPT = {}
+	I_XCoTestNET = {}
+	I_PosCPT = {}
+	I_YOffCNT = {}
+	I_YCoMaxCT = {}
+	I_YCoCT = {}
+	I_PlayPosPT = {}
+	I_BlackBTFT = {}
+	I_BoardFTT = {}
+	I_RandomPosRPPT = {}
+	I_NumTrappedNTT = {}
+	I_BeginBTFT = {}
+	I_BoardRPPT = {}
+	I_BoardPT = {}
+	I_OccupiedCT = {}
+	I_XOffSetBTFT = {}
+	I_StopFIDT = {}
+	I_PosStepNTT = {}
+	I_CountWhitePT = {}
+	I_BlackWinsPT = {}
+	I_CanPlayPT = {}
+	I_BoardNTT = {}
+	I_YCoCNT = {}
+	I_YOffSetFIDT = {}
+	I_BoardFIDT = {}
+	I_YCoCPT = {}
+	I_RanYRPPT = {}
+	I_YMaxCPT = {}
+	I_NeighborCNT = {}
+	I_CountBlackPT = {}
+	I_PosNTT = {}
+	I_YOffSetBTFT = {}
+	I_CanPlayCPT = {}
+	I_BoardCNT = {}
+	I_XCoCPT = {}
+	I_BoardCPT = {}
+	I_XOffCNT = {}
+	I_ToCheckNTT = {}
+	I_YCoMaxNET = {}
+	I_IsPlayableIPT = {}
+	I_NeighborFIDT = {}
+	I_XCoCNT = {}
+	I_XCoMaxNET = {}
+	I_SkipCountPT = {}
+	I_OccupiedNTT = {}
+	I_CountCT = {}
+	I_XCoMaxRPPT = {}
+	I_YCoTestNET = {}
+	I_RanXRPPT = {}
+	I_PosCT = {}
+	I_StopBTFT = {}
+	I_BeginFIDT = {}
+	I_BlackCPT = {}
+	I_PosCNT = {}
+	I_OccupiedRPPT = {}
+	I_XCoTestNET = {}
+	I_NeighExistsNTT = {}
+	I_XOffSetIPT = {}
+	I_EndBTFT = {}
+	I_LoopNTT = {}
+	I_ToFlipBTFT = {}
+	I_YCoNET = {}
+	I_BlackNTT = {}
+	I_TiePT = {}
+	I_YOffSetFTT = {}
+	I_PosFTT = {}
+	I_BlackFIDT = {}
+	I_BlackFTT = {}
+	I_BlackCT = {}
+	I_ColorCT = {}
+	I_FoundRPPT = {}
+	I_YOffNTT = {}
 }
 procedure main() {
-    print(modelexpand(T,S)[1])
+    simulate_interactive(T,S)
 }
