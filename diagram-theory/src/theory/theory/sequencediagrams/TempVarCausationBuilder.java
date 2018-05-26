@@ -188,6 +188,13 @@ public class TempVarCausationBuilder
 			if (andParts.length > 1 && toGetClass.hasAttributesByName(Arrays.asList(andParts))) // make sure it isn't a case where an attribute name contains "and"
 			{
 				String[] valueParts = this.findGetterValue(attrSpec[1]).split(ARGLIST_SEPARATOR);
+				for (String ele : valueParts)
+				{
+					TempVar indexVar = store.resolveTempVar(ele);
+					makeGetterPredicate = makeGetterPredicate.substring(0, makeGetterPredicate.indexOf(":") - 1)
+							+ " " + ele + " [" + OutputConvenienceFunctions.toIDPType(indexVar.getType(), store) + "]"
+							+ makeGetterPredicate.substring(makeGetterPredicate.indexOf(" :"), makeGetterPredicate.length());
+				}
 				makeGetterPredicate = makeGetterPredicate + this.handleMultiPartBy(andParts, valueParts, toGetClass, assigned, store) + ".";
 			}
 			else
@@ -325,7 +332,7 @@ public class TempVarCausationBuilder
 		boolean hasTempVars = false;
 
 		// These are relevant if there are temp vars
-		StringBuilder quantifiers = new StringBuilder ("? ");
+//		StringBuilder quantifiers = new StringBuilder ("? ");
 		StringBuilder varPredicates = new StringBuilder();
 		StringBuilder attrPredicates = new StringBuilder();
 
@@ -337,21 +344,21 @@ public class TempVarCausationBuilder
 			{
 				hasTempVars = true;
 				TempVar indexVar = store.resolveTempVar(valueParts[i]);
-				quantifiers.append(valueParts[i] + " [" + OutputConvenienceFunctions.toIDPType(indexVar.getType(), store) + "] ");
+//				quantifiers.append(valueParts[i] + " [" + OutputConvenienceFunctions.toIDPType(indexVar.getType(), store) + "] ");
 				String amp = i > 0 ? " & " : "";
 				varPredicates.append(amp + OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(valueParts[i])) + "(t, " + valueParts[i] + ")");
-				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(" + assigned.getName() + ", " + valueParts[i] + ")");
+				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(t, " + assigned.getName() + ", " + valueParts[i] + ")");
 			}
 			else
 			{
 				String amp = i > 0 ? " & " : "";
-				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(" + assigned.getName() + ", " + valueParts[i]);
+				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(t, " + assigned.getName() + ", " + valueParts[i]);
 			}
 		}
 
 		if (hasTempVars)
 		{
-			return "(" + quantifiers.toString() + ": " + varPredicates.toString() + " & " + attrPredicates.toString() + ")";
+			return varPredicates.toString() + " & " + attrPredicates.toString() + ")";
 		}
 		else
 		{
@@ -471,6 +478,14 @@ public class TempVarCausationBuilder
 					+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), st, " + assigned.getNameAsAssignee() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
 					+ message.getSDPoint() + ") & " + quantifiers.toString() + assertion.toString();
 
+			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
+		}
+		else if (rhs.equals("T") || rhs.equals("F"))
+		{
+			String toAppend = "! t [Time] st [StackLevel] : C_"
+					+ OutputConvenienceFunctions.singleTempVarPredicateName(assigned)
+					+ "(Next(t), st, " + rhs + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
+					+ message.getSDPoint() + ").";
 			this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
 		}
 		else
