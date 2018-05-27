@@ -106,6 +106,7 @@ public class SeqVocabularyBuilder
 				+ OutputConvenienceFunctions.insertTabsNewLine("SDPointAt(Time,SDPoint)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("I_SDPointAt(SDPoint)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("C_SDPointAt(Time,SDPoint)", this.getTabLevel() + 1)
+				+ OutputConvenienceFunctions.insertTabsNewLine("NonStandardSDPoint(SDPoint)", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsBlankLine(this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedInt isa int", this.getTabLevel() + 1)
 				+ OutputConvenienceFunctions.insertTabsNewLine("type LimitedFloat isa float", this.getTabLevel() + 1)

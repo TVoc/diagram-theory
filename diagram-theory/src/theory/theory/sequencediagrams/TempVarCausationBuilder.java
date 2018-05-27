@@ -417,9 +417,8 @@ public class TempVarCausationBuilder
 		//			
 		//			return this;
 		//		}
-
 		String[] parts = rhs.split(XMLParser.TEMPVAR_SEPARATOR);
-
+		
 		StringBuilder quantifiers = new StringBuilder("");
 		StringBuilder assertion = new StringBuilder("");
 
@@ -457,6 +456,18 @@ public class TempVarCausationBuilder
 
 		if (! assigned.getType().getTypeName(store).equals("boolean"))
 		{
+			if ((parts.length == 1 && ! store.hasTempVar(parts[0])) ||
+					OutputConvenienceFunctions.representsInteger(rhs) ||
+					OutputConvenienceFunctions.representsFloat(rhs))
+			{
+				String toAppend = "! t [Time] st [StackLevel] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(Next(t), st, " + rhs + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
+				+ message.getSDPoint() + ").";
+				
+				this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
+				
+				return this;
+			}
+			
 			if (! "".equals(assertion.toString()))
 			{
 				String content = message.getContent();

@@ -15,6 +15,7 @@ import theory.DiagramStore;
 import theory.OutputConvenienceFunctions;
 import theory.SeqDiagramStore;
 import theory.SeqFactors;
+import theory.theory.sequencediagrams.CheckpointBuilder;
 import data.classdiagrams.Class;
 import data.classdiagrams.Generalization;
 import data.sequencediagrams.Message;
@@ -233,6 +234,33 @@ public class SeqStructureBuilder
 			if (! it.hasNext())
 			{
 				nextBuilder.setLength(nextBuilder.length() - 2);
+				nextBuilder.append(" }");
+			}
+		}
+		
+		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(nextBuilder.toString(), this.getTabLevel() + 1));
+		
+		return this;
+	}
+	
+	public SeqStructureBuilder processNonStandardSDPoints(CheckpointBuilder checkpointBuilder)
+	{
+		StringBuilder nextBuilder = new StringBuilder("NonStandardSDPoint = { ");
+		
+		Set<SDPoint> nonStandard = checkpointBuilder.getNonStandardPoints();
+		
+		for (Iterator<SDPoint> it = nonStandard.iterator(); it.hasNext(); )
+		{
+			SDPoint ele = it.next();
+			
+			nextBuilder.append(ele);
+			
+			if (it.hasNext())
+			{
+				nextBuilder.append("; ");
+			}
+			else
+			{
 				nextBuilder.append(" }");
 			}
 		}

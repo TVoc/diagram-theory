@@ -67,9 +67,14 @@ public class CheckpointBuilder
 
 	private final Set<SDPoint> nonStandardPoints;
 
-	private final Set<SDPoint> getNonStandardPoints() 
+	private final Set<SDPoint> internalGetNonStandardPoints() 
 	{
 		return this.nonStandardPoints;
+	}
+	
+	public Set<SDPoint> getNonStandardPoints()
+	{
+		return Collections.unmodifiableSet(this.internalGetNonStandardPoints());
 	}
 
 	private final List<SDPoint> returnPoints;
@@ -187,7 +192,7 @@ public class CheckpointBuilder
 												ele.getRight().orElse(entryPoint.getValue())))));
 					}
 					
-					this.getNonStandardPoints().add(ele.getLeft().getSDPoint());
+					this.internalGetNonStandardPoints().add(ele.getLeft().getSDPoint());
 				}
 			}
 			
@@ -301,7 +306,7 @@ public class CheckpointBuilder
 					}
 				}
 				
-				this.getNonStandardPoints().add(exitForMessage.getMessage().getSDPoint());
+				this.internalGetNonStandardPoints().add(exitForMessage.getMessage().getSDPoint());
 			}
 
 			this.getExitPointsDetermined().add(frag);
@@ -352,8 +357,8 @@ public class CheckpointBuilder
 		this.getCheckpoints().put(frag.getSdThen(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdThen() + ") <- SDPointAt(t, " + (frag.getSdIf().offset(-1)) + ") & " + thenGuardQuantifiers.toString() + thenGuardBuilder.toString() + frag.getThenGuard() + ").");
 		this.getCheckpoints().put(frag.getSdExit(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdExit() + ") <- SDPointAt(t, " + (frag.getSdThen().offset(-1)) + ") | SDPointAt(t, " + (frag.getSdExit().offset(-1)) + ").");
 
-		this.getNonStandardPoints().add(frag.getSdIf().offset(-1));
-		this.getNonStandardPoints().add(frag.getSdThen().offset(-1));
+		this.internalGetNonStandardPoints().add(frag.getSdIf().offset(-1));
+		this.internalGetNonStandardPoints().add(frag.getSdThen().offset(-1));
 
 		return this;
 	}
@@ -383,15 +388,15 @@ public class CheckpointBuilder
 		this.getCheckpoints().put(frag.getSdStart(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdStart() + ") <- (SDPointAt(t, " + (frag.getSdStart().offset(-1)) + ") | SDPointAt(t, " + (frag.getSdEnd().offset(-1)) + ")) & " + loopGuardQuantifiers.toString() + loopGuardBuilder.toString() + frag.getGuard() + ").");
 		this.getCheckpoints().put(frag.getSdEnd(), "! t [Time] : C_SDPointAt(Next(t), " + frag.getSdEnd() + ") <- (SDPointAt(t, " + (frag.getSdStart().offset(-1)) + ") | SDPointAt(t, " + (frag.getSdEnd().offset(-1)) + ")) & ~(" + loopGuardQuantifiers.toString() + loopGuardBuilder.toString() + frag.getGuard() + ")).");
 
-		this.getNonStandardPoints().add(frag.getSdStart().offset(-1));
-		this.getNonStandardPoints().add(frag.getSdEnd().offset(-1));
+		this.internalGetNonStandardPoints().add(frag.getSdStart().offset(-1));
+		this.internalGetNonStandardPoints().add(frag.getSdEnd().offset(-1));
 
 		return this;
 	}
 
 	public CheckpointBuilder handleCallPoint(Message call, SeqDiagramStore store)
 	{
-		this.getNonStandardPoints().add(call.getSDPoint());
+		this.internalGetNonStandardPoints().add(call.getSDPoint());
 		
 		Message callMsg = store.getCallMessage(call);
 
@@ -410,7 +415,7 @@ public class CheckpointBuilder
 	
 	public CheckpointBuilder handleReturnMessage(Message returnMessage, SeqDiagramStore store)
 	{
-		this.getNonStandardPoints().add(returnMessage.getSDPoint());
+		this.internalGetNonStandardPoints().add(returnMessage.getSDPoint());
 		this.getReturnPoints().add(returnMessage.getSDPoint());
 		
 		return this;
@@ -457,7 +462,7 @@ public class CheckpointBuilder
 							beforeFrag.getSDPoint(), intermediate.toString()));
 				}
 				
-				this.getNonStandardPoints().add(beforeFrag.getSDPoint());
+				this.internalGetNonStandardPoints().add(beforeFrag.getSDPoint());
 				
 				return;
 			}
@@ -491,7 +496,7 @@ public class CheckpointBuilder
 			}
 		}
 		
-		this.getNonStandardPoints().add(beforeFrag.getSDPoint());
+		this.internalGetNonStandardPoints().add(beforeFrag.getSDPoint());
 	}
 
 	//	public CheckpointBuilder handleCallPoint(Message callFrom, Message callTo, SeqDiagramStore store)
@@ -503,25 +508,25 @@ public class CheckpointBuilder
 	{
 		StringBuilder toReturn = new StringBuilder();
 
-		StringBuilder general = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)");
+		StringBuilder general = new StringBuilder("! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s) & ~NonStandardSDPoint(s).");
 
-		if (! this.getNonStandardPoints().isEmpty())
-		{
-			general.append("& ~(");
-
-			for (Iterator<SDPoint> it = this.getNonStandardPoints().iterator(); it.hasNext(); )
-			{
-				SDPoint ele = it.next();
-				
-				if (it.hasNext())
-				{
-					general.append("(s = " + ele + ") | ");
-				}
-				else
-				{
-					general.append("(s = " + ele + ")).");
-				}
-			}
+//		if (! this.internalGetNonStandardPoints().isEmpty())
+//		{
+//			general.append("& ~(");
+//
+//			for (Iterator<SDPoint> it = this.internalGetNonStandardPoints().iterator(); it.hasNext(); )
+//			{
+//				SDPoint ele = it.next();
+//				
+//				if (it.hasNext())
+//				{
+//					general.append("(s = " + ele + ") | ");
+//				}
+//				else
+//				{
+//					general.append("(s = " + ele + ")).");
+//				}
+//			}
 			
 //			for (int i = 0; i < this.getNonStandardPoints().size(); i++)
 //			{
@@ -534,11 +539,11 @@ public class CheckpointBuilder
 //					general.append("(s = " + this.getNonStandardPoints().get(i) + ") | ");
 //				}
 //			}
-		}
-		else
-		{
-			general.append(".");
-		}
+//		}
+//		else
+//		{
+//			general.append(".");
+//		}
 
 		toReturn.append(OutputConvenienceFunctions.insertTabsNewLine(general.toString(), this.getTabLevel()));
 		

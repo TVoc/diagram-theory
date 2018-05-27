@@ -11,10 +11,9 @@ LTCvocabulary V {
     SDPointAt(Time,SDPoint)
     I_SDPointAt(SDPoint)
     C_SDPointAt(Time,SDPoint)
+    NonStandardSDPoint(SDPoint)
     
     type LimitedInt isa int
-    type LimitedFloat isa float
-    type LimitedString isa string
     type boolean constructed from { T, F }
     flipBool(boolean) : boolean
     type void constructed from { null }
@@ -29,7 +28,6 @@ LTCvocabulary V {
     C_ReturnPoint(Time,StackLevel,SDPoint)
     Cn_ReturnPoint(Time,StackLevel,SDPoint)
     
-    RandomInt(Time) : LimitedInt
     type Board
     type Position
     
@@ -506,7 +504,7 @@ theory T:V {
 
                     ! t [Time] st [StackLevel] x [Board] v [boolean] : Cn_BoardgameOver(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_25) & BoardPT(t, st, x) & BoardgameOver(t, x, v) & ~(v = T).
 
-        //! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)& ~((s = backtrackFlip_2) | (s = backtrackFlip_3) | (s = backtrackFlip_8) | (s = backtrackFlip_8post) | (s = backtrackFlip_9) | (s = backtrackFlip_10) | (s = backtrackFlip_11) | (s = calcNeighbor_9) | (s = calcNumTrapped_4) | (s = calcNumTrapped_4post) | (s = calcNumTrapped_6) | (s = calcNumTrapped_6post) | (s = calcNumTrapped_8) | (s = calcNumTrapped_10) | (s = calcNumTrapped_10post) | (s = calcNumTrapped_11) | (s = calcNumTrapped_11post) | (s = calcNumTrapped_12) | (s = calcNumTrapped_13) | (s = calcNumTrapped_14) | (s = calcNumTrapped_15) | (s = calcNumTrapped_16) | (s = calcNumTrapped_17) | (s = canPlay_6) | (s = canPlay_8) | (s = canPlay_9) | (s = canPlay_11) | (s = canPlay_12) | (s = count_6) | (s = count_11) | (s = count_12) | (s = count_13) | (s = count_14) | (s = count_16) | (s = count_17) | (s = finished) | (s = flipTiles_6) | (s = flipTiles_9) | (s = flipTiles_12) | (s = flipTiles_15) | (s = flipTiles_18) | (s = flipTiles_21) | (s = flipTiles_24) | (s = flipTiles_27) | (s = flipTiles_28) | (s = flipTilesInDir_2) | (s = flipTilesInDir_2post) | (s = flipTilesInDir_3) | (s = flipTilesInDir_7) | (s = flipTilesInDir_8) | (s = flipTilesInDir_9) | (s = flipTilesInDir_9post) | (s = flipTilesInDir_10) | (s = flipTilesInDir_14) | (s = flipTilesInDir_17) | (s = flipTilesInDir_18) | (s = flipTilesInDir_19) | (s = flipTilesInDir_20) | (s = flipTilesInDir_21) | (s = flipTilesInDir_22) | (s = flipTilesInDir_23) | (s = flipTilesInDir_24) | (s = isPlayable_5) | (s = isPlayable_5post) | (s = isPlayable_6) | (s = isPlayable_7) | (s = isPlayable_10) | (s = isPlayable_11) | (s = isPlayable_12) | (s = isPlayable_13) | (s = isPlayable_16) | (s = isPlayable_17) | (s = isPlayable_18) | (s = isPlayable_19) | (s = isPlayable_22) | (s = isPlayable_23) | (s = isPlayable_24) | (s = isPlayable_25) | (s = isPlayable_28) | (s = isPlayable_29) | (s = isPlayable_30) | (s = isPlayable_31) | (s = isPlayable_34) | (s = isPlayable_35) | (s = isPlayable_36) | (s = isPlayable_37) | (s = isPlayable_40) | (s = isPlayable_41) | (s = isPlayable_42) | (s = isPlayable_43) | (s = isPlayable_46) | (s = isPlayable_47) | (s = isPlayable_48) | (s = isPlayable_49) | (s = isPlayable_50) | (s = neighborExists_7) | (s = neighborExists_8) | (s = neighborExists_9) | (s = neighborExists_10) | (s = play_3) | (s = play_4) | (s = play_4post) | (s = play_6) | (s = play_9) | (s = play_9post) | (s = play_10) | (s = play_11) | (s = play_11post) | (s = play_13) | (s = play_16) | (s = play_16post) | (s = play_17) | (s = play_18) | (s = play_19) | (s = play_20) | (s = play_26) | (s = randomPossiblePos_4) | (s = randomPossiblePos_8) | (s = randomPossiblePos_9) | (s = randomPossiblePos_10) | (s = randomPossiblePos_10post) | (s = randomPossiblePos_11) | (s = randomPossiblePos_12) | (s = randomPossiblePos_13)).
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s) & ~NonStandardSDPoint(s).
         
         ! t [Time] : C_SDPointAt(Next(t), backtrackFlip_1) <- SDPointAt(t, flipTilesInDir_17).
         ! t [Time] : C_SDPointAt(Next(t), calcNeighbor_1) <- SDPointAt(t, calcNumTrapped_6) | SDPointAt(t, calcNumTrapped_11) | SDPointAt(t, backtrackFlip_2) | SDPointAt(t, backtrackFlip_8) | SDPointAt(t, flipTilesInDir_3) | SDPointAt(t, flipTilesInDir_10).
@@ -647,8 +645,8 @@ theory T:V {
         ! t [Time] st [StackLevel] x [LimitedInt] : C_XMaxCPT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_2) & (? o [Board] : BoardCPT(t, CurrentStackLevel(t), o) & BoardxCoMax(t, o, x)).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_YMaxCPT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_3) & (? o [Board] : BoardCPT(t, CurrentStackLevel(t), o) & BoardyCoMax(t, o, x)).
         ! t [Time] st [StackLevel] : C_CanPlayCPT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_4).
-        ! t [Time] st [StackLevel] xCoCP [LimitedInt] : C_XCoCPT(Next(t), st, xCoCP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_5) & xCoCP=1.
-        ! t [Time] st [StackLevel] yCoCP [LimitedInt] : C_YCoCPT(Next(t), st, yCoCP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_6) & yCoCP=1.
+        ! t [Time] st [StackLevel] : C_XCoCPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_5).
+        ! t [Time] st [StackLevel] : C_YCoCPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_6).
          ! t [Time] st [StackLevel] posCP [Position] : C_PosCPT(Next(t), st, posCP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_7) & (? boardCP [Board] xCoCP [LimitedInt] yCoCP [LimitedInt] : BoardCPT(t, st, boardCP) & BoardandPosition(boardCP, posCP) & XCoCPT(t, st, xCoCP) & YCoCPT(t, st, yCoCP) & PositionxCo(t, posCP, xCoCP) & PositionyCo(t, posCP, yCoCP)).
         ! t [Time] st [StackLevel] c [Board] : C_BoardIPT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, canPlay_8) & BoardCPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_GivenIPT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, canPlay_8) & PosCPT(t, (st-1), p).
@@ -656,7 +654,7 @@ theory T:V {
         ! t [Time] st [StackLevel] v [boolean] : C_CanPlayCPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_8post) & IsPlayableIPT(t, (st+1), v).
         ! t [Time] st [StackLevel] yCoCP_new [LimitedInt] : C_YCoCPT(Next(t), st, yCoCP_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_9) & (? yCoCP [LimitedInt] : YCoCPT(t, st, yCoCP) & yCoCP_new=yCoCP+1).
         ! t [Time] st [StackLevel] xCoCP_new [LimitedInt] : C_XCoCPT(Next(t), st, xCoCP_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_10) & (? xCoCP [LimitedInt] : XCoCPT(t, st, xCoCP) & xCoCP_new=xCoCP+1).
-        ! t [Time] st [StackLevel] yCoCP [LimitedInt] : C_YCoCPT(Next(t), st, yCoCP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_11) & yCoCP=1.
+        ! t [Time] st [StackLevel] : C_YCoCPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, canPlay_11).
         ! t [Time] st [StackLevel] : C_FoundRPPT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_2).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_XCoMaxRPPT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_3) & (? o [Board] : BoardRPPT(t, CurrentStackLevel(t), o) & BoardxCoMax(t, o, x)).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_YCoMaxRPPT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_4) & (? o [Board] : BoardRPPT(t, CurrentStackLevel(t), o) & BoardyCoMax(t, o, x)).
@@ -669,8 +667,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [boolean] : C_BlackIPT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, randomPossiblePos_10) & BlackRPPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [boolean] : C_IsPlayableRPPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_10post) & IsPlayableIPT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_FoundRPPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_11).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_2) & xOffSetIP=1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_3) & yOffSetIP=0.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_2).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_3).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_4).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_5) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_5) & GivenIPT(t, (st-1), p).
@@ -679,8 +677,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_5) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_5post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_6).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_8) & xOffSetIP=1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_9) & yOffSetIP=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_8).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_9).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_10) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_10) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_10) & BlackIPT(t, (st-1), p).
@@ -688,8 +686,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_10) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_10post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_11).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_14) & xOffSetIP=0.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_15) & yOffSetIP=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_14).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_15).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_16) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_16) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_16) & BlackIPT(t, (st-1), p).
@@ -697,8 +695,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_16) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_16post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_17).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_20) & xOffSetIP=-1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_21) & yOffSetIP=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_20).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_21).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_22) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_22) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_22) & BlackIPT(t, (st-1), p).
@@ -706,8 +704,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_22) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_22post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_23).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_26) & xOffSetIP=-1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_27) & yOffSetIP=0.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_26).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_27).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_28) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_28) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_28) & BlackIPT(t, (st-1), p).
@@ -715,8 +713,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_28) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_28post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_29).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_32) & xOffSetIP=-1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_33) & yOffSetIP=1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_32).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_33).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_34) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_34) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_34) & BlackIPT(t, (st-1), p).
@@ -724,8 +722,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_34) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_34post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_35).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_38) & xOffSetIP=0.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_39) & yOffSetIP=1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_38).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_39).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_40) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_40) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_40) & BlackIPT(t, (st-1), p).
@@ -733,8 +731,8 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_40) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_40post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_41).
-        ! t [Time] st [StackLevel] xOffSetIP [LimitedInt] : C_XOffSetIPT(Next(t), st, xOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_44) & xOffSetIP=1.
-        ! t [Time] st [StackLevel] yOffSetIP [LimitedInt] : C_YOffSetIPT(Next(t), st, yOffSetIP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_45) & yOffSetIP=1.
+        ! t [Time] st [StackLevel] : C_XOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_44).
+        ! t [Time] st [StackLevel] : C_YOffSetIPT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_45).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNTT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_46) & BoardIPT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_46) & GivenIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_BlackNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_46) & BlackIPT(t, (st-1), p).
@@ -742,7 +740,7 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffNTT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, isPlayable_46) & YOffSetIPT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [LimitedInt] : C_NumTrappedIPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_46post) & NumTrappedNTT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_IsPlayableIPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isPlayable_47).
-        ! t [Time] st [StackLevel] numTrappedNT [LimitedInt] : C_NumTrappedNTT(Next(t), st, numTrappedNT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_2) & numTrappedNT=0.
+        ! t [Time] st [StackLevel] : C_NumTrappedNTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_2).
         ! t [Time] st [StackLevel] b [boolean] : C_ToCheckNTT(Next(t), st, b) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_3) & (? b1 [boolean] : BlackNTT(t, st, b1) & b = flipBool(b1)).
         ! t [Time] st [StackLevel] c [Board] : C_BoardNET(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, calcNumTrapped_4) & BoardNTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_GivenNET(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, calcNumTrapped_4) & PosNTT(t, (st-1), p).
@@ -769,7 +767,7 @@ theory T:V {
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffCNT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, calcNumTrapped_11) & YOffNTT(t, (st-1), p).
         ! t [Time] st [StackLevel] v [Position] : C_PosStepNTT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_11post) & NeighborCNT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_LoopNTT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_12).
-        ! t [Time] st [StackLevel] numTrappedNT [LimitedInt] : C_NumTrappedNTT(Next(t), st, numTrappedNT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_13) & numTrappedNT=0.
+        ! t [Time] st [StackLevel] : C_NumTrappedNTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_13).
         ! t [Time] st [StackLevel] : C_LoopNTT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, calcNumTrapped_15).
         ! t [Time] st [StackLevel] c [Board] : C_BoardCNT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, backtrackFlip_2) & BoardBTFT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_PosCNT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, backtrackFlip_2) & BeginBTFT(t, (st-1), p).
@@ -822,68 +820,68 @@ theory T:V {
         ! t [Time] st [StackLevel] : C_StopFIDT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTilesInDir_19).
         ! t [Time] st [StackLevel] : C_StopFIDT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTilesInDir_21).
         ! t [Time] st [StackLevel] x [boolean] : C_BlackFTT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_2) & (? o [Position] : PosFTT(t, CurrentStackLevel(t), o) & Positionblack(t, o, x)).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_4) & xOffSetFT=1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_5) & yOffSetFT=0.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_4).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_5).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_6) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_6) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_6) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_6) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_6) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_7) & xOffSetFT=1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_8) & yOffSetFT=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_7).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_8).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_9) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_9) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_9) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_9) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_9) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_10) & xOffSetFT=0.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_11) & yOffSetFT=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_10).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_11).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_12) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_12) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_12) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_12) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_12) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_13) & xOffSetFT=-1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_14) & yOffSetFT=-1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_13).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_14).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_15) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_15) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_15) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_15) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_15) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_16) & xOffSetFT=-1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_17) & yOffSetFT=0.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_16).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_17).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_18) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_18) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_18) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_18) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_18) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_19) & xOffSetFT=-1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_20) & yOffSetFT=1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, -1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_19).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_20).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_21) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_21) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_21) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_21) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_21) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_22) & xOffSetFT=0.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_23) & yOffSetFT=1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_22).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_23).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_24) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_24) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_24) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_24) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_24) & YOffSetFTT(t, (st-1), p).
-        ! t [Time] st [StackLevel] xOffSetFT [LimitedInt] : C_XOffSetFTT(Next(t), st, xOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_25) & xOffSetFT=1.
-        ! t [Time] st [StackLevel] yOffSetFT [LimitedInt] : C_YOffSetFTT(Next(t), st, yOffSetFT) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_26) & yOffSetFT=1.
+        ! t [Time] st [StackLevel] : C_XOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_25).
+        ! t [Time] st [StackLevel] : C_YOffSetFTT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, flipTiles_26).
         ! t [Time] st [StackLevel] c [Board] : C_BoardFIDT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_27) & BoardFTT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [Position] : C_BeginFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_27) & PosFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [boolean] : C_PlayerFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_27) & BlackFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_XOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_27) & XOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_YOffSetFIDT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, flipTiles_27) & YOffSetFTT(t, (st-1), p).
         ! t [Time] st [StackLevel] : C_PlayerPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_2).
-        ! t [Time] st [StackLevel] skipCountP [LimitedInt] : C_SkipCountPT(Next(t), st, skipCountP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3) & skipCountP=0.
+        ! t [Time] st [StackLevel] : C_SkipCountPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_3).
         ! t [Time] st [StackLevel] c [Board] : C_BoardCPT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_4) & BoardPT(t, (st-1), c).
         ! t [Time] st [StackLevel] : C_BlackCPT(Next(t), st, T) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_4).
         ! t [Time] st [StackLevel] v [boolean] : C_CanPlayPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_4post) & CanPlayCPT(t, (st+1), v).
-        ! t [Time] st [StackLevel] skipCountP [LimitedInt] : C_SkipCountPT(Next(t), st, skipCountP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_5) & skipCountP=0.
+        ! t [Time] st [StackLevel] : C_SkipCountPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_5).
         ! t [Time] st [StackLevel] c [Board] : C_BoardRPPT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_6) & BoardPT(t, (st-1), c).
         ! t [Time] st [StackLevel] : C_BlackRPPT(Next(t), st, T) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_6).
         ! t [Time] st [StackLevel] v [Position] : C_PlayPosPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_6post) & RandomPosRPPT(t, (st+1), v).
@@ -893,7 +891,7 @@ theory T:V {
         ! t [Time] st [StackLevel] c [Board] : C_BoardCPT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_11) & BoardPT(t, (st-1), c).
         ! t [Time] st [StackLevel] : C_BlackCPT(Next(t), st, F) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_11).
         ! t [Time] st [StackLevel] v [boolean] : C_CanPlayPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_11post) & CanPlayCPT(t, (st+1), v).
-        ! t [Time] st [StackLevel] skipCountP [LimitedInt] : C_SkipCountPT(Next(t), st, skipCountP) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_12) & skipCountP=0.
+        ! t [Time] st [StackLevel] : C_SkipCountPT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_12).
         ! t [Time] st [StackLevel] c [Board] : C_BoardRPPT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_13) & BoardPT(t, (st-1), c).
         ! t [Time] st [StackLevel] : C_BlackRPPT(Next(t), st, F) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, play_13).
         ! t [Time] st [StackLevel] v [Position] : C_PlayPosPT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_13post) & RandomPosRPPT(t, (st+1), v).
@@ -910,18 +908,18 @@ theory T:V {
         ! t [Time] st [StackLevel] : C_TiePT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_21) & (? countBlackP [LimitedInt] countWhiteP [LimitedInt] : CountBlackPT(t, st, countBlackP) & CountWhitePT(t, st, countWhiteP) & ~((countBlackP=countWhiteP))).
         ! t [Time] st [StackLevel] : C_BlackWinsPT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_22) & (? countBlackP [LimitedInt] countWhiteP [LimitedInt] : CountBlackPT(t, st, countBlackP) & CountWhitePT(t, st, countWhiteP) & ((countBlackP>countWhiteP))).
         ! t [Time] st [StackLevel] : C_BlackWinsPT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_22) & (? countBlackP [LimitedInt] countWhiteP [LimitedInt] : CountBlackPT(t, st, countBlackP) & CountWhitePT(t, st, countWhiteP) & ~((countBlackP>countWhiteP))).
-        ! t [Time] st [StackLevel] countC [LimitedInt] : C_CountCT(Next(t), st, countC) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_2) & countC=0.
+        ! t [Time] st [StackLevel] : C_CountCT(Next(t), st, 0) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_2).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_XCoMaxCT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_3) & (? o [Board] : BoardCT(t, CurrentStackLevel(t), o) & BoardxCoMax(t, o, x)).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_YCoMaxCT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_4) & (? o [Board] : BoardCT(t, CurrentStackLevel(t), o) & BoardyCoMax(t, o, x)).
-        ! t [Time] st [StackLevel] xCoC [LimitedInt] : C_XCoCT(Next(t), st, xCoC) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_5) & xCoC=1.
-        ! t [Time] st [StackLevel] yCoC [LimitedInt] : C_YCoCT(Next(t), st, yCoC) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_6) & yCoC=1.
+        ! t [Time] st [StackLevel] : C_XCoCT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_5).
+        ! t [Time] st [StackLevel] : C_YCoCT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_6).
          ! t [Time] st [StackLevel] posC [Position] : C_PosCT(Next(t), st, posC) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_7) & (? boardC [Board] xCoC [LimitedInt] yCoC [LimitedInt] : BoardCT(t, st, boardC) & BoardandPosition(boardC, posC) & XCoCT(t, st, xCoC) & YCoCT(t, st, yCoC) & PositionxCo(t, posC, xCoC) & PositionyCo(t, posC, yCoC)).
         ! t [Time] st [StackLevel] x [boolean] : C_ColorCT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_8) & (? o [Position] : PosCT(t, CurrentStackLevel(t), o) & Positionblack(t, o, x)).
         ! t [Time] st [StackLevel] x [boolean] : C_OccupiedCT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_10) & (? o [Position] : PosCT(t, CurrentStackLevel(t), o) & Positionoccupied(t, o, x)).
         ! t [Time] st [StackLevel] countC_new [LimitedInt] : C_CountCT(Next(t), st, countC_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_12) & (? countC [LimitedInt] : CountCT(t, st, countC) & countC_new=countC+1).
         ! t [Time] st [StackLevel] yCoC_new [LimitedInt] : C_YCoCT(Next(t), st, yCoC_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_14) & (? yCoC [LimitedInt] : YCoCT(t, st, yCoC) & yCoC_new=yCoC+1).
         ! t [Time] st [StackLevel] xCoC_new [LimitedInt] : C_XCoCT(Next(t), st, xCoC_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_15) & (? xCoC [LimitedInt] : XCoCT(t, st, xCoC) & xCoC_new=xCoC+1).
-        ! t [Time] st [StackLevel] yCoC [LimitedInt] : C_YCoCT(Next(t), st, yCoC) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_16) & yCoC=1.
+        ! t [Time] st [StackLevel] : C_YCoCT(Next(t), st, 1) <- (CurrentStackLevel(t) = st) & SDPointAt(t, count_16).
         ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st - 1)) & (SDPointAt(t, backtrackFlip_2) | SDPointAt(t, backtrackFlip_8) | SDPointAt(t, calcNumTrapped_4) | SDPointAt(t, calcNumTrapped_6) | SDPointAt(t, calcNumTrapped_10) | SDPointAt(t, calcNumTrapped_11) | SDPointAt(t, canPlay_8) | SDPointAt(t, flipTiles_6) | SDPointAt(t, flipTiles_9) | SDPointAt(t, flipTiles_12) | SDPointAt(t, flipTiles_15) | SDPointAt(t, flipTiles_18) | SDPointAt(t, flipTiles_21) | SDPointAt(t, flipTiles_24) | SDPointAt(t, flipTiles_27) | SDPointAt(t, flipTilesInDir_2) | SDPointAt(t, flipTilesInDir_3) | SDPointAt(t, flipTilesInDir_9) | SDPointAt(t, flipTilesInDir_10) | SDPointAt(t, flipTilesInDir_17) | SDPointAt(t, isPlayable_5) | SDPointAt(t, isPlayable_10) | SDPointAt(t, isPlayable_16) | SDPointAt(t, isPlayable_22) | SDPointAt(t, isPlayable_28) | SDPointAt(t, isPlayable_34) | SDPointAt(t, isPlayable_40) | SDPointAt(t, isPlayable_46) | SDPointAt(t, play_4) | SDPointAt(t, play_6) | SDPointAt(t, play_9) | SDPointAt(t, play_11) | SDPointAt(t, play_13) | SDPointAt(t, play_16) | SDPointAt(t, play_19) | SDPointAt(t, play_20) | SDPointAt(t, randomPossiblePos_10)).
         ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st + 1)) & (SDPointAt(t, backtrackFlip_11) | SDPointAt(t, calcNeighbor_9) | SDPointAt(t, calcNumTrapped_17) | SDPointAt(t, canPlay_12) | SDPointAt(t, count_17) | SDPointAt(t, flipTiles_28) | SDPointAt(t, flipTilesInDir_24) | SDPointAt(t, isPlayable_50) | SDPointAt(t, neighborExists_10) | SDPointAt(t, play_26) | SDPointAt(t, randomPossiblePos_13)).
     }
@@ -1394,6 +1392,12 @@ theory T:V {
 		! t [Time] n [LimitedInt] : ChosenY(t, n) => (SDPointAt(t, randomPossiblePos_6) & ( ? st [StackLevel] n1 [LimitedInt] : (CurrentStackLevel(t) = st) & YCoMaxRPPT(t, st, n1) & n >= 1 & n =< n1)).
 }
 
+theory T1:V {
+	{
+		! t [Time] st [StackLevel] b [Board] : C_BoardPT(t, st, b) <- false.
+	}
+}
+
 structure S:V {
     Time = { 0..20 }
     Start = 0
@@ -1403,12 +1407,13 @@ structure S:V {
 	I_ReturnPoint = { 1,finished }
 	I_SDPointAt = { play_1 }
 
-    LimitedInt = { 1..4 }
-	
+    LimitedInt = { -1..4 }
+    
     Board = { Board1 }
     Position = { Position1; Position2; Position3; Position4}
     NextSD = { calcNeighbor_1->calcNeighbor_2; calcNeighbor_2->calcNeighbor_3; calcNeighbor_3->calcNeighbor_4; calcNeighbor_4->calcNeighbor_5; calcNeighbor_5->calcNeighbor_6; calcNeighbor_6->calcNeighbor_7; calcNeighbor_7->calcNeighbor_8; calcNeighbor_8->calcNeighbor_9; play_1->play_2; play_2->play_3; play_3->play_4; play_4->play_4post; play_4post->play_5; play_5->play_6; play_6->play_6post; play_6post->play_7; play_7->play_8; play_8->play_9; play_9->play_9post; play_9post->play_10; play_10->play_11; play_11->play_11post; play_11post->play_12; play_12->play_13; play_13->play_13post; play_13post->play_14; play_14->play_15; play_15->play_16; play_16->play_16post; play_16post->play_17; play_17->play_18; play_18->play_19; play_19->play_19post; play_19post->play_20; play_20->play_20post; play_20post->play_21; play_21->play_22; play_22->play_23; play_23->play_24; play_24->play_25; play_25->play_26; isPlayable_1->isPlayable_2; isPlayable_2->isPlayable_3; isPlayable_3->isPlayable_4; isPlayable_4->isPlayable_5; isPlayable_5->isPlayable_5post; isPlayable_5post->isPlayable_6; isPlayable_6->isPlayable_7; isPlayable_7->isPlayable_8; isPlayable_8->isPlayable_9; isPlayable_9->isPlayable_10; isPlayable_10->isPlayable_10post; isPlayable_10post->isPlayable_11; isPlayable_11->isPlayable_12; isPlayable_12->isPlayable_13; isPlayable_13->isPlayable_14; isPlayable_14->isPlayable_15; isPlayable_15->isPlayable_16; isPlayable_16->isPlayable_16post; isPlayable_16post->isPlayable_17; isPlayable_17->isPlayable_18; isPlayable_18->isPlayable_19; isPlayable_19->isPlayable_20; isPlayable_20->isPlayable_21; isPlayable_21->isPlayable_22; isPlayable_22->isPlayable_22post; isPlayable_22post->isPlayable_23; isPlayable_23->isPlayable_24; isPlayable_24->isPlayable_25; isPlayable_25->isPlayable_26; isPlayable_26->isPlayable_27; isPlayable_27->isPlayable_28; isPlayable_28->isPlayable_28post; isPlayable_28post->isPlayable_29; isPlayable_29->isPlayable_30; isPlayable_30->isPlayable_31; isPlayable_31->isPlayable_32; isPlayable_32->isPlayable_33; isPlayable_33->isPlayable_34; isPlayable_34->isPlayable_34post; isPlayable_34post->isPlayable_35; isPlayable_35->isPlayable_36; isPlayable_36->isPlayable_37; isPlayable_37->isPlayable_38; isPlayable_38->isPlayable_39; isPlayable_39->isPlayable_40; isPlayable_40->isPlayable_40post; isPlayable_40post->isPlayable_41; isPlayable_41->isPlayable_42; isPlayable_42->isPlayable_43; isPlayable_43->isPlayable_44; isPlayable_44->isPlayable_45; isPlayable_45->isPlayable_46; isPlayable_46->isPlayable_46post; isPlayable_46post->isPlayable_47; isPlayable_47->isPlayable_48; isPlayable_48->isPlayable_49; isPlayable_49->isPlayable_50; backtrackFlip_1->backtrackFlip_2; backtrackFlip_2->backtrackFlip_2post; backtrackFlip_2post->backtrackFlip_3; backtrackFlip_3->backtrackFlip_4; backtrackFlip_4->backtrackFlip_5; backtrackFlip_5->backtrackFlip_6; backtrackFlip_6->backtrackFlip_7; backtrackFlip_7->backtrackFlip_8; backtrackFlip_8->backtrackFlip_8post; backtrackFlip_8post->backtrackFlip_9; backtrackFlip_9->backtrackFlip_10; backtrackFlip_10->backtrackFlip_11; flipTilesInDir_1->flipTilesInDir_2; flipTilesInDir_2->flipTilesInDir_2post; flipTilesInDir_2post->flipTilesInDir_3; flipTilesInDir_3->flipTilesInDir_3post; flipTilesInDir_3post->flipTilesInDir_4; flipTilesInDir_4->flipTilesInDir_5; flipTilesInDir_5->flipTilesInDir_6; flipTilesInDir_6->flipTilesInDir_7; flipTilesInDir_7->flipTilesInDir_8; flipTilesInDir_8->flipTilesInDir_9; flipTilesInDir_9->flipTilesInDir_9post; flipTilesInDir_9post->flipTilesInDir_10; flipTilesInDir_10->flipTilesInDir_10post; flipTilesInDir_10post->flipTilesInDir_11; flipTilesInDir_11->flipTilesInDir_12; flipTilesInDir_12->flipTilesInDir_13; flipTilesInDir_13->flipTilesInDir_14; flipTilesInDir_14->flipTilesInDir_15; flipTilesInDir_15->flipTilesInDir_16; flipTilesInDir_16->flipTilesInDir_17; flipTilesInDir_17->flipTilesInDir_17post; flipTilesInDir_17post->flipTilesInDir_18; flipTilesInDir_18->flipTilesInDir_19; flipTilesInDir_19->flipTilesInDir_20; flipTilesInDir_20->flipTilesInDir_21; flipTilesInDir_21->flipTilesInDir_22; flipTilesInDir_22->flipTilesInDir_23; flipTilesInDir_23->flipTilesInDir_24; neighborExists_1->neighborExists_2; neighborExists_2->neighborExists_3; neighborExists_3->neighborExists_4; neighborExists_4->neighborExists_5; neighborExists_5->neighborExists_6; neighborExists_6->neighborExists_7; neighborExists_7->neighborExists_8; neighborExists_8->neighborExists_9; neighborExists_9->neighborExists_10; calcNumTrapped_1->calcNumTrapped_2; calcNumTrapped_2->calcNumTrapped_3; calcNumTrapped_3->calcNumTrapped_4; calcNumTrapped_4->calcNumTrapped_4post; calcNumTrapped_4post->calcNumTrapped_5; calcNumTrapped_5->calcNumTrapped_6; calcNumTrapped_6->calcNumTrapped_6post; calcNumTrapped_6post->calcNumTrapped_7; calcNumTrapped_7->calcNumTrapped_8; calcNumTrapped_8->calcNumTrapped_9; calcNumTrapped_9->calcNumTrapped_10; calcNumTrapped_10->calcNumTrapped_10post; calcNumTrapped_10post->calcNumTrapped_11; calcNumTrapped_11->calcNumTrapped_11post; calcNumTrapped_11post->calcNumTrapped_12; calcNumTrapped_12->calcNumTrapped_13; calcNumTrapped_13->calcNumTrapped_14; calcNumTrapped_14->calcNumTrapped_15; calcNumTrapped_15->calcNumTrapped_16; calcNumTrapped_16->calcNumTrapped_17; randomPossiblePos_1->randomPossiblePos_2; randomPossiblePos_2->randomPossiblePos_3; randomPossiblePos_3->randomPossiblePos_4; randomPossiblePos_4->randomPossiblePos_5; randomPossiblePos_5->randomPossiblePos_6; randomPossiblePos_6->randomPossiblePos_7; randomPossiblePos_7->randomPossiblePos_8; randomPossiblePos_8->randomPossiblePos_9; randomPossiblePos_9->randomPossiblePos_10; randomPossiblePos_10->randomPossiblePos_10post; randomPossiblePos_10post->randomPossiblePos_11; randomPossiblePos_11->randomPossiblePos_12; randomPossiblePos_12->randomPossiblePos_13; canPlay_1->canPlay_2; canPlay_2->canPlay_3; canPlay_3->canPlay_4; canPlay_4->canPlay_5; canPlay_5->canPlay_6; canPlay_6->canPlay_7; canPlay_7->canPlay_8; canPlay_8->canPlay_8post; canPlay_8post->canPlay_9; canPlay_9->canPlay_10; canPlay_10->canPlay_11; canPlay_11->canPlay_12; count_1->count_2; count_2->count_3; count_3->count_4; count_4->count_5; count_5->count_6; count_6->count_7; count_7->count_8; count_8->count_9; count_9->count_10; count_10->count_11; count_11->count_12; count_12->count_13; count_13->count_14; count_14->count_15; count_15->count_16; count_16->count_17; flipTiles_1->flipTiles_2; flipTiles_2->flipTiles_3; flipTiles_3->flipTiles_4; flipTiles_4->flipTiles_5; flipTiles_5->flipTiles_6; flipTiles_6->flipTiles_6post; flipTiles_6post->flipTiles_7; flipTiles_7->flipTiles_8; flipTiles_8->flipTiles_9; flipTiles_9->flipTiles_9post; flipTiles_9post->flipTiles_10; flipTiles_10->flipTiles_11; flipTiles_11->flipTiles_12; flipTiles_12->flipTiles_12post; flipTiles_12post->flipTiles_13; flipTiles_13->flipTiles_14; flipTiles_14->flipTiles_15; flipTiles_15->flipTiles_15post; flipTiles_15post->flipTiles_16; flipTiles_16->flipTiles_17; flipTiles_17->flipTiles_18; flipTiles_18->flipTiles_18post; flipTiles_18post->flipTiles_19; flipTiles_19->flipTiles_20; flipTiles_20->flipTiles_21; flipTiles_21->flipTiles_21post; flipTiles_21post->flipTiles_22; flipTiles_22->flipTiles_23; flipTiles_23->flipTiles_24; flipTiles_24->flipTiles_24post; flipTiles_24post->flipTiles_25; flipTiles_25->flipTiles_26; flipTiles_26->flipTiles_27; flipTiles_27->flipTiles_27post; flipTiles_27post->flipTiles_28 }
-    flipBool = { T->F;F->T}
+    NonStandardSDPoint = { backtrackFlip_2; backtrackFlip_3; backtrackFlip_8; backtrackFlip_8post; backtrackFlip_9; backtrackFlip_10; backtrackFlip_11; calcNeighbor_9; calcNumTrapped_4; calcNumTrapped_4post; calcNumTrapped_6; calcNumTrapped_6post; calcNumTrapped_8; calcNumTrapped_10; calcNumTrapped_10post; calcNumTrapped_11; calcNumTrapped_11post; calcNumTrapped_12; calcNumTrapped_13; calcNumTrapped_14; calcNumTrapped_15; calcNumTrapped_16; calcNumTrapped_17; canPlay_6; canPlay_8; canPlay_9; canPlay_11; canPlay_12; count_6; count_11; count_12; count_13; count_14; count_16; count_17; finished; flipTiles_6; flipTiles_9; flipTiles_12; flipTiles_15; flipTiles_18; flipTiles_21; flipTiles_24; flipTiles_27; flipTiles_28; flipTilesInDir_2; flipTilesInDir_2post; flipTilesInDir_3; flipTilesInDir_7; flipTilesInDir_8; flipTilesInDir_9; flipTilesInDir_9post; flipTilesInDir_10; flipTilesInDir_14; flipTilesInDir_17; flipTilesInDir_18; flipTilesInDir_19; flipTilesInDir_20; flipTilesInDir_21; flipTilesInDir_22; flipTilesInDir_23; flipTilesInDir_24; isPlayable_5; isPlayable_5post; isPlayable_6; isPlayable_7; isPlayable_10; isPlayable_11; isPlayable_12; isPlayable_13; isPlayable_16; isPlayable_17; isPlayable_18; isPlayable_19; isPlayable_22; isPlayable_23; isPlayable_24; isPlayable_25; isPlayable_28; isPlayable_29; isPlayable_30; isPlayable_31; isPlayable_34; isPlayable_35; isPlayable_36; isPlayable_37; isPlayable_40; isPlayable_41; isPlayable_42; isPlayable_43; isPlayable_46; isPlayable_47; isPlayable_48; isPlayable_49; isPlayable_50; neighborExists_7; neighborExists_8; neighborExists_9; neighborExists_10; play_3; play_4; play_4post; play_6; play_9; play_9post; play_10; play_11; play_11post; play_13; play_16; play_16post; play_17; play_18; play_19; play_20; play_26; randomPossiblePos_4; randomPossiblePos_8; randomPossiblePos_9; randomPossiblePos_10; randomPossiblePos_10post; randomPossiblePos_11; randomPossiblePos_12; randomPossiblePos_13 }
+	flipBool = { T->F;F->T}
 	
 	I_BoardxCoMax = { Board1,2 }
 	I_BoardyCoMax = { Board1,2 }
@@ -1460,7 +1465,7 @@ structure S:V {
 	I_NumTrappedNTT = {}
 	I_BeginBTFT = {}
 	I_BoardRPPT = {}
-	I_BoardPT = {}
+	I_BoardPT = { 1,Board1 }
 	I_OccupiedCT = {}
 	I_XOffSetBTFT = {}
 	I_StopFIDT = {}
@@ -1522,5 +1527,7 @@ structure S:V {
 }
 
 procedure main() {
-    print(modelexpand(T,S)[1])
+	T2 = merge(T,T1)
+	simulate_interactive(T2,S)
+    //print(modelexpand(T,S)[1])
 }

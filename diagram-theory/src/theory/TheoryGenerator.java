@@ -78,6 +78,8 @@ public class TheoryGenerator
 			theoryBuilder.addAssociation(assoc, store);
 		}
 		
+		structBuilder.processNonStandardSDPoints(theoryBuilder.getCausationBuilder().getCheckpointBuilder());
+		
 		file.write("include<LTC>" + System.lineSeparator() + System.lineSeparator());
 		file.write(vocBuilder.build(store));
 		file.write(theoryBuilder.build());
