@@ -202,7 +202,7 @@ public class HardcodedReversi {
 		TempVar yCoNE = new TempVar(new UserDefinedType("int"), "yCoNE");
 		TempVar xCoMaxNE = new TempVar(new UserDefinedType("int"), "xCoMaxNE");
 		TempVar yCoMaxNE = new TempVar(new UserDefinedType("int"), "yCoMaxNE");
-		TempVar existsNE = new TempVar(new UserDefinedType("boolean"), "xCoTestNE");
+		TempVar existsNE = new TempVar(new UserDefinedType("boolean"), "existsNE");
 		
 		// MESSAGES
 		
@@ -510,7 +510,7 @@ public class HardcodedReversi {
 				isPlayable_25, isPlayable_26, isPlayable_27, isPlayable_28, isPlayable_29, isPlayable_30, 
 				isPlayable_31, isPlayable_32, isPlayable_33, isPlayable_34, isPlayable_35, isPlayable_36, 
 				isPlayable_37, isPlayable_38, isPlayable_39, isPlayable_40, isPlayable_41, isPlayable_42, 
-				isPlayable_43, isPlayable_44, isPlayable_43, isPlayable_44, isPlayable_45, isPlayable_46, 
+				isPlayable_43, isPlayable_44, isPlayable_45, isPlayable_46, 
 				isPlayable_47, isPlayable_48, isPlayable_49, isPlayable_50));
 		store.addIdToMessage("isPlayable_1", isPlayable_1);
 		store.addIdToMessage("isPlayable_2", isPlayable_2);
@@ -1154,7 +1154,7 @@ public class HardcodedReversi {
 		canPlay_11.setFragment(Optional.of(cpOuter));
 		LoopCombinedFragment cpInner = CombinedFragmentFactory.createLoopCombinedFragment(Optional.of(cpOuter)
 				, Optional.empty(), Optional.of(Arrays.asList(canPlay_7, canPlay_8, canPlay_9))
-				, "yCoCP =< yMaxCP & (canPlay = F)", dummy, dummy1, store);
+				, "yCoCP =< yMaxCP & (canPlayCP = F)", dummy, dummy1, store);
 		canPlay_7.setFragment(Optional.of(cpInner));
 		canPlay_8.setFragment(Optional.of(cpInner));
 		canPlay_9.setFragment(Optional.of(cpInner));
@@ -1525,7 +1525,7 @@ public class HardcodedReversi {
 				Optional.of(Arrays.asList(count_12)), 
 				Optional.of(Arrays.asList(count_13)), 
 				"(occupiedC = T) & (colorC = blackC)", 
-				"~((occupiedC = T) & colorC = blackC))", dummy, dummy1, dummy2, store);
+				"~((occupiedC = T) & (colorC = blackC))", dummy, dummy1, dummy2, store);
 		count_12.setFragment(Optional.of(countAlt));
 		count_13.setFragment(Optional.of(countAlt));
 		countInner.setChildren(Arrays.asList(countAlt));

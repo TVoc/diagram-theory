@@ -205,7 +205,7 @@ public class TempVarCausationBuilder
 		}		
 
 		String toAppend = " ! t [Time] st [StackLevel] " + assigned.getName() + " [" + OutputConvenienceFunctions.toIDPType(assigned.getType(), store)
-		+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(" + causesTime + ", st, " + assigned.getName() + ") <- (CurrentStacklevel(t) = st) & SDPointAt(t, "
+		+ "] : C_" + OutputConvenienceFunctions.singleTempVarPredicateName(assigned) + "(" + causesTime + ", st, " + assigned.getName() + ") <- (CurrentStackLevel(t) = st) & SDPointAt(t, "
 		+ message.getSDPoint() + ") & " + makeGetterPredicate;
 
 		this.getStringBuilder().append(OutputConvenienceFunctions.insertTabsNewLine(toAppend, this.getTabLevel()));
@@ -346,7 +346,7 @@ public class TempVarCausationBuilder
 				TempVar indexVar = store.resolveTempVar(valueParts[i]);
 //				quantifiers.append(valueParts[i] + " [" + OutputConvenienceFunctions.toIDPType(indexVar.getType(), store) + "] ");
 				String amp = i > 0 ? " & " : "";
-				varPredicates.append(amp + OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(valueParts[i])) + "(t, " + valueParts[i] + ")");
+				varPredicates.append(amp + OutputConvenienceFunctions.singleTempVarPredicateName(store.resolveTempVar(valueParts[i])) + "(t, st, " + valueParts[i] + ")");
 				attrPredicates.append(amp + toGetClass.getName() + andParts[i] + "(t, " + assigned.getName() + ", " + valueParts[i] + ")");
 			}
 			else

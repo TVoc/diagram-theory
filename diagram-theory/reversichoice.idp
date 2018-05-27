@@ -1,3 +1,6 @@
+ChosenX(Time, LimitedInt)
+ChosenY(Time, LimitedInt)
+
     ! t [Time] st [StackLevel] r [LimitedInt] : C_RanXRPPT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_5) & ChosenX(t, r).
     ! t [Time] st [StackLevel] r [LimitedInt] : C_RanYRPPT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, randomPossiblePos_6) & ChosenY(t, r).
 
