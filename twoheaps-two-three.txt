@@ -1,0 +1,23 @@
+Step 23 - takeTurn_3
+
+911940 virt, 666028 res, 2:27.40 -> choose Heap2
+
+Step 35 - takeTurn_11
+
+1239620 virt, 998504 res, 3:45:06 -> choose 3
+
+Step 67 - takeTurn_3
+
+2091588 virt, 1.776g res, 7:12.85 -> choose Heap1
+
+Step 79 - takeTurn_11
+
+2419268 virt, 2.103g res, 8:32.75 -> choose 1
+
+Step 111 - takeTurn_3
+
+3336772 virt, 2.897g res, 12:03.47 -> choose Heap1
+
+Step 166 - finished
+
+4844100 virt, 3.269g res, 18:27.95

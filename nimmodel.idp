@@ -151,7 +151,7 @@ LTCvocabulary V {
     partial GameGetHeap(Game, LimitedInt) : Heap
     partial GameNextHeap(Game, Heap) : Heap
 	
-	ChosenHeap(Time, Heap)
+	ChosenHeap(Time, LimitedInt)
     ChosenTake(Time, LimitedInt)
 }
 theory T:V {
@@ -219,16 +219,16 @@ theory T:V {
         ! t [Time] st [StackLevel] x [LimitedInt] : C_IeNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_3) & (? o [Heap] : IeHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
         ! t [Time] st [StackLevel] : C_IeToReturnT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, isEmpty_4).
         ! t [Time] st [StackLevel] a [LimitedInt] : C_TtNumHeapsT(Next(t), st, a) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_2) & ( ? ttGame [Game] : TtGameT(t, st, ttGame) & #{ i [LimitedInt] : ? e [Heap] : GameGetHeap(ttGame, i) = e} = a).
-        ! t [Time] st [StackLevel] r [LimitedInt] : C_TtWhichHeapT(Next(t), st, r) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ( ? ub [LimitedInt] : TtNumHeapsT(t, st, ub) & r = (abs(RandomInt(t)) % (ub - 1)) + 1).
+        ! t [Time] st [StackLevel] h [LimitedInt] : C_TtWhichHeapT(Next(t), st, h) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_3) & ChosenHeap(t, h).
         ! t [Time] st [StackLevel] : C_TtBreakT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_4).
         ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_5) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] c [Heap] : C_IeHeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_6) & TtHeapT(t, (st-1), c).
         ! t [Time] st [StackLevel] v [boolean] : C_TtHeapEmptyT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_6post) & IeToReturnT(t, (st+1), v).
         ! t [Time] st [StackLevel] : C_TtBreakT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_7).
-        ! t [Time] st [StackLevel] h [Heap] : C_HeapT(Next(t), st, h) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ChosenHeap(t, h).
+        ! t [Time] st [StackLevel] h [LimitedInt] : C_TtWhichHeapT(Next(t), st, h) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_8) & ChosenHeap(t, h).
         ! t [Time] st [StackLevel] e [Heap] : C_TtHeapT(Next(t), st, e) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_9) & ( ? o [Game] i [LimitedInt] : TtGameT(t, st, o) & TtWhichHeapT(t, st, i) & GameGetHeap(o, i) = e).
         ! t [Time] st [StackLevel] x [LimitedInt] : C_TtNumObjT(Next(t), st, x) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_10) & (? o [Heap] : TtHeapT(t, CurrentStackLevel(t), o) & HeapamountObjects(t, o, x)).
-        ! t [Time] st [StackLevel] n [LimitedInt] : C_TakeNumT(Next(t), st, n) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ChosenTake(t, n).
+        ! t [Time] st [StackLevel] n [LimitedInt] : C_TtTakeNumT(Next(t), st, n) <- (CurrentStackLevel(t) = st) & SDPointAt(t, takeTurn_11) & ChosenTake(t, n).
         ! t [Time] st [StackLevel] c [Heap] : C_THeapT(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtHeapT(t, (st-1), c).
         ! t [Time] st [StackLevel] p [LimitedInt] : C_TNumT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, takeTurn_12) & TtTakeNumT(t, (st-1), p).
         ! t [Time] st [StackLevel] : C_PFinishedT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_2).
@@ -367,6 +367,7 @@ theory T:V {
             
             
     }
+	
     {
         ! f [Game] to [Heap] : GameGetHeap(f, 0) = to <- GameFirstHeap(f) = to.
         ! f [Game] i [LimitedInt] to [Heap] : GameGetHeap(f, i) = to <- ( ? to1 [Heap] : GameGetHeap(f, (i-1)) = to1 & GameNextHeap(f, to1) = to).
@@ -384,42 +385,44 @@ theory T:V {
         ! x2 [Heap] : ?1 x1 [Game] : GameandHeap(x1, x2).
         ! x1 [Game] : #{ x2 [Heap] : GameandHeap(x1, x2)} >= 1.
         
-		! t [Time] : SDPointAt(t, takeTurn_8) => ( ?1 h [Heap] : ChosenHeap(t, h)).
-		! t [Time] h [Heap] : ChosenHeap(t, h) => (SDPointAt(t, takeTurn_8) & ( ? g [Game] st [StackLevel] n [LimitedInt] : (CurrentStackLevel(t) = st) & GameT(t, st, g) & GameandHeap(g, h) & HeapamountObjects(t, h, n) & ~(n = 0))).
+		! t [Time] : (SDPointAt(t, takeTurn_8) | SDPointAt(t, takeTurn_3)) => ( ?1 h [LimitedInt] : ChosenHeap(t, h)).
+		! t [Time] h [LimitedInt] : ChosenHeap(t, h) => ((SDPointAt(t, takeTurn_8) | SDPointAt(t, takeTurn_3)) & ( ? st [StackLevel] n [LimitedInt] : (CurrentStackLevel(t) = st) & TtNumHeapsT(t, st, n) & h >= 0 & h < n)).
     
 		! t [Time] : SDPointAt(t, takeTurn_11) => ( ?1 n [LimitedInt] : ChosenTake(t, n)).
-		! t [Time] n [LimitedInt] : ChosenTake(t, n) => (SDPointAt(t, takeTurn_11) & ( ? st [StackLevel] h [Heap] n1 [LimitedInt] : (CurrentStackLevel(t) = st) & HeapT(t, st, h) & HeapamountObjects(t, h, n1) & n >= 1 & n =< n1)).
+		! t [Time] n [LimitedInt] : ChosenTake(t, n) => (SDPointAt(t, takeTurn_11) & ( ? st [StackLevel] n1 [LimitedInt] : (CurrentStackLevel(t) = st) & TtNumObjT(t, st, n1) & n > 0 & n =< n1)).
 }
 
 theory T1:V {
 	{
-	! t [Time] st [StackLevel] b [Game] : C_PGameT(t, st, b) -> false.
-	! t [Time] st [StackLevel] b [boolean] : C_PP1TurnT(t, st, b) -> false.
+	! t [Time] st [StackLevel] b [Game] : C_PGameT(t, st, b) <- false.
 	}
 }
 
 structure S:V {
-    Time = { 0..20 }
+    Time = { 0..170 }
     Start = 0
-    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20 }
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22; 22->23; 23->24; 24->25; 25->26; 26->27; 27->28; 28->29; 29->30; 30->31; 31->32; 32->33; 33->34; 34->35; 35->36; 36->37; 37->38; 38->39; 39->40; 40->41; 41->42; 42->43; 43->44; 44->45; 45->46; 46->47; 47->48; 48->49; 49->50; 50->51; 51->52; 52->53; 53->54; 54->55; 55->56; 56->57; 57->58; 58->59; 59->60; 60->61; 61->62; 62->63; 63->64; 64->65; 65->66; 66->67; 67->68; 68->69; 69->70; 70->71; 71->72; 72->73; 73->74; 74->75; 75->76; 76->77; 77->78; 78->79; 79->80; 80->81; 81->82; 82->83; 83->84; 84->85; 85->86; 86->87; 87->88; 88->89; 89->90; 90->91; 91->92; 92->93; 93->94; 94->95; 95->96; 96->97; 97->98; 98->99; 99->100; 100->101; 101->102; 102->103; 103->104; 104->105; 105->106; 106->107; 107->108; 108->109; 109->110; 110->111; 111->112; 112->113; 113->114; 114->115; 115->116; 116->117; 117->118; 118->119; 119->120; 120->121; 121->122; 122->123; 123->124; 124->125; 125->126; 126->127; 127->128; 128->129; 129->130; 130->131; 131->132; 132->133; 133->134; 134->135; 135->136; 136->137; 137->138; 138->139; 139->140; 140->141; 141->142; 142->143; 143->144; 144->145; 145->146; 146->147; 147->148; 148->149; 149->150; 150->151; 151->152; 152->153; 153->154; 154->155; 155->156; 156->157; 157->158; 158->159; 159->160; 160->161; 161->162; 162->163; 163->164; 164->165; 165->166; 166->167; 167->168; 168->169; 169->170 }
 
+	I_SDPointAt = { play_1 }
+	
     I_CurrentStackLevel = 1
+	I_ReturnPoint = { 1,finished }
 
     LimitedInt = { 0..5 }
     
     Game = { Game1 }
-    Heap = { Heap1 }
+    Heap = { Heap1; Heap2 }
     NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
     NonStandardSDPoint = { allHeapsEmpty_4; allHeapsEmpty_6; allHeapsEmpty_6post; allHeapsEmpty_7; allHeapsEmpty_8; allHeapsEmpty_9; allHeapsEmpty_10; finished; isEmpty_3; isEmpty_4; isEmpty_5; isEmpty_6; play_2; play_3; play_3post; play_6; play_7; play_8; play_9; take_3; take_4; take_5; take_7; takeTurn_5; takeTurn_6; takeTurn_6post; takeTurn_7; takeTurn_9; takeTurn_12; takeTurn_13 }
     flipBool = { T->F;F->T}
 	
-	GameandHeap = { Game1,Heap1 }
+	GameandHeap = { Game1,Heap1; Game1,Heap2 }
 	GameFirstHeap = { Game1->Heap1 }
-	GameNextHeap = {}
+	GameNextHeap = { Game1,Heap1->Heap2 }
 	
 	I_GamegameFinished = { Game1,F }
 	I_Gamep1Win = { Game1,F }
-	I_HeapamountObjects = { Heap1,2 }
+	I_HeapamountObjects = { Heap1,2; Heap2,3 }
 	
 	I_TtBreakT = {}
 	I_THeapT = {}
@@ -450,6 +453,82 @@ structure S:V {
 
 procedure main() {
 	T2 = merge(T,T1)
-	simulate_interactive(T2,S)
-    //print(modelexpand(T,S)[1])
+	/*
+    simulate_custom(T2,S, "SDPointAt", S[V::finished]())
+	*/
+	print(modelexpand(T2,S)[1])
+}
+
+procedure simulate_custom(theory,structure,finishedsym,finishedvalue) {
+    local backup = stdoptions.nbmodels
+    stdoptions.nbmodels = 0
+    local S_v = initialise(theory,structure)
+    local steps = 1
+	local prev
+    
+    if #S_v ~= 0 then
+        local stop = false
+        while(not stop)
+        do
+            if #S_v > 1 then
+                print("---------------------------------------------")
+                print("Step " .. steps)
+                print("0: stop")
+                for i, v in ipairs(S_v)
+                do
+                    print("########")
+                    print("State " .. i)
+                    print(v)
+                    print("########")
+                end
+                io.write("Please choose a number between 0 and " .. #S_v .. " (0 to stop) ")
+                io.flush()
+                local answer = io.read()
+                answer = tonumber(answer)
+                while (not (type(answer) == "number" and answer >= 0 and answer <= #S_v))
+                do
+                    io.write("Please choose a number between 0 and " .. #S_v .. " (0 to stop) ")
+                    io.flush()
+                    answer = io.read()
+                    answer = tonumber(answer)
+                end
+                if answer == 0 then
+                    print("Simulation will stop by user request")
+                    stop = true
+                else
+                    print("Chosen state: ")
+                    print(S_v[answer])
+					prev = S_v[answer]
+                    S_v = progress(theory, S_v[answer])
+                end
+            elseif #S_v == 1 then
+                if finishedsym ~= nil and finishedvalue ~= nil then
+                   local fin = S_v[1][getvocabulary(S_v[1])[finishedsym]].ct(finishedvalue)
+                   if fin then
+                        print("Step " .. steps)
+                        print("End condition has been reached-the final state is: ")
+                        print(S_v[1])
+                        stop = true
+                   else
+						prev = S_v[1]
+                        S_v = progress(theory, S_v[1])
+                   end
+                else
+					prev = S_v[1]
+                    S_v = progress(theory, S_v[1])
+                end
+            else
+                print("There are no valid states-stopping simulation")
+				print("The final valid state was: ")
+				print(prev)
+                stop = true
+            end
+            steps = steps + 1
+        end
+    else
+        print("No valid initial state-stopping")
+    end
+    
+    stdoptions.nbmodels = backup
+    print("stopped")
 }
