@@ -125,3 +125,109 @@ structure S:V {
 	I_TtHeapEmptyT = {}
 	I_TtHeapT = {}
 }
+
+// isEmpty invariants
+structure S:V {
+    Time = { 0..7 }
+    Start = 0
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7 }
+	I_SDPointAt = { isEmpty_1 }
+	
+    I_CurrentStackLevel = 1
+	I_ReturnPoint = { 1,finished }
+
+    LimitedInt = { 0..5 }
+    
+    Game = { Game1 }
+    Heap = { Heap1 }
+    NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
+    NonStandardSDPoint = { allHeapsEmpty_4; allHeapsEmpty_6; allHeapsEmpty_6post; allHeapsEmpty_7; allHeapsEmpty_8; allHeapsEmpty_9; allHeapsEmpty_10; finished; isEmpty_3; isEmpty_4; isEmpty_5; isEmpty_6; play_2; play_3; play_3post; play_6; play_7; play_8; play_9; take_3; take_4; take_5; take_7; takeTurn_5; takeTurn_6; takeTurn_6post; takeTurn_7; takeTurn_9; takeTurn_12; takeTurn_13 }
+    flipBool = { T->F;F->T}
+	
+	GameandHeap = { Game1,Heap1 }
+	GameFirstHeap = { Game1->Heap1 }
+	GameNextHeap = { }
+	
+	I_GamegameFinished = { Game1,F }
+	I_Gamep1Win = { Game1,F }
+	//I_HeapamountObjects = { }
+	
+	I_TtBreakT = {}
+	I_THeapT = {}
+	I_TCurrT = {}
+	I_TtNumHeapsT = {}
+	I_TNumT = {}
+	I_PGameT = { }
+	I_AheHeapT = {}
+	I_IeToReturnT = {}
+	I_AheGameT = {}
+	I_TtWhichHeapT = {}
+	I_AheHeapEmptyT = {}
+	I_PFinishedT = {}
+	I_IeNumObjT = {}
+	I_TtGameT = {}
+	I_AheNumHeapsT = {}
+	I_TtNumObjT = {}
+	I_AheToReturnT = {}
+	I_TtTakeNumT = {}
+	I_PAllEmptyT = {}
+	I_IeHeapT = { 1,Heap1 }
+	I_PP1TurnT = { }
+	I_AheCounterT = {}
+	I_TNewT = {}
+	I_TtHeapEmptyT = {}
+	I_TtHeapT = {}
+}
+
+// allHeapsEmpty
+structure S:V {
+    Time = { 0..22 }
+    Start = 0
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21; 21->22 }
+	I_SDPointAt = { allHeapsEmpty_1 }
+	
+    I_CurrentStackLevel = 1
+	I_ReturnPoint = { 1,finished }
+
+    LimitedInt = { 0..5 }
+    
+    Game = { Game1 }
+    Heap = { Heap1;Heap2 }
+    NextSD = { play_1->play_2; play_2->play_3; play_3->play_3post; play_3post->play_4; play_4->play_5; play_5->play_6; play_6->play_7; play_7->play_7post; play_7post->play_8; play_8->play_9; take_1->take_2; take_2->take_3; take_3->take_4; take_4->take_5; take_5->take_6; take_6->take_7; allHeapsEmpty_1->allHeapsEmpty_2; allHeapsEmpty_2->allHeapsEmpty_3; allHeapsEmpty_3->allHeapsEmpty_4; allHeapsEmpty_4->allHeapsEmpty_5; allHeapsEmpty_5->allHeapsEmpty_6; allHeapsEmpty_6->allHeapsEmpty_6post; allHeapsEmpty_6post->allHeapsEmpty_7; allHeapsEmpty_7->allHeapsEmpty_8; allHeapsEmpty_8->allHeapsEmpty_9; allHeapsEmpty_9->allHeapsEmpty_10; takeTurn_1->takeTurn_2; takeTurn_2->takeTurn_3; takeTurn_3->takeTurn_4; takeTurn_4->takeTurn_5; takeTurn_5->takeTurn_6; takeTurn_6->takeTurn_6post; takeTurn_6post->takeTurn_7; takeTurn_7->takeTurn_8; takeTurn_8->takeTurn_9; takeTurn_9->takeTurn_10; takeTurn_10->takeTurn_11; takeTurn_11->takeTurn_12; takeTurn_12->takeTurn_12post; takeTurn_12post->takeTurn_13; isEmpty_1->isEmpty_2; isEmpty_2->isEmpty_3; isEmpty_3->isEmpty_4; isEmpty_4->isEmpty_5; isEmpty_5->isEmpty_6 }
+    NonStandardSDPoint = { allHeapsEmpty_4; allHeapsEmpty_6; allHeapsEmpty_6post; allHeapsEmpty_7; allHeapsEmpty_8; allHeapsEmpty_9; allHeapsEmpty_10; finished; isEmpty_3; isEmpty_4; isEmpty_5; isEmpty_6; play_2; play_3; play_3post; play_6; play_7; play_8; play_9; take_3; take_4; take_5; take_7; takeTurn_5; takeTurn_6; takeTurn_6post; takeTurn_7; takeTurn_9; takeTurn_12; takeTurn_13 }
+    flipBool = { T->F;F->T}
+	
+	GameandHeap = { Game1,Heap1; Game1,Heap2 }
+	GameFirstHeap = { Game1->Heap1 }
+	GameNextHeap = { Game1,Heap1->Heap2 }
+	
+	I_GamegameFinished = { Game1,F }
+	I_Gamep1Win = { Game1,F }
+	//I_HeapamountObjects = { }
+	
+	I_TtBreakT = {}
+	I_THeapT = {}
+	I_TCurrT = {}
+	I_TtNumHeapsT = {}
+	I_TNumT = {}
+	I_PGameT = { }
+	I_AheHeapT = {}
+	I_IeToReturnT = {}
+	I_AheGameT = { 1,Game1 }
+	I_TtWhichHeapT = {}
+	I_AheHeapEmptyT = {}
+	I_PFinishedT = {}
+	I_IeNumObjT = {}
+	I_TtGameT = {}
+	I_AheNumHeapsT = {}
+	I_TtNumObjT = {}
+	I_AheToReturnT = {}
+	I_TtTakeNumT = {}
+	I_PAllEmptyT = {}
+	I_IeHeapT = { }
+	I_PP1TurnT = { }
+	I_AheCounterT = {}
+	I_TNewT = {}
+	I_TtHeapEmptyT = {}
+	I_TtHeapT = {}
+}
