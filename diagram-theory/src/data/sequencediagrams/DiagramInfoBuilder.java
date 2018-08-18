@@ -54,6 +54,12 @@ public class DiagramInfoBuilder {
 		return new DiagramInfo(this.getName(), this.getCallObject(), this.getParameters(), this.getReturnValue());
 	}
 	
+	public boolean fresh()
+	{
+		return this.getName() == null && this.getCallObject() == null
+				&& this.getParameters().equals(Optional.empty()) && this.getReturnValue().equals(Optional.empty());
+	}
+	
 	public void reset()
 	{
 		this.setName(null);

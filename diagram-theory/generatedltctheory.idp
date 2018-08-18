@@ -1,0 +1,142 @@
+include<LTC>
+
+LTCvocabulary V {
+    type Time isa nat
+    Start: Time
+    partial Next(Time) : Time
+    
+    type SDPoint constructed from { finished, methodOne_1, methodOne_2, methodOne_3, methodOne_3post, methodOne_4, methodOne_5, methodTwo_1, methodTwo_2, methodTwo_3, methodTwo_3post, methodTwo_4, methodTwo_5 }
+    partial NextSD(SDPoint) : SDPoint
+    
+    SDPointAt(Time,SDPoint)
+    I_SDPointAt(SDPoint)
+    C_SDPointAt(Time,SDPoint)
+    NonStandardSDPoint(SDPoint)
+    
+    type LimitedInt isa int
+    type LimitedFloat isa float
+    type LimitedString isa string
+    type boolean constructed from { T, F }
+    flipBool(boolean) : boolean
+    type void constructed from { null }
+    type StackLevel = { 1..10 } isa nat
+    
+    CurrentStackLevel(Time) : StackLevel
+    I_CurrentStackLevel : StackLevel
+    C_CurrentStackLevel(Time,StackLevel)
+    
+    ReturnPoint(Time,StackLevel,SDPoint)
+    I_ReturnPoint(StackLevel,SDPoint)
+    C_ReturnPoint(Time,StackLevel,SDPoint)
+    Cn_ReturnPoint(Time,StackLevel,SDPoint)
+    
+    RandomInt(Time) : LimitedInt
+    type A
+    
+    ResultT(Time, StackLevel, LimitedInt)
+    I_ResultT(StackLevel, LimitedInt)
+    C_ResultT(Time, StackLevel, LimitedInt)
+    
+    Obj2T(Time, StackLevel, A)
+    I_Obj2T(StackLevel, A)
+    C_Obj2T(Time, StackLevel, A)
+    
+    MTwoArgT(Time, StackLevel, LimitedInt)
+    I_MTwoArgT(StackLevel, LimitedInt)
+    C_MTwoArgT(Time, StackLevel, LimitedInt)
+    
+    FinishedT(Time, StackLevel, boolean)
+    I_FinishedT(StackLevel, boolean)
+    C_FinishedT(Time, StackLevel, boolean)
+    
+    ObjT(Time, StackLevel, A)
+    I_ObjT(StackLevel, A)
+    C_ObjT(Time, StackLevel, A)
+    
+}
+theory T:V {
+    {
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s) & ~NonStandardSDPoint(s).
+        
+        ! t [Time] : C_SDPointAt(Next(t), methodTwo_1) <- SDPointAt(t, methodOne_3) | SDPointAt(t, methodTwo_3).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), methodTwo_2) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodTwo_1) & ( ? mTwoArg [LimitedInt] : MTwoArgT(Next(t), st, mTwoArg) & (mTwoArg<3)).
+        ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), methodTwo_4) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodTwo_1) & ( ? mTwoArg [LimitedInt] : MTwoArgT(Next(t), st, mTwoArg) & (mTwoArg>=3)).
+        ! t [Time] : C_SDPointAt(Next(t), methodTwo_5) <- (SDPointAt(t, methodTwo_3post) | SDPointAt(t, methodTwo_4)).
+        
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), s) <- ReturnPoint(t, CurrentStackLevel(t), s) & (SDPointAt(t, methodOne_5) | SDPointAt(t, methodTwo_5)).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, methodOne_3post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodOne_3).
+        ! t [Time] st [StackLevel] : C_ReturnPoint(Next(t), st, methodTwo_3post) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodTwo_3).
+        ! t [Time] st [StackLevel] sd [SDPoint] : Cn_ReturnPoint(Next(t), st, sd) <- (CurrentStackLevel(t) = st) & ReturnPoint(t, st, sd) & (SDPointAt(t, methodOne_5) | SDPointAt(t, methodTwo_5)).
+        
+        ! t [Time] st [StackLevel] : C_FinishedT(Next(t), st, F) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodOne_2).
+        ! t [Time] st [StackLevel] c [A] : C_Obj2T(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodOne_3) & ObjT(t, (st-1), c).
+        ! t [Time] st [StackLevel] : C_MTwoArgT(Next(t), st, 1) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodOne_3).
+        ! t [Time] st [StackLevel] v [LimitedInt] : C_ResultT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodOne_3post) & MTwoArgT(t, (st+1), v).
+        ! t [Time] st [StackLevel] : C_FinishedT(Next(t), st, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodOne_4).
+        ! t [Time] st [StackLevel] mTwoArg_new [LimitedInt] : C_MTwoArgT(Next(t), st, mTwoArg_new) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodTwo_2) & (? mTwoArg [LimitedInt] : MTwoArgT(t, st, mTwoArg) & mTwoArg_new=mTwoArg+1).
+        ! t [Time] st [StackLevel] c [A] : C_Obj2T(Next(t), st, c) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodTwo_3) & Obj2T(t, (st-1), c).
+        ! t [Time] st [StackLevel] p [LimitedInt] : C_MTwoArgT(Next(t), st, p) <- (CurrentStackLevel(t) = (st-1)) & SDPointAt(t, methodTwo_3) & MTwoArgT(t, (st-1), p).
+        ! t [Time] st [StackLevel] v [LimitedInt] : C_MTwoArgT(Next(t), st, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, methodTwo_3post) & MTwoArgT(t, (st+1), v).
+        ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st - 1)) & (SDPointAt(t, methodOne_3) | SDPointAt(t, methodTwo_3)).
+        ! t [Time] st [StackLevel] : C_CurrentStackLevel(Next(t), st) <- (CurrentStackLevel(t) = (st + 1)) & (SDPointAt(t, methodOne_5) | SDPointAt(t, methodTwo_5)).
+    }
+    {
+            ! s [SDPoint] : SDPointAt(Start, s) <- I_SDPointAt(s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- C_SDPointAt(Next(t), s).
+            ! t [Time] s [SDPoint] : SDPointAt(Next(t), s) <- SDPointAt(t, s) & ~(? s1 [SDPoint] : C_SDPointAt(Next(t), s1)).
+            
+            ! st [StackLevel] : CurrentStackLevel(Start) = st <- I_CurrentStackLevel = st.
+            ! t [Time] st [StackLevel] : CurrentStackLevel(t) = st <- C_CurrentStackLevel(t, st).
+            ! t [Time] st [StackLevel] : CurrentStackLevel(Next(t)) = st <- CurrentStackLevel(t) = st & ~(? st1 [StackLevel] : C_CurrentStackLevel(Next(t), st1)).
+            
+            ! st [StackLevel] sd [SDPoint] : ReturnPoint(Start, st, sd) <- I_ReturnPoint(st, sd).
+            ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(t, st, sd) <- C_ReturnPoint(t, st, sd).
+            ! t [Time] st [StackLevel] sd [SDPoint] : ReturnPoint(Next(t), st, sd) <- ReturnPoint(t, st, sd) & ~Cn_ReturnPoint(Next(t), st, sd).
+            
+            ! x [LimitedInt] st [StackLevel] : ResultT(Start, st, x) <- I_ResultT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : ResultT(t, st, x) <- C_ResultT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : ResultT(Next(t), st, x) <- ResultT(t, st, x) & ~( ? x1 [LimitedInt] : C_ResultT(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [A] st [StackLevel] : Obj2T(Start, st, x) <- I_Obj2T(st, x).
+            ! t [Time] st [StackLevel] x [A] : Obj2T(t, st, x) <- C_Obj2T(t, st, x).
+            ! t [Time] st [StackLevel] x [A] : Obj2T(Next(t), st, x) <- Obj2T(t, st, x) & ~( ? x1 [A] : C_Obj2T(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [LimitedInt] st [StackLevel] : MTwoArgT(Start, st, x) <- I_MTwoArgT(st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : MTwoArgT(t, st, x) <- C_MTwoArgT(t, st, x).
+            ! t [Time] st [StackLevel] x [LimitedInt] : MTwoArgT(Next(t), st, x) <- MTwoArgT(t, st, x) & ~( ? x1 [LimitedInt] : C_MTwoArgT(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [boolean] st [StackLevel] : FinishedT(Start, st, x) <- I_FinishedT(st, x).
+            ! t [Time] st [StackLevel] x [boolean] : FinishedT(t, st, x) <- C_FinishedT(t, st, x).
+            ! t [Time] st [StackLevel] x [boolean] : FinishedT(Next(t), st, x) <- FinishedT(t, st, x) & ~( ? x1 [boolean] : C_FinishedT(Next(t), st, x1) & ~(x = x1)).
+            
+            ! x [A] st [StackLevel] : ObjT(Start, st, x) <- I_ObjT(st, x).
+            ! t [Time] st [StackLevel] x [A] : ObjT(t, st, x) <- C_ObjT(t, st, x).
+            ! t [Time] st [StackLevel] x [A] : ObjT(Next(t), st, x) <- ObjT(t, st, x) & ~( ? x1 [A] : C_ObjT(Next(t), st, x1) & ~(x = x1)).
+            
+            
+    }
+    {
+    }
+
+
+}
+structure S:V {
+    Time = { 0..21 }
+    Start = 0
+    Next = { 0->1; 1->2; 2->3; 3->4; 4->5; 5->6; 6->7; 7->8; 8->9; 9->10; 10->11; 11->12; 12->13; 13->14; 14->15; 15->16; 16->17; 17->18; 18->19; 19->20; 20->21 }
+
+    I_CurrentStackLevel = 1
+
+    LimitedInt = { -1..1 }
+    RandomInt = { 0,1; 1,-1; 2,0; 3,1; 4,0; 5,-1; 6,0; 7,1; 8,-1; 9,1; 10,-1; 11,-1; 12,1; 13,0; 14,-1; 15,0; 16,1; 17,1; 18,-1; 19,0; 20,1; 21,0 }
+    LimitedFloat = { 0.0; 
+    LimitedString = { "69K1L155oBuAaNYJSgJD"; "result"; "obj2"; "mTwoArg"; "finished"; "obj"} 
+    
+    A = { A1}
+    NextSD = { methodTwo_1->methodTwo_2; methodTwo_2->methodTwo_3; methodTwo_3->methodTwo_3post; methodTwo_3post->methodTwo_4; methodTwo_4->methodTwo_5; methodOne_1->methodOne_2; methodOne_2->methodOne_3; methodOne_3->methodOne_3post; methodOne_3post->methodOne_4; methodOne_4->methodOne_5 }
+    NonStandardSDPoint = { finished; methodOne_3; methodOne_5; methodTwo_1; methodTwo_3; methodTwo_3post; methodTwo_4; methodTwo_5 }
+    flipBool = { T->F;F->T}
+}
+procedure main() {
+    print(modelexpand(T,S)[1])
+}

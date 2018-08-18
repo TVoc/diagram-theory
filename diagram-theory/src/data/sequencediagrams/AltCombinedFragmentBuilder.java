@@ -126,7 +126,7 @@ public class AltCombinedFragmentBuilder {
 		
 		Collections.sort(ifMessages);
 		
-		for (String thenMsgID : this.getThenChildIDs())
+		for (String thenMsgID : this.getThenMessageIDs())
 		{
 			thenMessages.add(store.idToMessage(thenMsgID));
 		}

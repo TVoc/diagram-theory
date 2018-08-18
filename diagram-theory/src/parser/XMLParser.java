@@ -517,10 +517,7 @@ public class XMLParser
 		{
 			String id = message.getAttributeValue("Id");
 			String content = OutputConvenienceFunctions.toIDPOperators(message.getAttributeValue("Name").replaceAll("\\s", ""));
-			if (content.equals("mTwoArg"))
-			{
-				int a = 1;
-			}
+
 			int sdPoint = Integer.parseInt(message.getAttributeValue("SequenceNumber"));
 			Optional<String> fromId = Optional.empty();
 			Optional<String> toId = Optional.empty();
@@ -617,13 +614,23 @@ public class XMLParser
 	
 	private void parseDiagramInfo(Element messageContainer, SeqSymbolStore store)
 	{
-		DiagramInfoBuilder builder = new DiagramInfoBuilder();
+		DiagramInfoBuilder builder = null;
 		Operation operation = null;
 		
 		for (Element message : messageContainer.getChildren())
 		{
 			if (message.getAttributeValue("SequenceNumber").equals("1"))
 			{
+				if (builder == null)
+				{
+					builder = new DiagramInfoBuilder();
+				}
+				else if (! builder.fresh())
+				{
+					store.addDiagramInfo(builder.getName(), builder.build());
+					builder.reset();
+				}
+				
 				String content = message.getAttributeValue("Name");
 				TempVar callObject = store.resolveTempVar(store.getNameOf(
 						message.getChild("ToEnd").getChild("MessageEnd")
