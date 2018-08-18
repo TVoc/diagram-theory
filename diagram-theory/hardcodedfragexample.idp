@@ -11,6 +11,7 @@ LTCvocabulary V {
     SDPointAt(Time,SDPoint)
     I_SDPointAt(SDPoint)
     C_SDPointAt(Time,SDPoint)
+    NonStandardSDPoint(SDPoint)
     
     type LimitedInt isa int
     type LimitedFloat isa float
@@ -71,7 +72,7 @@ LTCvocabulary V {
 }
 theory T:V {
     {
-        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s)& ~((s = finished) | (s = fragexample_1) | (s = fragexample_2) | (s = fragexample_4) | (s = fragexample_5) | (s = fragexample_6) | (s = fragexample_7) | (s = fragexample_8) | (s = fragexample_9) | (s = fragexample_10)).
+        ! t [Time] s [SDPoint] : C_SDPointAt(Next(t), NextSD(s)) <- SDPointAt(t, s) & ~NonStandardSDPoint(s).
         
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_2) <- (CurrentStackLevel(t) = st) & (SDPointAt(t, fragexample_9) | SDPointAt(t, fragexample_1)) & ( ? loop1 [boolean] : Loop1T(Next(t), st, loop1) & (loop1=T)).
         ! t [Time] st [StackLevel] : C_SDPointAt(Next(t), fragexample_3) <- (CurrentStackLevel(t) = st) & SDPointAt(t, fragexample_2) & ( ? alt1a [boolean] : Alt1aT(Next(t), st, alt1a) & (alt1a=T)).
@@ -158,12 +159,13 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,2; 1,2; 2,-5; 3,-1; 4,-2; 5,-1; 6,-4; 7,1; 8,3; 9,5; 10,-2; 11,-2; 12,-5; 13,-3; 14,1; 15,1; 16,-4; 17,5; 18,5; 19,0; 20,4 }
+    RandomInt = { 0,-5; 1,-4; 2,-3; 3,5; 4,-5; 5,5; 6,4; 7,1; 8,-3; 9,5; 10,3; 11,2; 12,-1; 13,4; 14,4; 15,-5; 16,-2; 17,-1; 18,0; 19,4; 20,0 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "hG1M54llBhlbTjfjmyGu"; "fAG4jXXECGvMDLLOObfz"; "0x3V48Mr5tghvpRj7Gnb"; "alt1a"; "alt2b"; "a"; "alt2a"; "alt1b"; "loop4"; "loop2"; "loop3"; "loop1"} 
+    LimitedString = { "xeSSQh04kTSxq2f51QLl"; "5ME12SpSr9TuKxEJWv85"; "OwoD4B4OsVsSryNKWlBP"; "alt1a"; "alt2b"; "a"; "alt2a"; "alt1b"; "loop4"; "loop2"; "loop3"; "loop1"} 
     
     A = { A1; A2; A3}
     NextSD = { fragexample_1->fragexample_2; fragexample_2->fragexample_3; fragexample_3->fragexample_4; fragexample_4->fragexample_5; fragexample_5->fragexample_6; fragexample_6->fragexample_7; fragexample_7->fragexample_8; fragexample_8->fragexample_9; fragexample_9->fragexample_10; fragexample_10->fragexample_1; fragexample_1->fragexample_2 }
+    NonStandardSDPoint = { finished; fragexample_1; fragexample_2; fragexample_4; fragexample_5; fragexample_6; fragexample_7; fragexample_8; fragexample_9; fragexample_10 }
     flipBool = { T->F;F->T}
 }
 procedure main() {

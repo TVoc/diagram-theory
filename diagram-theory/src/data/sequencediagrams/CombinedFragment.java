@@ -20,7 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import theory.SeqDiagramStore;
 
-public abstract class CombinedFragment implements MessageContainer
+public abstract class CombinedFragment implements MessageContainer, Comparable<CombinedFragment>
 {
 	public CombinedFragment(Optional<CombinedFragment> parent) throws IllegalArgumentException
 	{
@@ -152,6 +152,11 @@ public abstract class CombinedFragment implements MessageContainer
 	{
 		CombinedFragment prev;
 		Set<CombinedFragment> excluded = new HashSet<CombinedFragment>();
+		
+		if (this instanceof AltCombinedFragment && ((AltCombinedFragment) this).getIfGuard().equals("(alt2a=T)"))
+		{
+			int a = 1;
+		}
 		
 		do
 		{
@@ -786,6 +791,30 @@ public abstract class CombinedFragment implements MessageContainer
 			{
 				return -1;
 			}
+		}
+		
+		List<Message> messages = this.flattenMessages();
+		List<Message> otherMessages = ((CombinedFragment) other).flattenMessages();
+		
+		if (messages.containsAll(otherMessages) || otherMessages.containsAll(messages))
+		{
+			return 0;
+		}
+		if (messages.get(messages.size() - 1).getSDPoint().getSequenceNumber() < otherMessages.get(0).getSDPoint().getSequenceNumber())
+		{
+			return -1;
+		}
+		else // first message in messages comes after otherMessages
+		{
+			return 1;
+		}
+	}
+	
+	public int compareTo(CombinedFragment other)
+	{
+		if (this == other)
+		{
+			return 0;
 		}
 		
 		List<Message> messages = this.flattenMessages();

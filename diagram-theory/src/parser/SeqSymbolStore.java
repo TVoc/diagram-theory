@@ -11,9 +11,12 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.AltCombinedFragmentBuilder;
 import data.sequencediagrams.DiagramInfo;
 import data.sequencediagrams.LoopCombinedFragment;
+import data.sequencediagrams.LoopCombinedFragmentBuilder;
 import data.sequencediagrams.Message;
+import data.sequencediagrams.MessageBuilder;
 import data.sequencediagrams.TempVar;
 import data.sequencediagrams.TempVarContext;
 import theory.CallPointExpander;
@@ -35,6 +38,13 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext, CallP
 		this.callPoints = new TreeMap<Message, Message>();
 		this.altCombinedFragments = new ArrayList<AltCombinedFragment>();
 		this.loopCombinedFragments = new ArrayList<LoopCombinedFragment>();
+		this.tempVarToDiagram = new HashMap<String,String>();
+		this.idsToMsgBuilders = new HashMap<String,MessageBuilder>();
+		this.msgBuilders = new ArrayList<MessageBuilder>();
+		this.acfPending = new HashMap<String,AltCombinedFragmentBuilder>();
+		this.topAcfs = new HashMap<String,AltCombinedFragmentBuilder>();
+		this.loopPending = new HashMap<String,LoopCombinedFragmentBuilder>();
+		this.topLcfs = new HashMap<String,LoopCombinedFragmentBuilder>();
 	}
 	
 	private final Map<String,String> idsToNames;
@@ -144,6 +154,38 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext, CallP
 		}
 		
 		this.internalGetTempVars().put(name, temp);
+	}
+	
+	private Map<String, String> tempVarToDiagram;
+	
+	private Map<String, String> internalGetTempVarToDiagram()
+	{
+		return this.tempVarToDiagram;
+	}
+	
+	public Map<String, String> getTempVarToDiagram()
+	{
+		return Collections.unmodifiableMap(this.internalGetTempVarToDiagram());
+	}
+	
+	public boolean hasTempVarToDiagram(String varName)
+	{
+		return this.internalGetTempVarToDiagram().containsKey(varName);
+	}
+	
+	public String getSourceDiagram(String varName) throws IllegalArgumentException
+	{
+		if (! this.hasTempVarToDiagram(varName))
+		{
+			throw new IllegalArgumentException("varName did not have associated diagram: " + varName);
+		}
+		
+		return this.internalGetTempVarToDiagram().get(varName);
+	}
+	
+	public void addTempVarToDiagram(String varName, String diagramName)
+	{
+		this.internalGetTempVarToDiagram().put(varName, diagramName);
 	}
 	
 	private final List<Message> messages;
@@ -362,6 +404,74 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext, CallP
 		this.setCallPointsExpanded(true);
 	}
 	
+	private Map<String, MessageBuilder> idsToMsgBuilders;
+	private List<MessageBuilder> msgBuilders;
+	
+	private Map<String, MessageBuilder> internalIdsToMsgBuilders()
+	{
+		return this.idsToMsgBuilders;
+	}
+	
+	public Map<String, MessageBuilder> getIdsToMsgBuilders()
+	{
+		return Collections.unmodifiableMap(this.internalIdsToMsgBuilders());
+	}
+	
+	public boolean hasMsgBuilder(String id)
+	{
+		return this.internalIdsToMsgBuilders().containsKey(id);
+	}
+	
+	public MessageBuilder getMsgBuilder(String id) throws IllegalArgumentException
+	{
+		if (! this.hasMsgBuilder(id))
+		{
+			throw new IllegalArgumentException("store did not have msg builder with id: " + id);
+		}
+		
+		return this.internalIdsToMsgBuilders().get(id);
+	}
+	
+	public void addMsgBuilder(String id, MessageBuilder builder)
+	{
+		this.internalIdsToMsgBuilders().put(id, builder);
+	}
+	
+	public void addMsgBuilder(String id)
+	{
+		this.internalIdsToMsgBuilders().put(id, new MessageBuilder());
+	}
+	
+	public void buildMessages()
+	{
+		for (MessageBuilder ele : this.internalGetMsgBuilders())
+		{
+			Message message = ele.build(this);
+			this.addIdToMessage(message.getId(), message);
+			this.addMessage(message);
+		}
+	}
+	
+	private List<MessageBuilder> internalGetMsgBuilders()
+	{
+		return this.msgBuilders;
+	}
+	
+	public List<MessageBuilder> getMsgBuilders()
+	{
+		return Collections.unmodifiableList(this.internalGetMsgBuilders());
+	}
+	
+	public MessageBuilder getMsgBuilder(int index)
+	{
+		return this.internalGetMsgBuilders().get(index);
+	}
+	
+	public void addMessageBuilder(MessageBuilder builder)
+	{
+		this.internalGetMsgBuilders().add(builder);
+	}
+	
 	private final List<AltCombinedFragment> altCombinedFragments;
 	
 	private List<AltCombinedFragment> internalGetAltCombinedFragments()
@@ -404,6 +514,154 @@ public class SeqSymbolStore extends SymbolStore implements TempVarContext, CallP
 	public void addLoopCombinedFragment(LoopCombinedFragment fragment)
 	{
 		this.internalGetLoopCombinedFragments().add(fragment);
+	}
+	
+	private Map<String, AltCombinedFragmentBuilder> acfPending;
+	
+	private Map<String, AltCombinedFragmentBuilder> internalGetAcfPending()
+	{
+		return this.acfPending;
+	}
+	
+	public Map<String, AltCombinedFragmentBuilder> getAcfPending()
+	{
+		return Collections.unmodifiableMap(this.internalGetAcfPending());
+	}
+	
+	public boolean hasAcf(String id)
+	{
+		return this.internalGetAcfPending().containsKey(id);
+	}
+	
+	public AltCombinedFragmentBuilder getAcf(String id) throws IllegalArgumentException
+	{
+		if (! this.hasAcf(id))
+		{
+			throw new IllegalArgumentException("store did not have acf with id: " + id);
+		}
+		
+		return this.internalGetAcfPending().get(id);
+	}
+	
+	public void addAcf(String id, AltCombinedFragmentBuilder acf)
+	{
+		this.internalGetAcfPending().put(id, acf);
+	}
+	
+	public void addAcf(String id)
+	{
+		this.internalGetAcfPending().put(id, new AltCombinedFragmentBuilder());
+	}
+	
+	private Map<String, AltCombinedFragmentBuilder> topAcfs;
+	
+	private Map<String, AltCombinedFragmentBuilder> internalGetTopAcfs()
+	{
+		return this.topAcfs;
+	}
+	
+	public Map<String, AltCombinedFragmentBuilder> getTopAcfs()
+	{
+		return Collections.unmodifiableMap(this.internalGetTopAcfs());
+	}
+	
+	public boolean hasTopAcf(String id)
+	{
+		return this.internalGetTopAcfs().containsKey(id);
+	}
+	
+	public AltCombinedFragmentBuilder getTopAcf(String id) throws IllegalArgumentException
+	{
+		if (! this.hasTopAcf(id))
+		{
+			throw new IllegalArgumentException("store does not have top acf with id: " + id);
+		}
+		
+		return this.internalGetTopAcfs().get(id);
+	}
+	
+	public void addTopAcf(String id, AltCombinedFragmentBuilder builder)
+	{
+		this.internalGetTopAcfs().put(id, builder);
+	}
+	
+	public void addTopAcf(String id)
+	{
+		this.internalGetTopAcfs().put(id, new AltCombinedFragmentBuilder());
+	}
+	
+	private Map<String, LoopCombinedFragmentBuilder> loopPending;
+	
+	private Map<String, LoopCombinedFragmentBuilder> internalGetLcfPending()
+	{
+		return this.loopPending;
+	}
+	
+	public Map<String, LoopCombinedFragmentBuilder> getLcfPending()
+	{
+		return Collections.unmodifiableMap(this.internalGetLcfPending());
+	}
+	
+	public boolean hasLcf(String id)
+	{
+		return this.internalGetLcfPending().containsKey(id);
+	}
+	
+	public LoopCombinedFragmentBuilder getLcf(String id) throws IllegalArgumentException
+	{
+		if (! this.hasLcf(id))
+		{
+			throw new IllegalArgumentException("store did not have lcf with id: " + id);
+		}
+		
+		return this.internalGetLcfPending().get(id);
+	}
+	
+	public void addLcf(String id, LoopCombinedFragmentBuilder lcf)
+	{
+		this.internalGetLcfPending().put(id, lcf);
+	}
+	
+	public void addLcf(String id)
+	{
+		this.internalGetLcfPending().put(id, new LoopCombinedFragmentBuilder());
+	}
+	
+	private Map<String, LoopCombinedFragmentBuilder> topLcfs;
+	
+	private Map<String, LoopCombinedFragmentBuilder> internalGetTopLcfs()
+	{
+		return this.topLcfs;
+	}
+	
+	public Map<String, LoopCombinedFragmentBuilder> getTopLcfs()
+	{
+		return Collections.unmodifiableMap(this.internalGetTopLcfs());
+	}
+	
+	public boolean hasTopLcf(String id)
+	{
+		return this.internalGetTopLcfs().containsKey(id);
+	}
+	
+	public LoopCombinedFragmentBuilder getTopLcf(String id) throws IllegalArgumentException
+	{
+		if (! this.hasTopLcf(id))
+		{
+			throw new IllegalArgumentException("store does not have top lcf with id: " + id);
+		}
+		
+		return this.internalGetTopLcfs().get(id);
+	}
+	
+	public void addTopLcf(String id, LoopCombinedFragmentBuilder builder)
+	{
+		this.internalGetTopLcfs().put(id, builder);
+	}
+	
+	public void addTopLcf(String id)
+	{
+		this.internalGetTopLcfs().put(id, new LoopCombinedFragmentBuilder());
 	}
 	
 	@Override

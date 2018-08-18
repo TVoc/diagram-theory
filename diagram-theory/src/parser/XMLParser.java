@@ -1,9 +1,15 @@
 package parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -27,8 +33,12 @@ import data.classdiagrams.TypeParameterType;
 import data.classdiagrams.UserDefinedType;
 import data.classdiagrams.Class;
 import data.sequencediagrams.AltCombinedFragment;
+import data.sequencediagrams.AltCombinedFragmentBuilder;
+import data.sequencediagrams.DiagramInfoBuilder;
 import data.sequencediagrams.LoopCombinedFragment;
+import data.sequencediagrams.LoopCombinedFragmentBuilder;
 import data.sequencediagrams.Message;
+import data.sequencediagrams.MessageBuilder;
 import data.sequencediagrams.TempVar;
 
 import org.apache.commons.cli.CommandLine;
@@ -44,6 +54,7 @@ import theory.OutputConvenienceFunctions;
 import theory.SeqDiagramStore;
 import theory.SeqFactors;
 import theory.TheoryGenerator;
+import theory.theory.sequencediagrams.TempVarCausationBuilder;
 
 public class XMLParser
 {
@@ -72,9 +83,6 @@ public class XMLParser
 		options.addOption("floatfactor", true, "Number of floats in generated structure will be ceil(floatfactor * numobjects; default is 1");
 		options.addOption("timesteps", true, "Number of time steps that the generated theory will range over; default is 21");
 		options.addOption("stacklevels", true, "Number of stack levels that will be available in the theory; default is 10");
-		options.addOption("classdiagram", true, "Path to the class diagram that will be translated into FO");
-		
-		Option seqDiagrams = new Option("seqdiagrams", true, "Paths to one or more sequence diagrams corresponding with the class diagram that will be translated into FO");
 		
 		int numObjects = 0;
 		double stringFactor = STRINGFACTOR_DEFAULT;
@@ -116,16 +124,16 @@ public class XMLParser
 		SAXBuilder saxBuilder = new SAXBuilder();
 		try
 		{
-			Document doc = saxBuilder.build("C:\\Users\\Thomas\\Desktop\\Werk stuff\\Univ\\Thesis\\voorbeeld\\project.xml");
-			Document seq;
-			Element seqRoot;
-			if (SEQ)
-			{
-				seq = saxBuilder.build("C:\\Users\\Thomas\\Desktop\\Werk stuff\\Univ\\Thesis\\attack\\project.xml");
-				seqRoot = seq.getRootElement().getChild("Models");
-			}
+			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+		    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		        "XML Files", "xml");
+		    chooser.setFileFilter(filter);
+		    chooser.showOpenDialog(null);
+			
+			Document doc = saxBuilder.build(chooser.getSelectedFile());
+
 			XMLParser parser = new XMLParser();
-			parser.parseModel(doc.getRootElement().getChild("Models"), seqRoot, seqFactors);
+			parser.parseModel(doc.getRootElement().getChild("Models"), seqFactors);
 		}
 		catch (JDOMException e)
 		{
@@ -137,7 +145,7 @@ public class XMLParser
 		}
 	}
 	
-	private void parseModel(Element models, Element seqModels, Factors factors) throws IOException
+	private void parseModel(Element models, Factors factors) throws IOException
 	{
 		SymbolStore store;
 		if (SEQ)
@@ -180,11 +188,47 @@ public class XMLParser
 		if (SEQ)
 		{
 			SeqSymbolStore seqStore = (SeqSymbolStore) store;
-			this.parseLifelines(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("InteractionLifeLine"), seqStore);
-			this.parseMessages(seqModels.getChild("ModelRelationshipContainer").getChild("ModelChildren").getChild("ModelRelationshipContainer").getChild("ModelChildren").getChildren(), seqStore);
-			this.parseCombinedFragments(seqModels.getChild("Frame").getChild("ModelChildren").getChildren("CombinedFragment"), seqStore);
 			
-			SeqDiagramStore diagramStore = new DiagramStoreFactory().makeSeqDiagramStore(seqStore);
+			for (Element element : models.getChildren())
+			{
+				if (element.getName().equals("Frame"))
+				{
+					String diagramName = element.getAttributeValue("Name");
+					this.parseLifelines(element.getChild("ModelChildren").getChildren("InteractionLifeLine"), diagramName, seqStore);
+				}
+			}
+			
+			Element relationships = models.getChild("ModelRelationshipContainer").getChild("ModelChildren");
+			
+			for (Element element : relationships.getChildren())
+			{
+				if (element.getAttributeValue("Name").equals("Message"))
+				{
+					this.parseDiagramInfo(element.getChild("ModelChildren"), seqStore);
+				}
+			}
+			
+			for (Element element : models.getChildren())
+			{
+				if (element.getName().equals("Frame"))
+				{
+					this.parseCombinedFragments(element.getChild("ModelChildren").getChildren("CombinedFragment"), seqStore);
+				}
+				if (element.getName().equals("ModelRelationshipContainer"))
+				{
+					Element modelChildren = element.getChild("ModelChildren");
+					
+					for (Element modelChild : modelChildren.getChildren())
+					{
+						if (modelChild.getAttributeValue("Name").equals("Message"))
+						{
+							this.parseMessages(modelChild.getChild("ModelChildren").getChildren(), seqStore);
+						}
+					}
+				}
+			}
+			
+			SeqDiagramStore diagramStore = new DiagramStoreFactory().parserMakeSeqDiagramStore(seqStore);
 			new TheoryGenerator().generateLTCTheory(diagramStore, "generatedltctheory.idp", (SeqFactors) factors);
 		}
 		else
@@ -452,7 +496,7 @@ public class XMLParser
 		store.addGeneralization(new Generalization(superType, subType));
 	}
 	
-	private void parseLifelines(List<Element> lifelines, SeqSymbolStore store)
+	private void parseLifelines(List<Element> lifelines, String diagramName, SeqSymbolStore store)
 	{
 		for (Element lifeline : lifelines)
 		{
@@ -463,6 +507,7 @@ public class XMLParser
 			TempVar tempVar = new TempVar(lifeType, name);
 			store.addTempVar(name, tempVar);
 			store.addName(lifeId, name);
+			store.addTempVarToDiagram(name, diagramName);
 		}
 	}
 	
@@ -472,20 +517,22 @@ public class XMLParser
 		{
 			String id = message.getAttributeValue("Id");
 			String content = OutputConvenienceFunctions.toIDPOperators(message.getAttributeValue("Name").replaceAll("\\s", ""));
+			if (content.equals("mTwoArg"))
+			{
+				int a = 1;
+			}
 			int sdPoint = Integer.parseInt(message.getAttributeValue("SequenceNumber"));
-			Optional<String> fromName = Optional.empty();
-			Optional<String> toName = Optional.empty();
+			Optional<String> fromId = Optional.empty();
+			Optional<String> toId = Optional.empty();
 			boolean isReturn = message.getChild("ActionType") != null && message.getChild("ActionType").getChild("ActionTypeReturn") != null;
 			
 			if (message.getChild("FromEnd").getChild("MessageEnd").getAttributeValue("EndModelElement") != null)
 			{
-				String varName = store.getNameOf(message.getChild("FromEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
-				fromName = Optional.of(varName);
+				fromId = Optional.of(message.getChild("FromEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
 			}
 			if (message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement") != null)
 			{
-				String varName = store.getNameOf(message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
-				toName = Optional.of(varName);
+				toId = Optional.of(message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement"));
 			}
 			
 			if (content.contains("="))
@@ -503,44 +550,149 @@ public class XMLParser
 				
 				if (! store.hasTempVar(sides[0]))
 				{
-					String[] names = rhs.split(TEMPVAR_SEPARATOR);
-					PrimitiveType type = null;
+					String diagramNameAttempt = rhs.split("\\(")[0];
 					
-					for (String ele : names)
+					if (store.getDiagrams().keySet().contains(diagramNameAttempt))
 					{
-						if (ele.equals(""))
-						{
-							continue;
-						}
-						
-						PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
-						
-						if (type == PrimitiveType.FLOAT || type == PrimitiveType.DOUBLE
-								&& (eleType == PrimitiveType.BYTE || eleType == PrimitiveType.SHORT || eleType == PrimitiveType.INTEGER || eleType == PrimitiveType.LONG))
-						{
-							continue;
-						}
-						
-						type = eleType;
+						TempVar toAdd = new TempVar(store.getDiagrams().get(diagramNameAttempt)
+								.getReturnValue().get().getType(), sides[0]);
+						store.addTempVar(sides[0], toAdd);
+						store.addName(sides[0], sides[0]);
 					}
-					
-					store.addTempVar(sides[0], new TempVar(type, sides[0]));
+					else
+					{
+						String[] names = rhs.split(TEMPVAR_SEPARATOR);
+						PrimitiveType type = null;
+						
+						for (String ele : names)
+						{
+							if (ele.equals(""))
+							{
+								continue;
+							}
+							
+							if (ele.equals("F") || ele.equals("T"))
+							{
+								type = PrimitiveType.BOOLEAN;
+								continue;
+							}
+							
+							PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
+							
+							if (type == PrimitiveType.FLOAT || type == PrimitiveType.DOUBLE
+									&& (eleType == PrimitiveType.BYTE || eleType == PrimitiveType.SHORT || eleType == PrimitiveType.INTEGER || eleType == PrimitiveType.LONG))
+							{
+								continue;
+							}
+							
+							type = eleType;
+						}
+						
+						TempVar toAdd = new TempVar(type, sides[0]);
+						store.addTempVar(sides[0], toAdd);
+						store.addName(sides[0], sides[0]);
+					}
 				}
 			}
 			
 			if (isReturn && ! content.contains("=") && ! store.hasTempVar(content))
 			{
-				Message prev = store.getMessage(sdPoint - 2);
+				MessageBuilder prev = store.getMsgBuilder(sdPoint - 2);
 				String name = StringUtils.uncapitalize(prev.getContent().replaceAll("get", "").split("\\(")[0]);
-				Class fromClass = store.getClassByName(store.resolveTempVar(fromName.get()).getType().getTypeName(store)).get();
+				Class fromClass = store.getClassByName(store.resolveTempVar(store.getNameOf(fromId.get())).getType().getTypeName(store)).get();
 				DataUnit attr = fromClass.getAttributeByName(name).get();
 				
-				store.addTempVar(content, new TempVar(attr.getType(), content));
+				TempVar toAdd = new TempVar(attr.getType(), content);
+				store.addTempVar(content, toAdd);
+				store.addName(content, content);
 			}
 			
-			Message newMessage = new Message(content, id, sdPoint, isReturn, fromName, toName);
-			store.addMessage(newMessage);
-			store.addIdToMessage(id, newMessage);
+			MessageBuilder builder = new MessageBuilder();
+			store.addMsgBuilder(id, builder);
+			store.addMessageBuilder(builder);
+			builder.setContent(content).setId(id).setSdPoint(sdPoint)
+				.setReturn(! toId.isPresent()).setFromId(fromId).setToId(toId);
+		}
+	}
+	
+	private void parseDiagramInfo(Element messageContainer, SeqSymbolStore store)
+	{
+		DiagramInfoBuilder builder = new DiagramInfoBuilder();
+		Operation operation = null;
+		
+		for (Element message : messageContainer.getChildren())
+		{
+			if (message.getAttributeValue("SequenceNumber").equals("1"))
+			{
+				String content = message.getAttributeValue("Name");
+				TempVar callObject = store.resolveTempVar(store.getNameOf(
+						message.getChild("ToEnd").getChild("MessageEnd")
+						.getAttributeValue("EndModelElement")));
+				String diagramName = content.split("\\(")[0];
+				builder.setName(diagramName).setCallObject(callObject);
+				
+				Set<Operation> ops = store.getClassByName(callObject.getType()
+						.getTypeName(store)).get().getAllOperations().get();
+				
+				for (Operation ele : ops)
+				{
+					if (ele.getName().equals(diagramName))
+					{
+						operation = ele;
+					}
+				}
+				
+				Matcher m = TempVarCausationBuilder.GETTER_PARAMETER.matcher(content);
+				m.find();
+				String found = m.group(0);
+				if (found.equals("()"))
+				{
+					continue;
+				}
+				builder.setParameters(Optional.of(new ArrayList<TempVar>()));
+				String[] para = found.substring(1, found.length() - 1).split(TempVarCausationBuilder.ARGLIST_SEPARATOR);
+				
+				int paraCounter = 0;
+				
+				for (String ele : para)
+				{
+					if (store.hasTempVar(ele))
+					{
+						TempVar parameter = store.resolveTempVar(ele);
+						builder.getParameters().get().add(parameter);
+					}
+					else
+					{
+						TempVar parameter = new TempVar(operation.getAllParameters().get().get(paraCounter).getType(), ele);
+						store.addTempVar(ele, parameter);
+						store.addName(ele, ele);
+						store.addTempVarToDiagram(ele, diagramName);
+						builder.getParameters().get().add(parameter);
+					}
+					paraCounter++;
+				}
+			}
+			else if (message.getChild("ToEnd").getChild("MessageEnd").getAttributeValue("EndModelElement") == null)
+			{
+				String returnVar = message.getAttributeValue("Name");
+				
+				if (store.hasTempVar(returnVar))
+				{
+					TempVar toReturn = store.resolveTempVar(returnVar);
+					builder.setReturnValue(Optional.of(toReturn));
+				}
+				else
+				{
+					TempVar toReturn = new TempVar(operation.getResultType().getType(), returnVar);
+					store.addTempVar(returnVar, toReturn);
+					store.addName(returnVar, returnVar);
+					store.addTempVarToDiagram(returnVar, builder.getName());
+					builder.setReturnValue(Optional.of(toReturn));
+				}
+				
+				store.addDiagramInfo(builder.getName(), builder.build());
+				builder.reset();
+			}
 		}
 	}
 	
@@ -561,36 +713,55 @@ public class XMLParser
 	
 	private void parseAlt(Element element, SeqSymbolStore store)
 	{
+		String id = element.getAttributeValue("Id");
 		List<Element> operands = element.getChild("ModelChildren").getChildren();
 		
 		String ifGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(0).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		String thenGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(1).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		
-		Message ifFirst = store.idToMessage(operands.get(0).getChild("Messages").getChildren().get(0).getAttributeValue("Idref"));
-		
+		List<Element> ifMessages = operands.get(0).getChild("Messages").getChildren();
 		List<Element> thenMessages = operands.get(1).getChild("Messages").getChildren();
 		
-		Message thenFirst = store.idToMessage(thenMessages.get(0).getAttributeValue("Idref"));
-		Message thenLast = store.idToMessage(thenMessages.get(thenMessages.size() - 1).getAttributeValue("Idref"));
+		List<String> ifMsgIDs = new ArrayList<String>();
+		List<String> thenMsgIDs = new ArrayList<String>();
 		
-		AltCombinedFragment toReturn = new AltCombinedFragment(ifGuard, thenGuard, ifFirst.getSdPoint(), thenFirst.getSdPoint(), thenLast.getSdPoint() + 1);
+		for (Element ifMessage : ifMessages)
+		{
+			ifMsgIDs.add(ifMessage.getAttributeValue("Idref"));
+		}
 		
-		store.addAltCombinedFragment(toReturn);
+		for (Element thenMessage : thenMessages)
+		{
+			thenMsgIDs.add(thenMessage.getAttributeValue("Idref"));
+		}
+		
+		AltCombinedFragmentBuilder builder = new AltCombinedFragmentBuilder();
+		builder.setIfGuard(ifGuard).setThenGuard(thenGuard).setIfMessageIDs(ifMsgIDs).setThenMessageIDs(thenMsgIDs);
+		
+		store.addAcf(id, builder);
+		store.addTopAcf(id, builder);
 	}
 	
 	private void parseLoop(Element element, SeqSymbolStore store)
 	{
+		String id = element.getAttributeValue("Id");
 		Element operand = element.getChild("ModelChildren").getChild("InteractionOperand");
 		
 		String guard = OutputConvenienceFunctions.toIDPOperators(operand.getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		
 		List<Element> messages = operand.getChild("Messages").getChildren();
 		
-		Message first = store.idToMessage(messages.get(0).getAttributeValue("Idref"));
-		Message last = store.idToMessage(messages.get(messages.size() - 1).getAttributeValue("Idref"));
+		List<String> msgIDs = new ArrayList<String>();
 		
-		LoopCombinedFragment toReturn = new LoopCombinedFragment(guard, first.getSdPoint(), last.getSdPoint() + 1);
+		for (Element message : messages)
+		{
+			msgIDs.add(message.getAttributeValue("Idref"));
+		}
 		
-		store.addLoopCombinedFragment(toReturn);
+		LoopCombinedFragmentBuilder builder = new LoopCombinedFragmentBuilder();
+		builder.setGuard(guard).setMessageIDs(msgIDs);
+		
+		store.addLcf(id, builder);
+		store.addTopLcf(id, builder);
 	}
 }

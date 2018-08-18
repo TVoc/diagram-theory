@@ -6,6 +6,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class SDPoint implements Comparable<SDPoint>
 {
 	public static final SDPoint FINISHED = new SDPoint("finished", -1, false);
+	public static final SDPoint DUMMY_1 = new SDPoint("dummy", 1, false);
+	public static final SDPoint DUMMY_2 = new SDPoint("dummy", 2, false);
+	public static final SDPoint DUMMY_3 = new SDPoint("dummy", 3, false);
 	
 	public SDPoint(String diagramName, int sequenceNumber, boolean post) throws IllegalArgumentException
 	{
