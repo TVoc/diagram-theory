@@ -134,8 +134,9 @@ public class AltCombinedFragmentBuilder {
 		Collections.sort(thenMessages);
 		
 		AltCombinedFragment toReturn = CombinedFragmentFactory
-				.createAltCombinedFragment(Optional.empty(), Optional.of(ifChildren)
-					, Optional.of(thenChildren)
+				.createAltCombinedFragment(Optional.empty()
+					, ifChildren.isEmpty() ? Optional.empty() : Optional.of(ifChildren)
+					, thenChildren.isEmpty() ? Optional.empty() : Optional.of(thenChildren)
 					, ifMessages.isEmpty() ? Optional.empty() : Optional.of(ifMessages)
 					, thenMessages.isEmpty() ? Optional.empty() : Optional.of(thenMessages)
 					, this.getIfGuard(), this.getThenGuard(), SDPoint.DUMMY_1, SDPoint.DUMMY_2, SDPoint.DUMMY_3, store);

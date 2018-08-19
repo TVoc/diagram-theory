@@ -81,7 +81,8 @@ public class LoopCombinedFragmentBuilder {
 		Collections.sort(messages);
 		
 		LoopCombinedFragment toReturn = CombinedFragmentFactory
-				.createLoopCombinedFragment(Optional.empty(), Optional.of(children)
+				.createLoopCombinedFragment(Optional.empty()
+					, children.isEmpty() ? Optional.empty() : Optional.of(children)
 					, Optional.of(messages), this.getGuard(), SDPoint.DUMMY_1, SDPoint.DUMMY_2, store);
 		
 		for (CombinedFragment child : children)

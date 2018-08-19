@@ -565,6 +565,10 @@ public class XMLParser
 						{
 							type = PrimitiveType.INTEGER;
 						}
+						else if (rhs.contains("getNum"))
+						{
+							type = PrimitiveType.INTEGER;
+						}
 						else
 						{
 							for (String ele : names)
@@ -578,6 +582,43 @@ public class XMLParser
 								{
 									type = PrimitiveType.BOOLEAN;
 									continue;
+								}
+								
+								if (OutputConvenienceFunctions.representsInteger(ele))
+								{
+									type = PrimitiveType.INTEGER;
+									continue;
+								}
+								
+								if (OutputConvenienceFunctions.representsFloat(ele))
+								{
+									type = PrimitiveType.FLOAT;
+									continue;
+								}
+								
+								if (toId.isPresent() && rhs.startsWith("get"))
+								{
+									TempVar to = store.resolveTempVar(store.getNameOf(toId.get()));
+									Set<DataUnit> attrs = store.getClassByName(to.getType()
+											.getTypeName(store)).get().getAttributes();
+									String partlySplit = rhs.split("By")[0];
+									String findAttr = partlySplit.substring(3, partlySplit.length()).split("\\(")[0];
+									
+									boolean attrFound = false;
+									for (DataUnit attr : attrs)
+									{
+										if (attr.getName().equalsIgnoreCase(findAttr))
+										{
+											type = (PrimitiveType) attr.getType();
+											attrFound = true;
+											break;
+										}
+									}
+									
+									if (attrFound)
+									{
+										continue;
+									}
 								}
 								
 								PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
@@ -708,6 +749,12 @@ public class XMLParser
 				builder.reset();
 			}
 		}
+		
+		if (! builder.fresh())
+		{
+			store.addDiagramInfo(builder.getName(), builder.build());
+			builder.reset();
+		}
 	}
 	
 	private void parseCombinedFragments(List<Element> fragments, SeqSymbolStore store)
@@ -716,16 +763,24 @@ public class XMLParser
 		{
 			if (ele.getAttributeValue("OperatorKind").equals("alt"))
 			{
-				this.parseAlt(ele, store);
+				String id = ele.getAttributeValue("Id");
+				AltCombinedFragmentBuilder frag = new AltCombinedFragmentBuilder();
+				store.addTopAcf(id, frag);
+				store.addAcf(id, frag);
+				this.parseAlt(ele, store, id);
 			}
 			else if (ele.getAttributeValue("OperatorKind").equals("loop"))
 			{
-				this.parseLoop(ele, store);
+				String id = ele.getAttributeValue("Id");
+				LoopCombinedFragmentBuilder frag = new LoopCombinedFragmentBuilder();
+				store.addTopLcf(id, frag);
+				store.addLcf(id, frag);
+				this.parseLoop(ele, store, id);
 			}
 		}
 	}
 	
-	private void parseAlt(Element element, SeqSymbolStore store)
+	private void parseAlt(Element element, SeqSymbolStore store, String topId)
 	{
 		String id = element.getAttributeValue("Id");
 		List<Element> operands = element.getChild("ModelChildren").getChildren();
@@ -739,6 +794,9 @@ public class XMLParser
 		List<String> ifMsgIDs = new ArrayList<String>();
 		List<String> thenMsgIDs = new ArrayList<String>();
 		
+		List<String> ifChildIDs = new ArrayList<String>();
+		List<String> thenChildIDs = new ArrayList<String>();
+		
 		for (Element ifMessage : ifMessages)
 		{
 			ifMsgIDs.add(ifMessage.getAttributeValue("Idref"));
@@ -749,14 +807,61 @@ public class XMLParser
 			thenMsgIDs.add(thenMessage.getAttributeValue("Idref"));
 		}
 		
-		AltCombinedFragmentBuilder builder = new AltCombinedFragmentBuilder();
-		builder.setIfGuard(ifGuard).setThenGuard(thenGuard).setIfMessageIDs(ifMsgIDs).setThenMessageIDs(thenMsgIDs);
+		if (operands.get(0).getChild("ModelChildren") != null)
+		{
+			List<Element> ifChildren = operands.get(0).getChild("ModelChildren").getChildren();
+			
+			for (Element ifChild : ifChildren)
+			{
+				String childId = ifChild.getAttributeValue("Id");
+				ifChildIDs.add(childId);
+				if (ifChild.getAttributeValue("OperatorKind").equals("alt"))
+				{
+					this.parseAlt(ifChild, store, topId);
+				}
+				else if (ifChild.getAttributeValue("OperatorKind").equals("loop"))
+				{
+					this.parseLoop(ifChild, store, topId);
+				}
+			}
+		}
 		
-		store.addAcf(id, builder);
-		store.addTopAcf(id, builder);
+		if (operands.get(1).getChild("ModelChildren") != null)
+		{
+			List<Element> thenChildren = operands.get(1).getChild("ModelChildren").getChildren();
+			
+			for (Element thenChild : thenChildren)
+			{
+				String childId = thenChild.getAttributeValue("Id");
+				thenChildIDs.add(childId);
+				if (thenChild.getAttributeValue("OperatorKind").equals("alt"))
+				{
+					this.parseAlt(thenChild, store, topId);
+				}
+				else if (thenChild.getAttributeValue("OperatorKind").equals("loop"))
+				{
+					this.parseLoop(thenChild, store, topId);
+				}
+			}
+		}
+		
+		if (id.equals(topId))
+		{
+			AltCombinedFragmentBuilder builder = store.getAcf(id);
+			builder.setIfGuard(ifGuard).setThenGuard(thenGuard).setIfMessageIDs(ifMsgIDs)
+				.setThenMessageIDs(thenMsgIDs).setIfChildIDs(ifChildIDs).setThenChildIDs(thenChildIDs);
+		}
+		else
+		{
+			AltCombinedFragmentBuilder builder = new AltCombinedFragmentBuilder();
+			builder.setIfGuard(ifGuard).setThenGuard(thenGuard).setIfMessageIDs(ifMsgIDs)
+				.setThenMessageIDs(thenMsgIDs).setIfChildIDs(ifChildIDs).setThenChildIDs(thenChildIDs);
+			
+			store.addAcf(id, builder);
+		}
 	}
 	
-	private void parseLoop(Element element, SeqSymbolStore store)
+	private void parseLoop(Element element, SeqSymbolStore store, String topId)
 	{
 		String id = element.getAttributeValue("Id");
 		Element operand = element.getChild("ModelChildren").getChild("InteractionOperand");
@@ -766,16 +871,43 @@ public class XMLParser
 		List<Element> messages = operand.getChild("Messages").getChildren();
 		
 		List<String> msgIDs = new ArrayList<String>();
+		List<String> childIDs = new ArrayList<String>();
 		
 		for (Element message : messages)
 		{
 			msgIDs.add(message.getAttributeValue("Idref"));
 		}
 		
-		LoopCombinedFragmentBuilder builder = new LoopCombinedFragmentBuilder();
-		builder.setGuard(guard).setMessageIDs(msgIDs);
+		if (operand.getChild("ModelChildren") != null)
+		{
+			List<Element> children = operand.getChild("ModelChildren").getChildren();
+			
+			for (Element child : children)
+			{
+				String childId = child.getAttributeValue("Id");
+				childIDs.add(childId);
+				if (child.getAttributeValue("OperatorKind").equals("alt"))
+				{
+					this.parseAlt(child, store, topId);
+				}
+				else if (child.getAttributeValue("OperatorKind").equals("loop"))
+				{
+					this.parseLoop(child, store, topId);
+				}
+			}
+		}
 		
-		store.addLcf(id, builder);
-		store.addTopLcf(id, builder);
+		if (id.equals(topId))
+		{
+			LoopCombinedFragmentBuilder builder = store.getLcf(id);
+			builder.setGuard(guard).setMessageIDs(msgIDs).setChildIDs(childIDs);
+		}
+		else
+		{
+			LoopCombinedFragmentBuilder builder = new LoopCombinedFragmentBuilder();
+			builder.setGuard(guard).setMessageIDs(msgIDs).setChildIDs(childIDs);
+			
+			store.addLcf(id, builder);
+		}
 	}
 }
