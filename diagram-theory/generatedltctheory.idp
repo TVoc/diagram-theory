@@ -30,7 +30,6 @@ LTCvocabulary V {
     C_ReturnPoint(Time,StackLevel,SDPoint)
     Cn_ReturnPoint(Time,StackLevel,SDPoint)
     
-    RandomInt(Time) : LimitedInt
     type A
     
     ResultT(Time, StackLevel, LimitedInt)
@@ -127,10 +126,9 @@ structure S:V {
 
     I_CurrentStackLevel = 1
 
-    LimitedInt = { -1..1 }
-    RandomInt = { 0,1; 1,-1; 2,0; 3,1; 4,0; 5,-1; 6,0; 7,1; 8,-1; 9,1; 10,-1; 11,-1; 12,1; 13,0; 14,-1; 15,0; 16,1; 17,1; 18,-1; 19,0; 20,1; 21,0 }
+    LimitedInt = { 1..3 }
     LimitedFloat = { 0.0; 
-    LimitedString = { "69K1L155oBuAaNYJSgJD"; "result"; "obj2"; "mTwoArg"; "finished"; "obj"} 
+    LimitedString = { "QPzkjfVGyrAJli3OGv8c"; "result"; "obj2"; "mTwoArg"; "finished"; "obj"} 
     
     A = { A1}
     NextSD = { methodTwo_1->methodTwo_2; methodTwo_2->methodTwo_3; methodTwo_3->methodTwo_3post; methodTwo_3post->methodTwo_4; methodTwo_4->methodTwo_5; methodOne_1->methodOne_2; methodOne_2->methodOne_3; methodOne_3->methodOne_3post; methodOne_3post->methodOne_4; methodOne_4->methodOne_5 }

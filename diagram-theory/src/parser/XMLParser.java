@@ -561,28 +561,35 @@ public class XMLParser
 						String[] names = rhs.split(TEMPVAR_SEPARATOR);
 						PrimitiveType type = null;
 						
-						for (String ele : names)
+						if (rhs.contains("randomInt"))
 						{
-							if (ele.equals(""))
+							type = PrimitiveType.INTEGER;
+						}
+						else
+						{
+							for (String ele : names)
 							{
-								continue;
+								if (ele.equals(""))
+								{
+									continue;
+								}
+								
+								if (ele.equals("F") || ele.equals("T"))
+								{
+									type = PrimitiveType.BOOLEAN;
+									continue;
+								}
+								
+								PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
+								
+								if (type == PrimitiveType.FLOAT || type == PrimitiveType.DOUBLE
+										&& (eleType == PrimitiveType.BYTE || eleType == PrimitiveType.SHORT || eleType == PrimitiveType.INTEGER || eleType == PrimitiveType.LONG))
+								{
+									continue;
+								}
+								
+								type = eleType;
 							}
-							
-							if (ele.equals("F") || ele.equals("T"))
-							{
-								type = PrimitiveType.BOOLEAN;
-								continue;
-							}
-							
-							PrimitiveType eleType = (PrimitiveType) store.resolveTempVar(ele).getType();
-							
-							if (type == PrimitiveType.FLOAT || type == PrimitiveType.DOUBLE
-									&& (eleType == PrimitiveType.BYTE || eleType == PrimitiveType.SHORT || eleType == PrimitiveType.INTEGER || eleType == PrimitiveType.LONG))
-							{
-								continue;
-							}
-							
-							type = eleType;
 						}
 						
 						TempVar toAdd = new TempVar(type, sides[0]);
