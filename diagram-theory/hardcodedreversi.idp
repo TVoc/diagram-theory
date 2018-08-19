@@ -410,21 +410,6 @@ LTCvocabulary V {
     I_YOffNTT(StackLevel, LimitedInt)
     C_YOffNTT(Time, StackLevel, LimitedInt)
     
-    BoardxCoMax(Time, Board, LimitedInt)
-    I_BoardxCoMax(Board, LimitedInt)
-    C_BoardxCoMax(Time, Board, LimitedInt)
-    Cn_BoardxCoMax(Time, Board, LimitedInt)
-    
-    BoardblackWinner(Time, Board, boolean)
-    I_BoardblackWinner(Board, boolean)
-    C_BoardblackWinner(Time, Board, boolean)
-    Cn_BoardblackWinner(Time, Board, boolean)
-    
-    BoardgameOver(Time, Board, boolean)
-    I_BoardgameOver(Board, boolean)
-    C_BoardgameOver(Time, Board, boolean)
-    Cn_BoardgameOver(Time, Board, boolean)
-    
     Boardtie(Time, Board, boolean)
     I_Boardtie(Board, boolean)
     C_Boardtie(Time, Board, boolean)
@@ -435,25 +420,40 @@ LTCvocabulary V {
     C_BoardyCoMax(Time, Board, LimitedInt)
     Cn_BoardyCoMax(Time, Board, LimitedInt)
     
-    Positionblack(Time, Position, boolean)
-    I_Positionblack(Position, boolean)
-    C_Positionblack(Time, Position, boolean)
-    Cn_Positionblack(Time, Position, boolean)
+    BoardxCoMax(Time, Board, LimitedInt)
+    I_BoardxCoMax(Board, LimitedInt)
+    C_BoardxCoMax(Time, Board, LimitedInt)
+    Cn_BoardxCoMax(Time, Board, LimitedInt)
     
-    Positionoccupied(Time, Position, boolean)
-    I_Positionoccupied(Position, boolean)
-    C_Positionoccupied(Time, Position, boolean)
-    Cn_Positionoccupied(Time, Position, boolean)
+    BoardgameOver(Time, Board, boolean)
+    I_BoardgameOver(Board, boolean)
+    C_BoardgameOver(Time, Board, boolean)
+    Cn_BoardgameOver(Time, Board, boolean)
+    
+    BoardblackWinner(Time, Board, boolean)
+    I_BoardblackWinner(Board, boolean)
+    C_BoardblackWinner(Time, Board, boolean)
+    Cn_BoardblackWinner(Time, Board, boolean)
     
     PositionxCo(Time, Position, LimitedInt)
     I_PositionxCo(Position, LimitedInt)
     C_PositionxCo(Time, Position, LimitedInt)
     Cn_PositionxCo(Time, Position, LimitedInt)
     
+    Positionoccupied(Time, Position, boolean)
+    I_Positionoccupied(Position, boolean)
+    C_Positionoccupied(Time, Position, boolean)
+    Cn_Positionoccupied(Time, Position, boolean)
+    
     PositionyCo(Time, Position, LimitedInt)
     I_PositionyCo(Position, LimitedInt)
     C_PositionyCo(Time, Position, LimitedInt)
     Cn_PositionyCo(Time, Position, LimitedInt)
+    
+    Positionblack(Time, Position, boolean)
+    I_Positionblack(Position, boolean)
+    C_Positionblack(Time, Position, boolean)
+    Cn_Positionblack(Time, Position, boolean)
     
     BoardandPosition(Board, Position)
     partial BoardFirstPosition(Board) : Position
@@ -467,6 +467,9 @@ theory T:V {
                     ! t [Time] st [StackLevel] x [Board] v [boolean] : Cn_BoardblackWinner(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_24) & BoardPT(t, st, x) & BoardblackWinner(t, x, v) & ~BlackWinsPT(Next(t), st, v).
 
         
+            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : C_PositionxCo(t, x, v) <- false.
+            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : Cn_PositionxCo(t, x, v) <- false.
+        
                     ! t [Time] st [StackLevel] x [Position] : C_Positionoccupied(Next(t), x, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_7) & PlayPosPT(t, st, x).
         ! t [Time] st [StackLevel] x [Position] : C_Positionoccupied(Next(t), x, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_14) & PlayPosPT(t, st, x).
 
@@ -474,8 +477,8 @@ theory T:V {
         ! t [Time] st [StackLevel] x [Position] v [boolean] : Cn_Positionoccupied(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_14) & PlayPosPT(t, st, x) & Positionoccupied(t, x, v) & ~(v = T).
 
         
-            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : C_PositionxCo(t, x, v) <- false.
-            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : Cn_PositionxCo(t, x, v) <- false.
+            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : C_PositionyCo(t, x, v) <- false.
+            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : Cn_PositionyCo(t, x, v) <- false.
         
                     ! t [Time] st [StackLevel] x [Position] v [boolean] : C_Positionblack(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, backtrackFlip_7) & ToFlipBTFT(t, st, x) & BlackBTFT(t, st, v).
         ! t [Time] st [StackLevel] x [Position] : C_Positionblack(Next(t), x, T) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_8) & PlayPosPT(t, st, x).
@@ -485,9 +488,6 @@ theory T:V {
         ! t [Time] st [StackLevel] x [Position] v [boolean] : Cn_Positionblack(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_8) & PlayPosPT(t, st, x) & Positionblack(t, x, v) & ~(v = T).
         ! t [Time] st [StackLevel] x [Position] v [boolean] : Cn_Positionblack(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_15) & PlayPosPT(t, st, x) & Positionblack(t, x, v) & ~(v = F).
 
-        
-            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : C_PositionyCo(t, x, v) <- false.
-            ! t [Time] st [StackLevel] x [Position] v [LimitedInt] : Cn_PositionyCo(t, x, v) <- false.
         
                     ! t [Time] st [StackLevel] x [Board] v [boolean] : C_Boardtie(Next(t), x, v) <- (CurrentStackLevel(t) = st) & SDPointAt(t, play_23) & BoardPT(t, st, x) & TiePT(t, st, v).
 
@@ -1312,18 +1312,6 @@ theory T:V {
             ! t [Time] st [StackLevel] x [LimitedInt] : YOffNTT(t, st, x) <- C_YOffNTT(t, st, x).
             ! t [Time] st [StackLevel] x [LimitedInt] : YOffNTT(Next(t), st, x) <- YOffNTT(t, st, x) & ~( ? x1 [LimitedInt] : C_YOffNTT(Next(t), st, x1) & ~(x = x1)).
             
-            ! x [Board] y [LimitedInt] : BoardxCoMax(Start, x, y) <- I_BoardxCoMax(x, y).
-            ! t [Time] x [Board] y [LimitedInt] : BoardxCoMax(t, x, y) <- C_BoardxCoMax(t, x, y).
-            ! t [Time] x [Board] y [LimitedInt] : BoardxCoMax(Next(t), x, y) <- BoardxCoMax(t, x, y) & ~Cn_BoardxCoMax(Next(t), x, y).
-            
-            ! x [Board] y [boolean] : BoardblackWinner(Start, x, y) <- I_BoardblackWinner(x, y).
-            ! t [Time] x [Board] y [boolean] : BoardblackWinner(t, x, y) <- C_BoardblackWinner(t, x, y).
-            ! t [Time] x [Board] y [boolean] : BoardblackWinner(Next(t), x, y) <- BoardblackWinner(t, x, y) & ~Cn_BoardblackWinner(Next(t), x, y).
-            
-            ! x [Board] y [boolean] : BoardgameOver(Start, x, y) <- I_BoardgameOver(x, y).
-            ! t [Time] x [Board] y [boolean] : BoardgameOver(t, x, y) <- C_BoardgameOver(t, x, y).
-            ! t [Time] x [Board] y [boolean] : BoardgameOver(Next(t), x, y) <- BoardgameOver(t, x, y) & ~Cn_BoardgameOver(Next(t), x, y).
-            
             ! x [Board] y [boolean] : Boardtie(Start, x, y) <- I_Boardtie(x, y).
             ! t [Time] x [Board] y [boolean] : Boardtie(t, x, y) <- C_Boardtie(t, x, y).
             ! t [Time] x [Board] y [boolean] : Boardtie(Next(t), x, y) <- Boardtie(t, x, y) & ~Cn_Boardtie(Next(t), x, y).
@@ -1332,21 +1320,33 @@ theory T:V {
             ! t [Time] x [Board] y [LimitedInt] : BoardyCoMax(t, x, y) <- C_BoardyCoMax(t, x, y).
             ! t [Time] x [Board] y [LimitedInt] : BoardyCoMax(Next(t), x, y) <- BoardyCoMax(t, x, y) & ~Cn_BoardyCoMax(Next(t), x, y).
             
-            ! x [Position] y [boolean] : Positionblack(Start, x, y) <- I_Positionblack(x, y).
-            ! t [Time] x [Position] y [boolean] : Positionblack(t, x, y) <- C_Positionblack(t, x, y).
-            ! t [Time] x [Position] y [boolean] : Positionblack(Next(t), x, y) <- Positionblack(t, x, y) & ~Cn_Positionblack(Next(t), x, y).
+            ! x [Board] y [LimitedInt] : BoardxCoMax(Start, x, y) <- I_BoardxCoMax(x, y).
+            ! t [Time] x [Board] y [LimitedInt] : BoardxCoMax(t, x, y) <- C_BoardxCoMax(t, x, y).
+            ! t [Time] x [Board] y [LimitedInt] : BoardxCoMax(Next(t), x, y) <- BoardxCoMax(t, x, y) & ~Cn_BoardxCoMax(Next(t), x, y).
             
-            ! x [Position] y [boolean] : Positionoccupied(Start, x, y) <- I_Positionoccupied(x, y).
-            ! t [Time] x [Position] y [boolean] : Positionoccupied(t, x, y) <- C_Positionoccupied(t, x, y).
-            ! t [Time] x [Position] y [boolean] : Positionoccupied(Next(t), x, y) <- Positionoccupied(t, x, y) & ~Cn_Positionoccupied(Next(t), x, y).
+            ! x [Board] y [boolean] : BoardgameOver(Start, x, y) <- I_BoardgameOver(x, y).
+            ! t [Time] x [Board] y [boolean] : BoardgameOver(t, x, y) <- C_BoardgameOver(t, x, y).
+            ! t [Time] x [Board] y [boolean] : BoardgameOver(Next(t), x, y) <- BoardgameOver(t, x, y) & ~Cn_BoardgameOver(Next(t), x, y).
+            
+            ! x [Board] y [boolean] : BoardblackWinner(Start, x, y) <- I_BoardblackWinner(x, y).
+            ! t [Time] x [Board] y [boolean] : BoardblackWinner(t, x, y) <- C_BoardblackWinner(t, x, y).
+            ! t [Time] x [Board] y [boolean] : BoardblackWinner(Next(t), x, y) <- BoardblackWinner(t, x, y) & ~Cn_BoardblackWinner(Next(t), x, y).
             
             ! x [Position] y [LimitedInt] : PositionxCo(Start, x, y) <- I_PositionxCo(x, y).
             ! t [Time] x [Position] y [LimitedInt] : PositionxCo(t, x, y) <- C_PositionxCo(t, x, y).
             ! t [Time] x [Position] y [LimitedInt] : PositionxCo(Next(t), x, y) <- PositionxCo(t, x, y) & ~Cn_PositionxCo(Next(t), x, y).
             
+            ! x [Position] y [boolean] : Positionoccupied(Start, x, y) <- I_Positionoccupied(x, y).
+            ! t [Time] x [Position] y [boolean] : Positionoccupied(t, x, y) <- C_Positionoccupied(t, x, y).
+            ! t [Time] x [Position] y [boolean] : Positionoccupied(Next(t), x, y) <- Positionoccupied(t, x, y) & ~Cn_Positionoccupied(Next(t), x, y).
+            
             ! x [Position] y [LimitedInt] : PositionyCo(Start, x, y) <- I_PositionyCo(x, y).
             ! t [Time] x [Position] y [LimitedInt] : PositionyCo(t, x, y) <- C_PositionyCo(t, x, y).
             ! t [Time] x [Position] y [LimitedInt] : PositionyCo(Next(t), x, y) <- PositionyCo(t, x, y) & ~Cn_PositionyCo(Next(t), x, y).
+            
+            ! x [Position] y [boolean] : Positionblack(Start, x, y) <- I_Positionblack(x, y).
+            ! t [Time] x [Position] y [boolean] : Positionblack(t, x, y) <- C_Positionblack(t, x, y).
+            ! t [Time] x [Position] y [boolean] : Positionblack(Next(t), x, y) <- Positionblack(t, x, y) & ~Cn_Positionblack(Next(t), x, y).
             
             
     }
@@ -1355,32 +1355,32 @@ theory T:V {
         ! f [Board] i [LimitedInt] to [Position] : BoardGetPosition(f, i) = to <- ( ? to1 [Position] : BoardGetPosition(f, (i-1)) = to1 & BoardNextPosition(f, to1) = to).
     }
 
-        ! x [Board] : ?1 v [LimitedInt] : I_BoardxCoMax(x, v).
-        ! t [Time] x [Board] : ?1 v [LimitedInt] : BoardxCoMax(t, x, v).
-        
-        ! x [Board] : ?1 v [boolean] : I_BoardblackWinner(x, v).
-        ! t [Time] x [Board] : ?1 v [boolean] : BoardblackWinner(t, x, v).
-        
-        ! x [Board] : ?1 v [boolean] : I_BoardgameOver(x, v).
-        ! t [Time] x [Board] : ?1 v [boolean] : BoardgameOver(t, x, v).
-        
         ! x [Board] : ?1 v [boolean] : I_Boardtie(x, v).
         ! t [Time] x [Board] : ?1 v [boolean] : Boardtie(t, x, v).
         
         ! x [Board] : ?1 v [LimitedInt] : I_BoardyCoMax(x, v).
         ! t [Time] x [Board] : ?1 v [LimitedInt] : BoardyCoMax(t, x, v).
         
-        ! x [Position] : ?1 v [boolean] : I_Positionblack(x, v).
-        ! t [Time] x [Position] : ?1 v [boolean] : Positionblack(t, x, v).
+        ! x [Board] : ?1 v [LimitedInt] : I_BoardxCoMax(x, v).
+        ! t [Time] x [Board] : ?1 v [LimitedInt] : BoardxCoMax(t, x, v).
         
-        ! x [Position] : ?1 v [boolean] : I_Positionoccupied(x, v).
-        ! t [Time] x [Position] : ?1 v [boolean] : Positionoccupied(t, x, v).
+        ! x [Board] : ?1 v [boolean] : I_BoardgameOver(x, v).
+        ! t [Time] x [Board] : ?1 v [boolean] : BoardgameOver(t, x, v).
+        
+        ! x [Board] : ?1 v [boolean] : I_BoardblackWinner(x, v).
+        ! t [Time] x [Board] : ?1 v [boolean] : BoardblackWinner(t, x, v).
         
         ! x [Position] : ?1 v [LimitedInt] : I_PositionxCo(x, v).
         ! t [Time] x [Position] : ?1 v [LimitedInt] : PositionxCo(t, x, v).
         
+        ! x [Position] : ?1 v [boolean] : I_Positionoccupied(x, v).
+        ! t [Time] x [Position] : ?1 v [boolean] : Positionoccupied(t, x, v).
+        
         ! x [Position] : ?1 v [LimitedInt] : I_PositionyCo(x, v).
         ! t [Time] x [Position] : ?1 v [LimitedInt] : PositionyCo(t, x, v).
+        
+        ! x [Position] : ?1 v [boolean] : I_Positionblack(x, v).
+        ! t [Time] x [Position] : ?1 v [boolean] : Positionblack(t, x, v).
         
         ! x2 [Position] : ?1 x1 [Board] : BoardandPosition(x1, x2).
         ! x1 [Board] : #{ x2 [Position] : BoardandPosition(x1, x2)} >= 1.
@@ -1395,9 +1395,9 @@ structure S:V {
     I_CurrentStackLevel = 1
 
     LimitedInt = { -5..5 }
-    RandomInt = { 0,-4; 1,1; 2,0; 3,3; 4,-5; 5,-5; 6,4; 7,4; 8,0; 9,4; 10,1; 11,4; 12,1; 13,4; 14,1; 15,-1; 16,2; 17,4; 18,-2; 19,-1; 20,4 }
+    RandomInt = { 0,2; 1,2; 2,-4; 3,-2; 4,-5; 5,2; 6,0; 7,2; 8,1; 9,0; 10,-5; 11,5; 12,4; 13,-3; 14,-1; 15,-1; 16,-3; 17,-2; 18,4; 19,0; 20,1 }
     LimitedFloat = { 0.0; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5; 0.5; -0.5}
-    LimitedString = { "jVS9lqJwJRfTTvGFx74B"; "QKn4rVW5jNlCCex3vWM0"; "IxWzhOPl7TzEA7j4gYLe"; "xCoNE"; "xCoMaxC"; "boardNE"; "xOffSetFT"; "xCoC"; "givenNE"; "xMaxCP"; "isPlayableRPP"; "playerFID"; "blackRPP"; "numTrappedIP"; "boardBTF"; "xOffSetFID"; "neighborExistsFID"; "yOffSetIP"; "xOffNT"; "blackIP"; "boardIP"; "occupiedFID"; "givenIP"; "boardC"; "playerP"; "yCoMaxRPP"; "xCoTestNE"; "posCP"; "yOffCN"; "yCoMaxC"; "yCoC"; "playPosP"; "blackBTF"; "boardFT"; "randomPosRPP"; "numTrappedNT"; "beginBTF"; "boardRPP"; "boardP"; "occupiedC"; "xOffSetBTF"; "stopFID"; "posStepNT"; "countWhiteP"; "blackWinsP"; "canPlayP"; "boardNT"; "yCoCN"; "yOffSetFID"; "boardFID"; "yCoCP"; "ranYRPP"; "yMaxCP"; "neighborCN"; "countBlackP"; "posNT"; "yOffSetBTF"; "canPlayCP"; "boardCN"; "xCoCP"; "boardCP"; "xOffCN"; "toCheckNT"; "yCoMaxNE"; "isPlayableIP"; "neighborFID"; "xCoCN"; "xCoMaxNE"; "skipCountP"; "occupiedNT"; "countC"; "xCoMaxRPP"; "yCoTestNE"; "ranXRPP"; "posC"; "stopBTF"; "beginFID"; "blackCP"; "posCN"; "occupiedRPP"; "existsNE"; "neighExistsNT"; "xOffSetIP"; "endBTF"; "loopNT"; "toFlipBTF"; "yCoNE"; "blackNT"; "tieP"; "yOffSetFT"; "posFT"; "blackFID"; "blackFT"; "blackC"; "colorC"; "foundRPP"; "yOffNT"} 
+    LimitedString = { "bGnrDyHGQOFdO9MVvXyJ"; "up58MoO1A5pee8alrrx7"; "3F7wnvvSX6hWoZH23pJp"; "xCoNE"; "xCoMaxC"; "boardNE"; "xOffSetFT"; "xCoC"; "givenNE"; "xMaxCP"; "isPlayableRPP"; "playerFID"; "blackRPP"; "numTrappedIP"; "boardBTF"; "xOffSetFID"; "neighborExistsFID"; "yOffSetIP"; "xOffNT"; "blackIP"; "boardIP"; "occupiedFID"; "givenIP"; "boardC"; "playerP"; "yCoMaxRPP"; "xCoTestNE"; "posCP"; "yOffCN"; "yCoMaxC"; "yCoC"; "playPosP"; "blackBTF"; "boardFT"; "randomPosRPP"; "numTrappedNT"; "beginBTF"; "boardRPP"; "boardP"; "occupiedC"; "xOffSetBTF"; "stopFID"; "posStepNT"; "countWhiteP"; "blackWinsP"; "canPlayP"; "boardNT"; "yCoCN"; "yOffSetFID"; "boardFID"; "yCoCP"; "ranYRPP"; "yMaxCP"; "neighborCN"; "countBlackP"; "posNT"; "yOffSetBTF"; "canPlayCP"; "boardCN"; "xCoCP"; "boardCP"; "xOffCN"; "toCheckNT"; "yCoMaxNE"; "isPlayableIP"; "neighborFID"; "xCoCN"; "xCoMaxNE"; "skipCountP"; "occupiedNT"; "countC"; "xCoMaxRPP"; "yCoTestNE"; "ranXRPP"; "posC"; "stopBTF"; "beginFID"; "blackCP"; "posCN"; "occupiedRPP"; "existsNE"; "neighExistsNT"; "xOffSetIP"; "endBTF"; "loopNT"; "toFlipBTF"; "yCoNE"; "blackNT"; "tieP"; "yOffSetFT"; "posFT"; "blackFID"; "blackFT"; "blackC"; "colorC"; "foundRPP"; "yOffNT"} 
     
     Board = { Board1; Board2; Board3}
     Position = { Position1; Position2; Position3}

@@ -2,6 +2,7 @@ package parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -513,6 +514,8 @@ public class XMLParser
 	
 	private void parseMessages(List<Element> messages, SeqSymbolStore store)
 	{
+		MessageBuilder pairedGetMessage = null;
+		
 		for (Element message : messages)
 		{
 			String id = message.getAttributeValue("Id");
@@ -536,14 +539,14 @@ public class XMLParser
 			{
 				String[] sides = content.split("=");
 				
-				StringBuilder merge = new StringBuilder();
+//				StringBuilder merge = new StringBuilder();
+//				
+//				for (int i = 1; i < sides.length; i++)
+//				{
+//					merge.append(sides[i]);
+//				}
 				
-				for (int i = 1; i < sides.length; i++)
-				{
-					merge.append(sides[i]);
-				}
-				
-				String rhs = merge.toString();
+				String rhs = content.substring(content.indexOf("=") + 1, content.length());
 				
 				if (! store.hasTempVar(sides[0]))
 				{
@@ -568,6 +571,15 @@ public class XMLParser
 						else if (rhs.contains("getNum"))
 						{
 							type = PrimitiveType.INTEGER;
+						}
+						else if (rhs.contains("flipBool"))
+						{
+							type = PrimitiveType.BOOLEAN;
+						}
+						else if (rhs.contains("=") || rhs.contains("=<") || rhs.contains(">=") || rhs.contains("<")
+								|| rhs.contains(">") || rhs.contains("&") || rhs.contains("|"))
+						{
+							type = PrimitiveType.BOOLEAN;
 						}
 						else
 						{
@@ -642,8 +654,7 @@ public class XMLParser
 			
 			if (isReturn && ! content.contains("=") && ! store.hasTempVar(content))
 			{
-				MessageBuilder prev = store.getMsgBuilder(sdPoint - 2);
-				String name = StringUtils.uncapitalize(prev.getContent().replaceAll("get", "").split("\\(")[0]);
+				String name = StringUtils.uncapitalize(pairedGetMessage.getContent().replaceAll("get", "").split("\\(")[0]);
 				Class fromClass = store.getClassByName(store.resolveTempVar(store.getNameOf(fromId.get())).getType().getTypeName(store)).get();
 				DataUnit attr = fromClass.getAttributeByName(name).get();
 				
@@ -657,6 +668,11 @@ public class XMLParser
 			store.addMessageBuilder(builder);
 			builder.setContent(content).setId(id).setSdPoint(sdPoint)
 				.setReturn(! toId.isPresent()).setFromId(fromId).setToId(toId);
+
+			if (! isReturn && content.startsWith("get"))
+			{
+				pairedGetMessage = builder;
+			}
 		}
 	}
 	
@@ -788,8 +804,10 @@ public class XMLParser
 		String ifGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(0).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		String thenGuard = OutputConvenienceFunctions.toIDPOperators(operands.get(1).getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		
-		List<Element> ifMessages = operands.get(0).getChild("Messages").getChildren();
-		List<Element> thenMessages = operands.get(1).getChild("Messages").getChildren();
+		List<Element> ifMessages = operands.get(0).getChild("Messages") == null ? 
+				Collections.emptyList() : operands.get(0).getChild("Messages").getChildren();
+		List<Element> thenMessages = operands.get(1).getChild("Messages") == null ?
+				Collections.emptyList() : operands.get(1).getChild("Messages").getChildren();
 		
 		List<String> ifMsgIDs = new ArrayList<String>();
 		List<String> thenMsgIDs = new ArrayList<String>();
@@ -868,7 +886,8 @@ public class XMLParser
 		
 		String guard = OutputConvenienceFunctions.toIDPOperators(operand.getChild("Guard").getChild("InteractionConstraint").getAttributeValue("Constraint"));
 		
-		List<Element> messages = operand.getChild("Messages").getChildren();
+		List<Element> messages = operand.getChild("Messages") == null ?
+				Collections.emptyList() : operand.getChild("Messages").getChildren();
 		
 		List<String> msgIDs = new ArrayList<String>();
 		List<String> childIDs = new ArrayList<String>();

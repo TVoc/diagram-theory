@@ -63,13 +63,12 @@ public class ClassVariableCausationBuilder
 	
 	public ClassVariableCausationBuilder handleMessage(Message message, SeqDiagramStore store)
 	{
-		if (message.getContent().contains("set"))
+		if (message.getContent().startsWith("set"))
 		{
 			String toSet = StringUtils.uncapitalize(message.getContent().replaceAll("set", "").split("\\(")[0]);
 			TempVar setOf = message.getTo(store);
 			Class setClass = store.getClassByName(message.getTo(store).getType().getTypeName(store));
 			String predName = setClass.getName() + toSet;
-			
 			this.getClassVarDefs().get(predName).handleSet(message, store, toSet, predName, setOf, setClass);
 		}
 		
